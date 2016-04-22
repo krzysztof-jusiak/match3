@@ -8,7 +8,7 @@ LINKFLAGS_APP:=-lSDL2 -lSDL2_image -lSDL2_ttf
 all: app app_run
 
 web:
-	em++ $(CXXFLAGS) $(CXXFLAGS_EMSCRIPTEN) $(LINKFLAGS_EMSCRIPTEN) $(TGT).cpp -o index.html --shell-file template.html
+	em++ $(CXXFLAGS) $(CXXFLAGS_EMSCRIPTEN) $(LINKFLAGS_EMSCRIPTEN) src/main.cpp -o index.html --shell-file data/template.html
 
 web_run:
 	emrun --port 8080 index.html
