@@ -8,7 +8,7 @@
 
 #include "fwd.hpp"
 
-class SDL_Texture;
+struct SDL_Texture;
 
 namespace match3 {
 

@@ -121,7 +121,7 @@ auto swap_items = [](const selected& s, board& b) {
   std::swap(b.grids[_1], b.grids[_2]);
 };
 
-auto add_matches = [](const board& b, auto& m, selected& s, animations& a, config c) {
+auto add_matches = [](const board& b, auto& m, selected& s, config c) {
   assert(m.arity >= 0);
   auto arity = m.arity;
   while (arity--) {
@@ -142,7 +142,7 @@ auto add_new = [](board& b, const auto& m, selected& s, config c) {
     std::uniform_int_distribution<int> dis(1, c.board_colors);
     return i ? i : dis(gen);
   });
-  s |= ranges::action::push_front(affected(b.grids, m.matches, c.board_width)) | ranges::action::sort | ranges::action::unique;
+  s |= ranges::action::push_front(affected(m.matches, c.board_width)) | ranges::action::sort | ranges::action::unique;
 };
 
 auto show_swap = [](const board& b, const selected& s, animations& a, view& v, config c) {
@@ -152,7 +152,7 @@ auto show_swap = [](const board& b, const selected& s, animations& a, view& v, c
       v.set_grid(_1 % c.board_width, _1 / c.board_width, b.grids[_1]);
       const auto _2 = *(s.begin() + 1);
       v.set_grid(_2 % c.board_width, _2 / c.board_width, b.grids[_2]);
-  }, 10);
+  }, EM(10)(100));
 };
 
 auto show_board = [](const board& b, animations& a, view& v, config c) {
@@ -160,7 +160,7 @@ auto show_board = [](const board& b, animations& a, view& v, config c) {
     for (auto i = 0; i < c.board_width * c.board_height; ++i) {
       v.set_grid(i % c.board_width, i / c.board_width, b.grids[i]);
     }
-  }, 10);
+  }, EM(10)(100));
 };
 
 auto show_matches = [](const auto& m, animations& a, view& v, config c) {
@@ -168,7 +168,7 @@ auto show_matches = [](const auto& m, animations& a, view& v, config c) {
     for (auto i : m.matches) {
       v.update_grid(i % c.board_width, i / c.board_width);
     }
-  }, 10);
+  }, EM(10)(100));
 };
 
 struct controller {

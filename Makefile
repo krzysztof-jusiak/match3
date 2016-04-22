@@ -1,12 +1,9 @@
 TGT:=match3
-CXXFLAGS:=-O2 -std=c++14 -I src -I libs/msm-lite/include -Ilibs/di/include -Ilibs/range-v3/include
+CXXFLAGS:=-O2 -std=c++14 -I src -I libs/msm-lite/include -Ilibs/di/include -Ilibs/range-v3/include -Wall -Wextra -pedantic -pedantic-errors -Wno-c99-extensions #-Werror
 CXXFLAGS_EMSCRIPTEN:=-Wwarn-absolute-paths --emrun -s USE_SDL=2 -s USE_SDL_IMAGE=2 -s USE_SDL_TTF=2
 CXXFLAGS_APP:=-I/usr/local/include/SDL2
 LINKFLAGS_EMSCRIPTEN:=--preload-file data --use-preload-plugins
 LINKFLAGS_APP:=-lSDL2 -lSDL2_image -lSDL2_ttf
-
-
-# pedantic, ... valgrind
 
 all: app app_run
 

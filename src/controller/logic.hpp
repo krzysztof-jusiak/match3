@@ -61,7 +61,7 @@ auto scroll = [](auto&& v, const auto& match, auto width) {
   ranges::rotate(c, begin);
 };
 
-auto affected = [](auto&& v, const auto& matches, auto width) {
+auto affected = [](const auto& matches, auto width) {
   const auto&& columns = matches | ranges::view::transform([=](int m) {
                            return ranges::view::ints | ranges::view::take(m / width + 1) |
                                   ranges::view::transform([=](int i) { return m % width + (i * width); });

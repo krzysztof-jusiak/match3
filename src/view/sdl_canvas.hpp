@@ -47,7 +47,7 @@ class sdl_canvas : public icanvas {
 
   std::shared_ptr<Sprite> create_text(const std::string& str, const std::string& font_file, int font_size) const override {
     std::shared_ptr<TTF_Font> font(TTF_OpenFont(font_file.c_str(), font_size), TTF_CloseFont);
-    std::shared_ptr<SDL_Surface> surface(TTF_RenderText_Blended(font.get(), str.c_str(), SDL_Color{255, 255, 255}),
+    std::shared_ptr<SDL_Surface> surface(TTF_RenderText_Blended(font.get(), str.c_str(), SDL_Color{255, 255, 255, 0}),
                                          SDL_FreeSurface);
     return std::shared_ptr<Sprite>(SDL_CreateTextureFromSurface(renderer_.get(), surface.get()), SDL_DestroyTexture);
   }
