@@ -1,4 +1,8 @@
 #include <boost/di.hpp>
+#include "model/config.hpp"
+#include "model/board.hpp"
+#include "view/sdl_canvas.hpp"
+#include "game.hpp"
 
 namespace di = boost::di;
 
@@ -8,7 +12,6 @@ auto configuration = [] {
   // clang-format off
   return di::make_injector(
     di::bind<icanvas>.to<sdl_canvas>()
-  , di::bind<iclient*[]>.to<sdl_user>()
   , di::bind<>.to(config{.win_title = "match3",
                          .win_width = 320,
                          .win_height = 480,
