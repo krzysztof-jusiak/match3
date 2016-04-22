@@ -1,7 +1,6 @@
 #pragma once
 
-#include <string>
-#include <memory>
+#include "fwd.hpp"
 
 class SDL_Texture;
 

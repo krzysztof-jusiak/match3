@@ -1,6 +1,6 @@
 #pragma once
 
-#include <vector>
+#include "fwd.hpp"
 
 namespace match3 {
 

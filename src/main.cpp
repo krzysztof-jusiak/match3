@@ -1,4 +1,3 @@
-#include <boost/di.hpp>
 #include "model/config.hpp"
 #include "model/board.hpp"
 #include "view/sdl_canvas.hpp"

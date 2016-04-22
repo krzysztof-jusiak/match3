@@ -1,29 +1,6 @@
 #pragma once
 
-#include <cassert>
-#include <utility>
-#include <vector>
-#include <memory>
-#include <range/v3/algorithm/remove_if.hpp>
-
-// clang-format off
-#if __has_include(<SDL2/SDL.h>)
-#include <SDL2/SDL.h>
-#elif __has_include(<SDL.h>)
-#include <SDL.h>
-#endif
-#if __has_include(<SDL2/SDL_image.h>)
-#include <SDL2/SDL_image.h>
-#elif __has_include(<SDL_image.h>)
-#include <SDL_image.h>
-#endif
-#if __has_include(<SDL2/SDL_ttf.h>)
-#include <SDL2/SDL_ttf.h>
-#elif __has_include(<SDL_ttf.h>)
-#include <SDL_ttf.h>
-#endif
-// clang-format on
-
+#include "fwd.hpp"
 #include "view/icanvas.hpp"
 
 namespace match3 {

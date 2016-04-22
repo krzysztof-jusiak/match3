@@ -1,7 +1,7 @@
 #pragma once
 
+#include "fwd.hpp"
 #include "controller/controller.hpp"
-#include <boost/msm-lite.hpp>
 
 namespace msm = boost::msm::lite;
 

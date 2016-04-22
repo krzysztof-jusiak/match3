@@ -1,5 +1,6 @@
 #pragma once
 
+#include "fwd.hpp"
 #include "view/icanvas.hpp"
 #include "model/config.hpp"
 

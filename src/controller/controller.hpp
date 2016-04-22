@@ -1,32 +1,11 @@
 #pragma once
 
-#include <cassert>
-#include <memory>
-#include <vector>
-#include <random>
-#include <boost/msm-lite.hpp>
-#include "view/view.hpp"
-#include "view/animations.hpp"
+#include "fwd.hpp"
 #include "model/config.hpp"
 #include "model/board.hpp"
+#include "view/view.hpp"
+#include "view/animations.hpp"
 #include "controller/logic.hpp"
-
-#if __has_include(<SDL2/SDL.h>)
-#include <SDL2/SDL.h>
-#elif __has_include(<SDL.h>)
-#include <SDL.h>
-#endif
-
-#if defined(EMSCRIPTEN)
-#include <emscripten.h>
-#define EM(...) __VA_ARGS__ EM_ELSE
-#define EM_ELSE(...)
-#else
-#define EM(...) EM_ELSE
-#define EM_ELSE(...) __VA_ARGS__
-#define EM_ASM_INT_V(...) 0
-#endif
-
 
 namespace msm = boost::msm::lite;
 

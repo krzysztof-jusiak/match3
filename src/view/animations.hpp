@@ -1,8 +1,6 @@
 #pragma once
 
-#include <vector>
-#include <functional>
-#include <range/v3/algorithm/remove_if.hpp>
+#include "fwd.hpp"
 #include "view/view.hpp"
 
 namespace match3 {
