@@ -27,7 +27,6 @@
 #include <range/v3/action/unique.hpp>
 #include <range/v3/action/push_back.hpp>
 #include <range/v3/action/push_front.hpp>
-#include <boost/di.hpp>
 #include <boost/msm-lite.hpp>
 // clang-format off
 #if __has_include(<SDL2/SDL.h>)
@@ -56,7 +55,6 @@
 #define EM_ASM_INT_V(...) 0
 #endif
 
-namespace di = boost::di;
 namespace msm = boost::msm::lite;
 
 namespace match3 {
@@ -156,10 +154,10 @@ class view {
   view(icanvas& canvas, config conf) : canvas_(canvas), config_(conf) {
     grids.reserve(config_.board_colors);
     for (auto i = 0; i <= config_.board_colors; ++i) {
-      grids.emplace_back(canvas_.load_image("images/" + std::to_string(i) + ".png"));
+      grids.emplace_back(canvas_.load_image("data/images/" + std::to_string(i) + ".png"));
     };
 
-    match_ = canvas_.load_image("images/match.png");
+    match_ = canvas_.load_image("data/images/match.png");
   }
 
   void set_grid(int x, int y, int c) {
@@ -174,7 +172,7 @@ class view {
     return (((y - grids_offset_y) / grid_offset) * config_.board_width) + ((x - grids_offset_x) / grid_offset);
   }
 
-  void set_text(const std::string& text, int x, int y) { canvas_.draw(canvas_.create_text(text, "fonts/font.ttf"), x, y); }
+  void set_text(const std::string& text, int x, int y) { canvas_.draw(canvas_.create_text(text, "data/fonts/font.ttf"), x, y); }
   void update() { canvas_.render(); }
 
  private:
@@ -518,35 +516,4 @@ class game {
   msm::sm<controller>& controller_;
 };
 
-auto configuration = [] {
-  // clang-format off
-  return di::make_injector(
-    di::bind<icanvas>.to<sdl_canvas>()
-  , di::bind<iclient*[]>.to<sdl_user>()
-  , di::bind<>.to(config{.win_title = "match3",
-                         .win_width = 320,
-                         .win_height = 480,
-                         .board_width = 7,
-                         .board_height = 10,
-                         .board_colors = 5})
-  , di::bind<board::color[]>.to({
-        3,5,1,4,3,2,1,
-        1,1,4,2,5,1,3,
-        5,3,5,4,5,3,2,
-        4,4,2,1,3,4,5,
-        5,1,1,2,4,5,1,
-        5,2,3,5,4,2,2,
-        1,5,5,1,5,5,4,
-        2,3,3,1,3,3,4,
-        3,2,2,5,4,4,1,
-        1,2,3,4,1,3,4})
-  );
-  // clang-format on
-};
-
 }  // match3
-
-int main() {
-  auto injector = di::make_injector(match3::configuration());
-  injector.create<match3::game>().play();
-}
