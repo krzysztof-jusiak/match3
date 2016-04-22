@@ -13,8 +13,8 @@ web:
 web_run:
 	emrun --port 8080 index.html
 
-app:
-	$(CXX) $(CXXFLAGS) $(CXXFLAGS_APP) $(LINKFLAGS_APP) src/main.cpp -o $(TGT)
+app_%:
+	$(CXX) $(CXXFLAGS) $(CXXFLAGS_APP) $(LINKFLAGS_APP) -include src/match3_$*.hpp src/main.cpp -o $(TGT)
 
 app_run:
 	./$(TGT)
