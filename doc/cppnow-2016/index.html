@@ -1,0 +1,429 @@
+<!doctype html>
+<html lang="en">
+
+	<head>
+		<meta charset="utf-8">
+
+		<title>Let's make a web match-3 game in C++14</title>
+
+		<meta name="description" content="A framework for easily creating beautiful presentations using HTML">
+		<meta name="author" content="Hakim El Hattab">
+
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+
+		<link rel="stylesheet" href="css/reveal.css">
+    <link rel="stylesheet" href="css/theme/league.css" id="theme">
+
+		<!-- Code syntax highlighting -->
+		<link rel="stylesheet" href="lib/css/zenburn.css">
+
+		<!-- Printing and PDF exports -->
+		<script>
+			var link = document.createElement( 'link' );
+			link.rel = 'stylesheet';
+			link.type = 'text/css';
+			link.href = window.location.search.match( /print-pdf/gi ) ? 'css/print/pdf.css' : 'css/print/paper.css';
+			document.getElementsByTagName( 'head' )[0].appendChild( link );
+		</script>
+
+		<!--[if lt IE 9]>
+		<script src="lib/js/html5shiv.js"></script>
+		<![endif]-->
+	</head>
+
+	<body>
+
+		<div class="reveal">
+			<div class="slides">
+          <section data-markdown=""
+                   data-separator="^====+$"
+                   data-separator-vertical="^----+$"
+                   data-notes="^Note:">
+					<script type="text/template">
+
+C++Now 2016
+
+# Let's make a web match-3 game in C++14
+
+
+Kris Jusiak, King
+
+==============================================================================
+
+##Being Cross-platform
+
+----
+
+> Write Once, Deploy Everywhere!
+
+| Platform |   |
+| -------- | - |
+| Desktop  | Windows / OS X / Linux |
+| Mobile   | Android / iOS / Windows |
+| Web      | Chrome / IE / Safari / Firefox |
+
+----
+
+| Apps | |
+| ------ | - |
+| Mobile | QT/NDK+djinni |
+| Desktop | QT/wxWidgets |
+| Web | Emscripten/Cheerp/WebAssembly |
+
+----
+
+| Games | |
+| ------ | - |
+| Mobile | NDK+OpenGL+SDL/Cocos2d-x/Marmalade |
+| Desktop | Unreal Engine/Cocos2d-x |
+| Web | Emscripten/Cheerp/WebAssembly |
+
+----
+
+Combine C++ with JS
+
+* Cordova
+* Titanium
+* ReactNative
+* QML
+
+==============================================================================
+
+##C++ and the Web
+
+----
+
+Emscripten
+
+> Emscripten is an LLVM-based project that compiles C and C++ into highly-optimizable JavaScript in asm.js format
+
+----
+
+WebAssemlby
+
+> WebAssembly or wasm is a new portable, size- and load-time-efficient format suitable for compilation to the web
+
+In Progress!
+
+==============================================================================
+
+##Let's match some <s>candies</s> / jewels
+
+![Candy Crush](images/candy_crush.jpg)
+
+----
+
+##Match3 Game
+
+<img width=250 height=400 src="images/game.png" />
+
+http://modern-cpp-examples.github.io/match3
+
+
+==============================================================================
+
+###Core Mechanics
+
+----
+
+Match 3
+
+![match3](images/match3.png)
+![match3x](images/match3x.png)
+
+----
+
+Match 3 - Twice
+
+![match32](images/match32.png)
+![match32x](images/match32x.png)
+
+----
+
+Match 4
+
+![match4](images/match4.png)
+![match4x](images/match4x.png)
+
+----
+
+Match 5
+
+![match5](images/match5.png)
+![match5x](images/match5x.png)
+
+----
+
+Match L
+
+![matchl](images/matchl.png)
+![matchlx](images/matchlx.png)
+
+----
+
+Match can generate new matches
+
+<img width=350 height=400 src="images/matchs.png" />
+
+==============================================================================
+
+##Requirements
+
+----
+
+* C++14 compiler (Clang-3.7+) / Emscripten (1.35.0)
+* SDL2 (SDL2_image / SDL2_ttf)
+* Range-v3
+* Experimental Boost.DI
+* Experimental Boost.MSM-lite
+
+==============================================================================
+
+##Design
+
+----
+
+* Dependency Injection: Experimental Boost.DI
+
+  * Model
+
+  * View
+
+    * SDL2
+
+  * Controller
+
+    * Meta State Machine: Experimental Boost.MSM-lite
+    * Logic: Range-V3
+
+==============================================================================
+
+##Compile & Run
+
+----
+
+Desktop
+
+----
+
+Compile
+
+```sh
+clang++ -std=c++14 -lSDL2 -lSDL2_image -lSDL2_ttf
+        src/main.cpp -o match3
+```
+
+Run
+
+```sh
+./match3
+```
+
+----
+
+Web
+
+----
+
+Compile
+
+```sh
+em++ -s USE_SDL=2 -s USE_SDL_IMAGE=2 -s USE_SDL_TTF=2
+     --emrun --preload-file data --use-preload-plugins src/main.cpp
+     -o index.html --shell-file data/template.html
+```
+
+Run
+
+```sh
+browser index.html
+```
+
+==============================================================================
+
+##Fancy to try something crazy?
+
+----
+
+C++ -> JS -> Mobile -> Browser
+
+<img width=250 height=400 src="images/mobile.jpg" />
+
+----
+
+Embedding JS in C++
+
+----
+
+```cpp
+auto is_mobile = [] {
+  return bool(EM_ASM_INT_V({
+    return /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+  }));
+};
+```
+----
+
+Finger touch instead of button click
+
+----
+
+```cpp
+"second_item"_s <= "first_item"_s  + touch_down  [is_mobile] ...
+"match_items"_s <= "second_item"_s + touch_up    [is_mobile] ...
+
+"second_item"_s <= "first_item"_s  + button_down [!is_mobile] ...
+"match_items"_s <= "second_item"_s + button_up   [!is_mobile] ...
+```
+
+==============================================================================
+
+Testing
+
+----
+
+==============================================================================
+
+###Debugging C++ -> JS -> Mobile -> Chrome
+
+![Chrome Discover Devices](images/chrome-discover-usb.png)
+
+```
+chrome://inspect/#devices
+```
+
+----
+
+![Debug](images/debug.jpg)
+
+==============================================================================
+
+##Questions?
+
+|  |  |
+| ------- | ------------- |
+| Match-3 Game | https://github.com/modern-cpp-examples/match3 |
+| Experimental Boost.DI | https://github.com/boost-experimental/di |
+| Experimental Boost.MSM-lite | https://github.com/boost-experimental/msm-lite |
+| Range-V3 | https://github.com/ericniebler/range-v3 |
+
+					</script>
+				</section>
+
+		  <section data-background-size="100%" data-background="images/king_logo.png"><font style="font-size: 72px; font-weight: bold; color: black;"><br /><br /><br /><br /><br /><br />Thank you</font></section>
+
+			</div>
+		</div>
+
+		<script src="lib/js/head.min.js"></script>
+		<script src="js/reveal.js"></script>
+
+		<script>
+
+			// Full list of configuration options available at:
+			// https://github.com/hakimel/reveal.js#configuration
+			Reveal.initialize({
+
+        // Display controls in the bottom right corner
+        controls: true,
+
+        // Display a presentation progress bar
+        progress: true,
+
+        // Display the page number of the current slide
+        slideNumber: true,
+
+        // Push each slide change to the browser history
+        history: true,
+
+        // Enable keyboard shortcuts for navigation
+        keyboard: true,
+
+        // Enable the slide overview mode
+        overview: true,
+
+        // Vertical centering of slides
+        center: true,
+
+        // Enables touch navigation on devices with touch input
+        touch: true,
+
+        // Loop the presentation
+        loop: false,
+
+        // Change the presentation direction to be RTL
+        rtl: false,
+
+        // Turns fragments on and off globally
+        fragments: false,
+
+        // Flags if the presentation is running in an embedded mode,
+        // i.e. contained within a limited portion of the screen
+        embedded: false,
+
+        // Flags if we should show a help overlay when the questionmark
+        // key is pressed
+        help: true,
+
+        // Flags if speaker notes should be visible to all viewers
+        showNotes: false,
+
+        // Number of milliseconds between automatically proceeding to the
+        // next slide, disabled when set to 0, this value can be overwritten
+        // by using a data-autoslide attribute on your slides
+        autoSlide: 0,
+
+        // Stop auto-sliding after user input
+        autoSlideStoppable: true,
+
+        // Enable slide navigation via mouse wheel
+        mouseWheel: true,
+
+        // Hides the address bar on mobile devices
+        hideAddressBar: true,
+
+        // Opens links in an iframe preview overlay
+        previewLinks: false,
+
+        // Transition style
+        transition: 'slide', // none/fade/slide/convex/concave/zoom
+
+        // Transition speed
+        transitionSpeed: 'default', // default/fast/slow
+
+        // Transition style for full page slide backgrounds
+        backgroundTransition: 'default', // none/fade/slide/convex/concave/zoom
+
+        // Number of slides away from the current that are visible
+        viewDistance: 3,
+
+        // Parallax background image
+        parallaxBackgroundImage: '', // e.g. "'https://s3.amazonaws.com/hakim-static/reveal-js/reveal-parallax-1.jpg'"
+
+        // Parallax background size
+        parallaxBackgroundSize: '', // CSS syntax, e.g. "2100px 900px"
+
+        // Number of pixels to move the parallax background per slide
+        // - Calculated automatically unless specified
+        // - Set to 0 to disable movement along an axis
+        parallaxBackgroundHorizontal: null,
+        parallaxBackgroundVertical: null,
+
+				// Optional reveal.js plugins
+				dependencies: [
+					{ src: 'lib/js/classList.js', condition: function() { return !document.body.classList; } },
+					{ src: 'plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } },
+					{ src: 'plugin/zoom-js/zoom.js', async: true },
+					{ src: 'plugin/notes/notes.js', async: true }
+				]
+			});
+
+		</script>
+
+	</body>
+</html>
