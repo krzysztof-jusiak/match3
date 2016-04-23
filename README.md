@@ -29,6 +29,11 @@
 
 ###Quick start
 
+|         | Web      | Desktop       |
+| ------- | -------- | ------------- |
+| Compile | <code>make web</code> | <code>make app</code> |
+| Run | <code>$browser index.html</code> | <code>./match3</code> |
+
 ```sh
 make app web
 ```
