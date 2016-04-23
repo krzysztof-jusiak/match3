@@ -72,7 +72,7 @@
       function RequestFullScreen() {
         var element = document.getElementById("play-button");
         element.parentNode.removeChild(element);
-        Module.requestFullScreen(true, false);
+        Module.requestFullScreen(false, false);
       }
 
       var statusElement = document.getElementById('status');
