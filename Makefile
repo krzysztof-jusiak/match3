@@ -7,7 +7,7 @@ LINKFLAGS_APP:=-lSDL2 -lSDL2_image -lSDL2_ttf
 
 all: app app_run
 
-check:
+style:
 	find src test -iname "*.hpp" -or -iname "*.cpp" | xargs clang-format -i
 
 web:
