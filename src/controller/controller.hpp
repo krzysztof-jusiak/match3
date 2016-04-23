@@ -72,7 +72,11 @@ struct key_pressed {
 
 /// Guards
 
-auto is_mobile = [] { return bool(EM_ASM_INT_V({ return / iPhone | iPad | iPod | Android / i.test(navigator.userAgent); })); };
+auto is_mobile = [] {
+  // clang-format off
+  return bool(EM_ASM_INT_V({return /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);}));
+  // clang-format on
+};
 
 auto are_selected = [](const selected& s) { return !s.empty(); };
 
