@@ -10,9 +10,11 @@
 #include <memory>
 #include <string>
 #include <vector>
+#include <chrono>
 #include <random>
 #include <utility>
 #include <functional>
+#include <type_traits>
 #include <range/v3/view/take.hpp>
 #include <range/v3/view/drop.hpp>
 #include <range/v3/view/stride.hpp>

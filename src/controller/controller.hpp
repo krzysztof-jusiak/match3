@@ -101,18 +101,12 @@ auto is_key = [](auto event) { return event.key == Key; };
 
 auto select_item = [](auto event, const view& v, selected& s) { s.emplace_back(v.get_position(event.x, event.y)); };
 
-auto drop = [](selected& s) {
+auto drop_item = [](selected& s) {
   assert(!s.empty());
   s.pop_back();
 };
 
-auto clean_matches = [](board& b, const auto& m) { ranges::for_each(m.matches, [&](auto i) { b.grids[i] = {}; }); };
-
 auto clear_selected = [](selected& s) { s.clear(); };
-
-auto show_points = [](view& v, const points& p) { v.set_text("points: " + std::to_string(p), 10, 10); };
-
-auto add_points = [](points& p, const auto& m) { p += m.matches.size(); };
 
 auto swap_items = [](const selected& s, board& b) {
   assert(s.size() == 2);
@@ -131,6 +125,8 @@ auto add_matches = [](const board& b, auto& m, selected& s, config c) {
   m.matches |= ranges::action::sort | ranges::action::unique;
 };
 
+auto clean_matches = [](board& b, const auto& m) { ranges::for_each(m.matches, [&](auto i) { b.grids[i] = {}; }); };
+
 auto scroll_board = [](board& b, const auto& m, config c) {
   ranges::for_each(m.matches, [&](auto i) { scroll(b.grids, i, c.board_width); });
 };
@@ -145,31 +141,38 @@ auto add_new = [](board& b, const auto& m, selected& s, config c) {
   s |= ranges::action::push_front(affected(m.matches, c.board_width)) | ranges::action::sort | ranges::action::unique;
 };
 
+auto add_points = [](points& p, const auto& m) { p += m.matches.size(); };
+
 auto show_swap = [](const board& b, const selected& s, animations& a, view& v, config c) {
   assert(s.size() == 2);
+  using namespace std::chrono_literals;
   a.queue_animation([b, c, s, &v] {
       const auto _1 = *s.begin();
       v.set_grid(_1 % c.board_width, _1 / c.board_width, b.grids[_1]);
       const auto _2 = *(s.begin() + 1);
       v.set_grid(_2 % c.board_width, _2 / c.board_width, b.grids[_2]);
-  }, EM(10)(100));
+  }, 150ms);
 };
 
 auto show_board = [](const board& b, animations& a, view& v, config c) {
+  using namespace std::chrono_literals;
   a.queue_animation([b, c, &v] {
     for (auto i = 0; i < c.board_width * c.board_height; ++i) {
       v.set_grid(i % c.board_width, i / c.board_width, b.grids[i]);
     }
-  }, EM(10)(100));
+  }, 150ms);
 };
 
 auto show_matches = [](const auto& m, animations& a, view& v, config c) {
+  using namespace std::chrono_literals;
   a.queue_animation([m, c, &v] {
     for (auto i : m.matches) {
       v.update_grid(i % c.board_width, i / c.board_width);
     }
-  }, EM(10)(100));
+  }, 150ms);
 };
+
+auto show_points = [](view& v, const points& p) { v.set_text("points: " + std::to_string(p), 10, 10); };
 
 struct controller {
   auto configure() const noexcept {
@@ -182,11 +185,11 @@ struct controller {
 
       , "wait_for_second_item"_s <=   "wait_for_first_item"_s  + event<touch_down>  [is_mobile] / select_item
       , "match_items"_s          <=   "wait_for_second_item"_s + event<touch_up>    [is_mobile && is_allowed] / (select_item, swap_items, show_swap)
-      , "wait_for_first_item"_s  <=   "wait_for_second_item"_s + event<touch_up>    [is_mobile && !is_allowed] / clear_selected
+      , "wait_for_first_item"_s  <=   "wait_for_second_item"_s + event<touch_up>    [is_mobile && !is_allowed] / drop_item
 
       , "wait_for_second_item"_s <=   "wait_for_first_item"_s  + event<button_down> [!is_mobile] / select_item
       , "match_items"_s          <=   "wait_for_second_item"_s + event<button_up>   [!is_mobile && is_allowed] / (select_item, swap_items, show_swap)
-      , "wait_for_first_item"_s  <=   "wait_for_second_item"_s + event<button_up>   [!is_mobile && !is_allowed] / clear_selected
+      , "wait_for_first_item"_s  <=   "wait_for_second_item"_s + event<button_up>   [!is_mobile && !is_allowed] / drop_item
 
       , "wait_for_first_item"_s  <=   "match_items"_s                               [ is_swap_items_winning ] / msm::queue_event(matches{.arity = 2})
       , "wait_for_first_item"_s  <=   "match_items"_s                               / (swap_items, clear_selected, show_board)
@@ -200,7 +203,7 @@ struct controller {
                                                                                      , msm::queue_event(matches{.arity = 1})
                                                                                     )
       ,                               "handle_matches"_s       + event<matches>     [are_selected && !is_item_winning] / (
-                                                                                      drop, msm::queue_event(matches{.arity = 1})
+                                                                                      drop_item, msm::queue_event(matches{.arity = 1})
                                                                                     )
      // +--------------------------------------------------------------------------------------------------------------------------------------------+
       , X                        <= *("wait_for_client"_s)     + event<key_pressed> [ is_key<SDLK_ESCAPE> ]

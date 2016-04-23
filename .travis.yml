@@ -1,0 +1,38 @@
+#
+# Copyright (c) 2016 Krzysztof Jusiak (krzysztof at jusiak dot net)
+#
+# Distributed under the Boost Software License, Version 1.0.
+# (See accompanying file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+#
+sudo: false
+
+branches:
+  except:
+    - gh-pages
+
+matrix:
+  fast_finish: true
+  include:
+  - os: linux
+    env: CXX=clang++-3.7
+    addons:
+      apt:
+        packages: ["clang-3.7", "libstdc++-5-dev", "valgrind"]
+        sources: ["ubuntu-toolchain-r-test", "llvm-toolchain-precise-3.7"]
+  - os: linux
+    env: CXX=clang++-3.8
+    addons:
+      apt:
+        packages: ["clang-3.8", "libstdc++-5-dev", "valgrind"]
+        sources: ["ubuntu-toolchain-r-test", "llvm-toolchain-precise-3.8"]
+  - os: osx
+    osx_image: xcode7.3
+    env: CXX=clang++
+
+script:
+  - if [ "${CXX}" != "" ]; then (travis_wait make); fi
+
+notifications:
+  on_success: change
+  on_failure: always
+  on_start: false
