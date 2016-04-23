@@ -18,7 +18,7 @@ namespace msm = boost::msm::lite;
 namespace match3 {
 
 using selected = std::vector<short>;
-using points = int;
+using points = long;
 
 /// Events
 
