@@ -20,13 +20,8 @@ class animations {
  public:
   explicit animations(view& v) : view_(v) {}
 
-  void queue_animation(const std::function<void()>& f, std::chrono::milliseconds length) {
+  void queue_animation(const std::function<void()>& f, std::chrono::milliseconds length = {}) {
     anims_.emplace_back(animation{f, length});
-  }
-
-  void queue_animation(const std::function<void()>& f) {
-    using namespace std::chrono_literals;
-    anims_.emplace_back(animation{f, 1ms});
   }
 
   void update() {
@@ -36,7 +31,7 @@ class animations {
     );
 
     for (auto& a : anims_) {
-      if (a.length > 0ms) {
+      if (a.length >= 0ms) {
         if (a.start == 0ms) {
           a.start = now;
         }
