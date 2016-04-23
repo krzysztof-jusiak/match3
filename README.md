@@ -29,12 +29,9 @@
 
 ###Quick start
 
-```sh
-git clone --recurisve https://github.com/modern-cpp-examples/match3.git
-```
-
-|         | Web                              | Desktop               |
-| ------- | -------------------------------- | --------------------- |
-| Compile | <code>make web</code>            | <code>make app</code> |
-| Run     | <code>$browser index.html</code> | <code>./match3</code> |
+|          | Web                              | Desktop               |
+| -------- | -------------------------------- | --------------------- |
+| Download | <code>git clone --recurisve https://github.com/modern-cpp-examples/match3.git</code>                                            |
+| Compile  | <code>make web</code>            | <code>make app</code> |
+| Run      | <code>$browser index.html</code> | <code>./match3</code> |
 
