@@ -4,21 +4,32 @@
 
 ---------------------------------------
 
-#Match3
+#Simple Match3 game in C++14 using SDL2 / MVC / Meta State Machine / Dependency Injection / Range-V3
 
 | Play it! | Read about it |
-| screenshot | image of cppnow-2016 |
+| -------- | ------------- |
+| [![Play it](doc/match3.png)](http://modern-cpp-examples.github.io/match3) | |
 
 ---
 
-#Requirements
+###Requirements
 
-* Clang (C++14) / STL
-* Emscripten
+* [Clang-3.7+](http://clang.llvm.org) / C++14 / STL
+* [Emscripten - 1.35.0](http://kripken.github.io/emscripten-site/docs/getting_started/downloads.html)
 
-#Dependencies
+###Dependencies
 
-* SDL
-* msm-lite
-* di
-* range-v3
+* [SDL2](https://www.libsdl.org/download-2.0.php)
+* [SDL2-image](https://www.libsdl.org/projects/SDL_image/)
+* [SDL2-ttf](https://www.libsdl.org/download-2.0.php)
+* [boost.di](https://github.com/boost-experimental/di)
+* [boost.msm-lite](https://github.com/boost-experimental/msm-lite)
+* [range-v3](https://github.com/ericniebler/range-v3)
+
+
+###Quick start
+
+```sh
+make app web
+```
+
