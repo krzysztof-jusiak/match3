@@ -78,7 +78,7 @@ auto is_mobile = [] {
   // clang-format on
 };
 
-auto are_selected = [](const selected& s) { return !s.empty(); };
+auto are_items = [](const selected& s) { return !s.empty(); };
 
 auto is_swap_items_winning = [](const board& b, const selected& s, config c) {
   assert(s.size() >= 2);
@@ -119,7 +119,7 @@ auto swap_items = [](const selected& s, board& b) {
   std::swap(b.grids[_1], b.grids[_2]);
 };
 
-auto add_matches = [](const board& b, auto& m, selected& s, config c) {
+auto find_matches = [](const board& b, auto& m, selected& s, config c) {
   assert(m.arity >= 0);
   auto arity = m.arity;
   while (arity--) {
@@ -129,13 +129,13 @@ auto add_matches = [](const board& b, auto& m, selected& s, config c) {
   m.matches |= ranges::action::sort | ranges::action::unique;
 };
 
-auto clean_matches = [](board& b, const auto& m) { ranges::for_each(m.matches, [&](auto i) { b.grids[i] = {}; }); };
+auto destroy_matches = [](board& b, const auto& m) { ranges::for_each(m.matches, [&](auto i) { b.grids[i] = {}; }); };
 
 auto scroll_board = [](board& b, const auto& m, config c) {
   ranges::for_each(m.matches, [&](auto i) { scroll(b.grids, i, c.board_width); });
 };
 
-auto add_new = [](board& b, const auto& m, selected& s, config c) {
+auto generate_new = [](board& b, const auto& m, selected& s, config c) {
   ranges::action::transform(b.grids, [c](auto i) {
     std::random_device rd;
     std::mt19937 gen(rd());
@@ -176,7 +176,12 @@ auto show_matches = [](const auto& m, animations& a, view& v, config c) {
   }, 150ms);
 };
 
-auto show_points = [](view& v, const points& p) { v.set_text("points: " + std::to_string(p), 10, 10); };
+auto show_points = [](view& v, const points& p, animations& a) {
+  using namespace std::chrono_literals;
+  a.queue_animation([p, &v] {
+    v.set_text("points: " + std::to_string(p), 10, 10);
+  });
+};
 
 struct controller {
   auto configure() const noexcept {
@@ -198,15 +203,15 @@ struct controller {
       , "wait_for_first_item"_s  <=   "match_items"_s                               [ is_swap_items_winning ] / msm::queue_event(matches{.arity = 2})
       , "wait_for_first_item"_s  <=   "match_items"_s                               / (swap_items, clear_selected, show_board)
      // +--------------------------------------------------------------------------------------------------------------------------------------------+
-      ,                             *("handle_matches"_s)      + event<matches>     [are_selected && is_item_winning] / (
-                                                                                       add_matches, show_matches
-                                                                                     , clean_matches, show_board
+      ,                             *("handle_matches"_s)      + event<matches>     [are_items && is_item_winning] / (
+                                                                                       find_matches, show_matches
+                                                                                     , destroy_matches, show_board
                                                                                      , add_points, show_points
                                                                                      , scroll_board, show_board
-                                                                                     , add_new, show_board
+                                                                                     , generate_new, show_board
                                                                                      , msm::queue_event(matches{.arity = 1})
                                                                                     )
-      ,                               "handle_matches"_s       + event<matches>     [are_selected && !is_item_winning] / (
+      ,                               "handle_matches"_s       + event<matches>     [are_items && !is_item_winning] / (
                                                                                       drop_item, msm::queue_event(matches{.arity = 1})
                                                                                     )
      // +--------------------------------------------------------------------------------------------------------------------------------------------+

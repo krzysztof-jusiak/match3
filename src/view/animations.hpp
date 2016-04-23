@@ -24,6 +24,11 @@ class animations {
     anims_.emplace_back(animation{f, length});
   }
 
+  void queue_animation(const std::function<void()>& f) {
+    using namespace std::chrono_literals;
+    anims_.emplace_back(animation{f, 1ms});
+  }
+
   void update() {
     using namespace std::chrono_literals;
     const auto now = std::chrono::duration_cast<std::chrono::milliseconds>(
