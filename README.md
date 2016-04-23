@@ -8,7 +8,7 @@
 
 | Play it! | Read about it |
 | -------- | ------------- |
-| <a href="http://modern-cpp-examples.github.io/match3"><img src="doc/match3.png" width="300" height="450"/></a> | <a href="http://modern-cpp-examples.github.io/match3/cppnow-2016"><img src="doc/cppnow-2016.png" width="500" height="450"/></a> | |
+| <a href="http://modern-cpp-examples.github.io/match3"><img src="doc/match3.png" width="300" height="450"/></a> | <a href="http://modern-cpp-examples.github.io/match3/cppnow-2016"><img src="doc/cppnow-2016.png" width="550" height="450"/></a> | |
 
 ---
 
