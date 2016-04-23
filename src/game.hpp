@@ -18,11 +18,11 @@ class game {
   explicit game(msm::sm<controller>& c) : controller_(c) {}
 
   void play() {
-    EM(emscripten_set_main_loop_arg(run_impl, reinterpret_cast<void*>(&controller_), 0, 0))
-    (run_impl(reinterpret_cast<void*>(&controller_)));
+    EM(emscripten_set_main_loop_arg(play_impl, reinterpret_cast<void*>(&controller_), 0, 0))
+    (play_impl(reinterpret_cast<void*>(&controller_)));
   }
 
-  static void run_impl(void* c) {
+  static void play_impl(void* c) {
     auto& controller_ = *reinterpret_cast<msm::sm<controller>*>(c);
     do {
       auto dispatch_event = msm::make_dispatch_table<SDL_Event, SDL_QUIT, SDL_FINGERMOTION>(controller_);
