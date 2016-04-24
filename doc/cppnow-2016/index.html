@@ -18,7 +18,7 @@
     <link rel="stylesheet" href="css/theme/league.css" id="theme">
 
 		<!-- Code syntax highlighting -->
-		<link rel="stylesheet" href="lib/css/zenburn.css">
+		<link rel="stylesheet" href="css/theme/black.css" id="theme">
 
 		<!-- Printing and PDF exports -->
 		<script>
@@ -41,13 +41,16 @@
           <section data-markdown=""
                    data-separator="^====+$"
                    data-separator-vertical="^----+$"
-                   data-notes="^Note:">
+                   data-notes="^Note:"
+                   data-background-size="100%"
+                 	 data-background="images/king.png">
 					<script type="text/template">
 
 C++Now 2016
 
 # Let's make a web match-3 game in C++14
 
+https://github.com/modern-cpp-examples/match3
 
 Kris Jusiak, King
 
@@ -129,6 +132,24 @@ http://modern-cpp-examples.github.io/match3
 
 ----
 
+1. Swipe items (2 given items)
+
+2. For given items
+
+    2.1 Find matches
+
+    2.2 Remove matches
+
+    2.3 Scroll down items (which were above removed)
+
+    2.4 Generate new items
+
+    2.6 Find affected items (new or scrolled items)
+
+    2.7 For affected (new given items) items go to 2
+
+----
+
 Match 3
 
 ![match3](images/match3.png)
@@ -175,7 +196,7 @@ Match can generate new matches
 ----
 
 * C++14 compiler (Clang-3.7+) / Emscripten (1.35.0)
-* SDL2 (SDL2_image / SDL2_ttf)
+* SDL2 / SDL2_image / SDL2_ttf
 * Range-v3
 * Experimental Boost.DI
 * Experimental Boost.MSM-lite
@@ -244,7 +265,7 @@ browser index.html
 
 ==============================================================================
 
-##Fancy to try something crazy?
+##Let's try something crazy?
 
 ----
 

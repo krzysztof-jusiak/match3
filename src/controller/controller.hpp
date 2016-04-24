@@ -20,6 +20,7 @@ namespace match3 {
 
 using selected = std::vector<short>;
 using points = long;
+using moves = int;
 
 /// Events
 
@@ -198,6 +199,18 @@ auto show_points = [](view& v, const points& p, animations& a) {
       [p, &v] { v.set_text("points: " + std::to_string(p), 10, 10); });
 };
 
+auto show_moves = [](view& v, const moves& m, animations& a) {
+  using namespace std::chrono_literals;
+  a.queue_animation(
+      [m, &v] { v.set_text("moves: " + std::to_string(m), 240, 10); });
+};
+
+auto show_game_over = [](view& v, animations& a) {
+  using namespace std::chrono_literals;
+  a.queue_animation(
+      [&v] { v.set_text("GAME OVER", 20, 230, 48 /*font size*/); });
+};
+
 struct controller {
   auto configure() const noexcept {
     using namespace msm;
@@ -205,20 +218,25 @@ struct controller {
     // clang-format off
     return make_transition_table(
      // +--------------------------------------------------------------------------------------------------------------------------------------------+
-        "wait_for_first_item"_s  <= *("idle"_s)                                     / (show_board, show_points)
+        "wait_for_first_item"_s  <= *("idle"_s)                                     / (show_board, show_points, show_moves)
 
-      , "wait_for_second_item"_s <=   "wait_for_first_item"_s  + event<touch_down>  [is_mobile] / select_item
-      , "match_items"_s          <=   "wait_for_second_item"_s + event<touch_up>    [is_mobile && is_allowed] / (select_item, swap_items, show_swap)
-      , "wait_for_first_item"_s  <=   "wait_for_second_item"_s + event<touch_up>    [is_mobile && !is_allowed] / drop_item
+      ,  "game_over"_s           <=   "wait_for_first_item"_s                       [ not [](moves& m) { return m > 0; } ] / show_game_over
 
-      , "wait_for_second_item"_s <=   "wait_for_first_item"_s  + event<button_down> [!is_mobile] / select_item
-      , "match_items"_s          <=   "wait_for_second_item"_s + event<button_up>   [!is_mobile && is_allowed] / (select_item, swap_items, show_swap)
-      , "wait_for_first_item"_s  <=   "wait_for_second_item"_s + event<button_up>   [!is_mobile && !is_allowed] / drop_item
+      , "wait_for_second_item"_s <=   "wait_for_first_item"_s  + event<touch_down>  [ is_mobile ] / select_item
+      , "match_items"_s          <=   "wait_for_second_item"_s + event<touch_up>    [ is_mobile and is_allowed ] / (select_item, swap_items, show_swap)
+      , "wait_for_first_item"_s  <=   "wait_for_second_item"_s + event<touch_up>    [ is_mobile and  not is_allowed ] / drop_item
 
-      , "wait_for_first_item"_s  <=   "match_items"_s                               [ is_swap_items_winning ] / msm::queue_event(matches{.arity = 2})
+      , "wait_for_second_item"_s <=   "wait_for_first_item"_s  + event<button_down> [ not is_mobile ] / select_item
+      , "match_items"_s          <=   "wait_for_second_item"_s + event<button_up>   [ not is_mobile and is_allowed ] / (select_item, swap_items, show_swap)
+      , "wait_for_first_item"_s  <=   "wait_for_second_item"_s + event<button_up>   [ not is_mobile and not is_allowed ] / drop_item
+
+      , "wait_for_first_item"_s  <=   "match_items"_s                               [ is_swap_items_winning ] / (
+                                                                                      [](moves& m) {--m;}, show_moves,
+                                                                                      msm::queue_event(matches{.arity = 2})
+                                                                                    )
       , "wait_for_first_item"_s  <=   "match_items"_s                               / (swap_items, clear_selected, show_board)
      // +--------------------------------------------------------------------------------------------------------------------------------------------+
-      ,                             *("handle_matches"_s)      + event<matches>     [has_items && is_item_winning] / (
+      ,                             *("handle_matches"_s)      + event<matches>     [ has_items and is_item_winning ] / (
                                                                                        find_matches, show_matches
                                                                                      , destroy_matches, show_board
                                                                                      , add_points, show_points
@@ -226,7 +244,7 @@ struct controller {
                                                                                      , generate_new, show_board
                                                                                      , msm::queue_event(matches{.arity = 1})
                                                                                     )
-      ,                               "handle_matches"_s       + event<matches>     [has_items && !is_item_winning] / (
+      ,                               "handle_matches"_s       + event<matches>     [ has_items and not is_item_winning ] / (
                                                                                       drop_item, msm::queue_event(matches{.arity = 1})
                                                                                     )
      // +--------------------------------------------------------------------------------------------------------------------------------------------+

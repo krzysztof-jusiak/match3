@@ -10,6 +10,9 @@ all: app app_run
 style:
 	find src test -iname "*.hpp" -or -iname "*.cpp" | xargs clang-format -i
 
+pph:
+	$(CXX) $(CXXFLAGS) $(CXXFLAGS_APP) src/fwd.hpp
+
 web:
 	em++ $(CXXFLAGS) $(CXXFLAGS_EMSCRIPTEN) $(LINKFLAGS_EMSCRIPTEN) src/main.cpp -o index.html --shell-file data/template.html
 
