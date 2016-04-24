@@ -2,7 +2,8 @@
 // Copyright (c) 2016 Krzysztof Jusiak (krzysztof at jusiak dot net)
 //
 // Distributed under the Boost Software License, Version 1.0.
-// (See accompanying file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+// (See accompanying file LICENSE_1_0.txt or copy at
+// http://www.boost.org/LICENSE_1_0.txt)
 //
 #pragma once
 
@@ -18,14 +19,17 @@ class game {
   explicit game(msm::sm<controller>& c) : controller_(c) {}
 
   void play() {
-    EM(emscripten_set_main_loop_arg(play_impl, reinterpret_cast<void*>(&controller_), 0, 0))
+    EM(emscripten_set_main_loop_arg(
+        play_impl, reinterpret_cast<void*>(&controller_), 0, 0))
     (play_impl(reinterpret_cast<void*>(&controller_)));
   }
 
   static void play_impl(void* c) {
     auto& controller_ = *reinterpret_cast<msm::sm<controller>*>(c);
     do {
-      auto dispatch_event = msm::make_dispatch_table<SDL_Event, SDL_QUIT, SDL_FINGERMOTION>(controller_);
+      auto dispatch_event =
+          msm::make_dispatch_table<SDL_Event, SDL_QUIT, SDL_FINGERMOTION>(
+              controller_);
       controller_.process_event(time_tick{});
       SDL_Event event;
       while (SDL_PollEvent(&event)) {
@@ -38,4 +42,4 @@ class game {
   msm::sm<controller>& controller_;
 };
 
-} // match3
+}  // match3
