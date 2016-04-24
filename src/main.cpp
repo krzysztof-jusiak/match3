@@ -12,7 +12,7 @@
 
 namespace di = boost::di;
 
-auto configuration = [](int& max_moves) {
+auto configuration = []() {
   using namespace match3;
 
   // clang-format off
@@ -24,7 +24,7 @@ auto configuration = [](int& max_moves) {
                          .board_width = 7,
                          .board_height = 10,
                          .board_colors = 5})
-  , di::bind<moves>.to(max_moves)
+  , di::bind<moves>.to(std::make_shared<int>(10))
   , di::bind<board::color[]>.to({
         3,5,1,4,3,2,2,
         1,1,4,2,5,1,3,
@@ -40,8 +40,7 @@ auto configuration = [](int& max_moves) {
   // clang-format on
 };
 
-int main(int argc, char** argv) {
-  auto max_moves = argc > 1 ? std::stoi(argv[1]) : 10;
-  auto injector = di::make_injector(configuration(max_moves));
+int main() {
+  auto injector = di::make_injector(configuration());
   injector.create<match3::game>().play();
 }
