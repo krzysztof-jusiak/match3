@@ -15,10 +15,10 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
 
 		<link rel="stylesheet" href="css/reveal.css">
-    <link rel="stylesheet" href="css/theme/league.css" id="theme">
+    <link rel="stylesheet" href="css/theme/black.css" id="theme">
 
 		<!-- Code syntax highlighting -->
-		<link rel="stylesheet" href="css/theme/black.css" id="theme">
+    <link rel="stylesheet" href="lib/css/zenburn.css">
 
 		<!-- Printing and PDF exports -->
 		<script>
@@ -234,7 +234,7 @@ Compile
 
 ```sh
 clang++ -std=c++14 -lSDL2 -lSDL2_image -lSDL2_ttf
-        src/main.cpp -o match3
+        -o match3 src/main.cpp
 ```
 
 Run
@@ -253,8 +253,11 @@ Compile
 
 ```sh
 em++ -s USE_SDL=2 -s USE_SDL_IMAGE=2 -s USE_SDL_TTF=2
-     --emrun --preload-file data --use-preload-plugins src/main.cpp
-     -o index.html --shell-file data/template.html
+     --emrun # log to the console
+     --preload-file data # images and fonts
+     --use-preload-plugins # load data
+     --shell-file data/template.html # custom html template
+     -o index.html src/main.cpp
 ```
 
 Run
