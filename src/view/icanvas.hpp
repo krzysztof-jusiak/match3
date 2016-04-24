@@ -25,6 +25,7 @@ class icanvas {
   virtual void draw(std::shared_ptr<Sprite>, int x = 0, int y = 0,
                     bool = true) = 0;
   virtual void render() = 0;
+  virtual void clear() = 0;
 };
 
 }  // match3

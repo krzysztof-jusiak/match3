@@ -75,6 +75,11 @@ class sdl_canvas : public icanvas {
     SDL_RenderPresent(renderer_.get());
   }
 
+  void clear() override {
+    elements_.clear();
+    SDL_RenderClear(renderer_.get());
+  }
+
  private:
   std::shared_ptr<SDL_Window> window_;
   std::shared_ptr<SDL_Renderer> renderer_;

@@ -87,7 +87,7 @@ auto is_mobile = [] {
 auto has_items = [](const selected& s) { return !s.empty(); };
 
 auto is_swap_items_winning = [](const board& b, const selected& s, config c) {
-  assert(s.size() >= 2);
+  assert(s.size() == 2);
   return is_match(b.grids, *(s.end() - 1), c.board_width) ||
          is_match(b.grids, *(s.end() - 2), c.board_width);
 };
@@ -163,6 +163,14 @@ auto generate_new = [](board& b, const auto& m, selected& s, config c) {
 
 auto add_points = [](points& p, const auto& m) { p += m.matches.size(); };
 
+auto reset = [](config c, board original, board& b, points& p, moves& m,
+                view& v) {
+  b = original;
+  p = {};
+  m = c.max_moves;
+  v.clear();
+};
+
 auto show_swap = [](const board& b, const selected& s, animations& a, view& v,
                     config c) {
   assert(s.size() == 2);
@@ -208,7 +216,7 @@ auto show_moves = [](view& v, const moves& m, animations& a) {
 auto show_game_over = [](view& v, animations& a) {
   using namespace std::chrono_literals;
   a.queue_animation(
-      [&v] { v.set_text("GAME OVER", 20, 230, 48 /*font size*/); });
+      [&v] { v.set_text("GAME OVER", 20, 230, 48 /*font size*/); }, 1s);
 };
 
 struct controller {
@@ -218,9 +226,11 @@ struct controller {
     // clang-format off
     return make_transition_table(
      // +--------------------------------------------------------------------------------------------------------------------------------------------+
-        "wait_for_first_item"_s  <= *("idle"_s)                                     / (show_board, show_points, show_moves)
+        "wait_for_first_item"_s  <= *("idle"_s)                                     / (reset, show_board, show_points, show_moves)
 
-      ,  "game_over"_s           <=   "wait_for_first_item"_s                       [ not [](moves& m) { return m > 0; } ] / show_game_over
+      ,  "wait_for_click"_s      <=   "wait_for_first_item"_s                       [ not [](moves& m) { return m > 0; } ] / show_game_over
+      ,  "wait_for_first_item"_s <=   "wait_for_click"_s       + event<touch_up>    [ is_mobile ] / (reset, show_board, show_points, show_moves)
+      ,  "wait_for_first_item"_s <=   "wait_for_click"_s       + event<button_up>   [ not is_mobile ] / (reset, show_board, show_points, show_moves)
 
       , "wait_for_second_item"_s <=   "wait_for_first_item"_s  + event<touch_down>  [ is_mobile ] / select_item
       , "match_items"_s          <=   "wait_for_second_item"_s + event<touch_up>    [ is_mobile and is_allowed ] / (select_item, swap_items, show_swap)

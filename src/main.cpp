@@ -23,8 +23,8 @@ auto configuration = []() {
                          .win_height = 480,
                          .board_width = 7,
                          .board_height = 10,
-                         .board_colors = 5})
-  , di::bind<moves>.to(std::make_shared<int>(10))
+                         .board_colors = 5,
+                         .max_moves = 10})
   , di::bind<board::color[]>.to({
         3,5,1,4,3,2,2,
         1,1,4,2,5,1,3,

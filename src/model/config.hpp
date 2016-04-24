@@ -18,6 +18,7 @@ struct config {
   int board_width;
   int board_height;
   int board_colors;
+  int max_moves;
 };
 
 }  // match3

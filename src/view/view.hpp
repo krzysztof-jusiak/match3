@@ -49,7 +49,9 @@ class view {
     canvas_.draw(canvas_.create_text(text, "data/fonts/font.ttf", font_size), x,
                  y);
   }
+
   void update() { canvas_.render(); }
+  void clear() { canvas_.clear(); }
 
  private:
   std::vector<std::shared_ptr<Sprite>> grids;
