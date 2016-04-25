@@ -8,7 +8,7 @@
 #include <range/v3/algorithm/equal.hpp>
 #include "common/logger.hpp"
 #include "fakes/fake_canvas.hpp"
-#include "fwd.hpp"
+#include "pph.hpp"
 #include "model/config.hpp"
 #include "model/board.hpp"
 #include "controller/controller.hpp"
@@ -49,17 +49,16 @@ test match5 = [] {
   selected = {38, 45};
   sm.process_event(match3::matches{.arity = int(selected.size())});
 
-  expect(ranges::equal({
-        /*0 1 2 3 4 5 6*/
-    /*0*/ 3,42,43,44,45,46,2,
-    /*1*/ 1,5,1,4,3,2,3,
-    /*2*/ 5,1,4,2,5,1,2,
-    /*3*/ 4,3,5,4,5,3,5,
-    /*4*/ 5,4,2,1,3,4,1,
-    /*5*/ 5,1,1,2,4,5,1,
-    /*6*/ 1,2,3,1,4,2,4,
-    /*7*/ 2,3,3,1,3,3,4,
-    /*8*/ 3,2,2,5,4,4,1,
-    /*9*/ 1,2,3,4,1,3,4}, injector.create<match3::board&>().grids));
+  expect(ranges::equal({/*0 1 2 3 4 5 6*/
+                        /*0*/ 3, 42, 43, 44, 45, 46, 2,
+                        /*1*/ 1, 5, 1, 4, 3, 2, 3,
+                        /*2*/ 5, 1, 4, 2, 5, 1, 2,
+                        /*3*/ 4, 3, 5, 4, 5, 3, 5,
+                        /*4*/ 5, 4, 2, 1, 3, 4, 1,
+                        /*5*/ 5, 1, 1, 2, 4, 5, 1,
+                        /*6*/ 1, 2, 3, 1, 4, 2, 4,
+                        /*7*/ 2, 3, 3, 1, 3, 3, 4,
+                        /*8*/ 3, 2, 2, 5, 4, 4, 1,
+                        /*9*/ 1, 2, 3, 4, 1, 3, 4},
+                       injector.create<match3::board&>().grids));
 };
-

@@ -7,7 +7,7 @@
 //
 #pragma once
 
-#include "fwd.hpp"
+#include "pph.hpp"
 #include "model/config.hpp"
 #include "model/board.hpp"
 #include "view/view.hpp"
@@ -151,10 +151,10 @@ auto scroll_board = [](board& b, const auto& m, config c) {
                    [&](auto i) { scroll(b.grids, i, c.board_width); });
 };
 
-auto generate_new = [](board& b, const auto& m, selected& s, config c, randomize r) {
-  ranges::action::transform(b.grids, [c, r](auto i) {
-    return i ? i : r(1, c.board_colors);
-  });
+auto generate_new = [](board& b, const auto& m, selected& s, config c,
+                       randomize r) {
+  ranges::action::transform(
+      b.grids, [c, r](auto i) { return i ? i : r(1, c.board_colors); });
   s |= ranges::action::push_front(affected(m.matches, c.board_width)) |
        ranges::action::sort | ranges::action::unique;
 };

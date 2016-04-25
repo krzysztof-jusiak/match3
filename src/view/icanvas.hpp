@@ -7,7 +7,7 @@
 //
 #pragma once
 
-#include "fwd.hpp"
+#include "pph.hpp"
 
 namespace match3 {
 
@@ -16,8 +16,7 @@ class icanvas {
   virtual ~icanvas() noexcept = default;
   virtual std::shared_ptr<void> load_image(const std::string&) const = 0;
   virtual std::shared_ptr<void> create_text(const std::string&,
-                                            const std::string&,
-                                            int) const = 0;
+                                            const std::string&, int) const = 0;
   virtual void draw(std::shared_ptr<void>, int x = 0, int y = 0,
                     bool = true) = 0;
   virtual void render() = 0;

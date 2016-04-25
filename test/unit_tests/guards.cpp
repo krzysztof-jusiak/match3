@@ -34,8 +34,7 @@ test $is_item_no_winning = [] {
 
 test $is_item_winning = [] {
   board b;
-  b.grids = {1, 2, 3,
-             2, 2, 2};
+  b.grids = {1, 2, 3, 2, 2, 2};
 
   expect(!is_item_winning(b, {0}, config{.board_width = 3}));
   expect(!is_item_winning(b, {1}, config{.board_width = 3}));
@@ -47,14 +46,18 @@ test $is_item_winning = [] {
 
 test $is_key = [] {
   constexpr auto key = 42;
-  struct { int key; } event{key};
+  struct {
+    int key;
+  } event{key};
   expect(is_key(key)(event));
 };
 
 test $is_not_key = [] {
   constexpr auto key = 42;
-  struct { int key; } event{0};
+  struct {
+    int key;
+  } event{0};
   expect(!is_key(key)(event));
 };
 
-} // match3
+}  // match3

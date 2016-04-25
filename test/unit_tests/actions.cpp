@@ -31,4 +31,4 @@ test $swap_items = [] {
   expect(ranges::equal({2, 1}, b.grids));
 };
 
-} // match3
+}  // match3

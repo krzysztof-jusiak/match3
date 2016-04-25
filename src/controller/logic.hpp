@@ -7,7 +7,7 @@
 //
 #pragma once
 
-#include "fwd.hpp"
+#include "pph.hpp"
 
 namespace match3 {
 
@@ -20,9 +20,9 @@ namespace match3 {
  *
  * \code{.cpp}
  *
- * | 1 2 3 |    |  1   2   3  |
- * | 3 4 5 | => | [3] [4] [5] |
- * | 6 7 8 |    |  6   7   8  |
+ * | 1 2 3 |           |  1   2   3  |
+ * | 3 4 5 | => n:1 -> | [3] [4] [5] |
+ * | 6 7 8 |           |  6   7   8  |
  *
  * assert(row([1, 2, 3, 4, 5, 6, 7, 8], 1, 3), [3, 4, 5]);
  *
@@ -43,9 +43,9 @@ auto row = [](auto&& v, auto n, auto width) {
  *
  * \code{.cpp}
  *
- * | 1 2 3 |    | 1 [2] 3 |
- * | 3 4 5 | => | 3 [4] 5 |
- * | 6 7 8 |    | 6 [7] 8 |
+ * | 1 2 3 |           | 1 [2] 3 |
+ * | 3 4 5 | => n:1 -> | 3 [4] 5 |
+ * | 6 7 8 |           | 6 [7] 8 |
  *
  * assert(col([1, 2, 3, 4, 5, 6, 7, 8], 1, 3), [2, 4, 7]);
  *
@@ -105,17 +105,17 @@ auto match_n = [](auto&& v, auto color, int n = 3) {
  *
  * \code{.cpp}
  *
- * | 1 2 3 4 5 |                 | 1 2 3  4  5 |    | 1 2 3  4  5 |
- * | 6 7 7 9 3 |                 | 6 7 7  9  3 |    | 6 7 7  9  3 |
- * | 2 3 4 5 3 |  => value:13 -> | 2 3 4 [5] 3 | => | 2 3 4 [5] 3 | => true
- * | 2 1 3 5 1 |                 | 2 1 3  5  1 |    | 2 1 3 [5] 1 |
- * | 4 2 1 5 8 |                 | 4 2 1  5  8 |    | 4 2 1 [5] 8 |
+ * | 1 2 3 4 5 |                | 1 2 3  4  5 |    | 1 2 3  4  5 |
+ * | 6 7 7 9 3 |                | 6 7 7  9  3 |    | 6 7 7  9  3 |
+ * | 2 3 4 5 3 | => value:13 -> | 2 3 4 [5] 3 | => | 2 3 4 [5] 3 | => true
+ * | 2 1 3 5 1 |                | 2 1 3  5  1 |    | 2 1 3 [5] 1 |
+ * | 4 2 1 5 8 |                | 4 2 1  5  8 |    | 4 2 1 [5] 8 |
  *
- * | 1 2 3 4 5 |                 | 1 2 [3] 4 5 |    | 1 2 3 4 5 |
- * | 6 7 7 9 3 |                 | 6 7  7  9 3 |    | 6 7 7 9 3 |
- * | 2 3 4 5 3 |  => value:2 ->  | 2 3  4  5 3 | => | 2 3 4 5 3 | => false
- * | 2 1 3 5 1 |                 | 2 1  3  5 1 |    | 2 1 3 5 1 |
- * | 4 2 1 5 8 |                 | 4 2  1  5 8 |    | 4 2 1 5 8 |
+ * | 1 2 3 4 5 |                | 1 2 [3] 4 5 |    | 1 2 3 4 5 |
+ * | 6 7 7 9 3 |                | 6 7  7  9 3 |    | 6 7 7 9 3 |
+ * | 2 3 4 5 3 | => value:2 ->  | 2 3  4  5 3 | => | 2 3 4 5 3 | => false
+ * | 2 1 3 5 1 |                | 2 1  3  5 1 |    | 2 1 3 5 1 |
+ * | 4 2 1 5 8 |                | 4 2  1  5 8 |    | 4 2 1 5 8 |
  *
  * assert(is_match([1, 2, 3, 4, 2, 6, 7, 2, 9], 1, 3));
  * assert(!is_match([1, 2, 3, 4, 3, 6, 7, 2, 9], 1, 3));
@@ -132,6 +132,7 @@ auto is_match = [](auto&& v, auto value, auto width) {
          match_n(col(v, x, width), color).length;
 };
 
+// clang-format off
 /**
  * Creates a sorted and unique list of positions which matches
  *
@@ -154,6 +155,7 @@ auto is_match = [](auto&& v, auto value, auto width) {
  *
  * @return sorted, unique list of positions which matches
  */
+// clang-format on
 auto match = [](auto&& v, auto value, auto width) {
   const auto color = v[value];
   const auto x = value % width;
@@ -201,6 +203,7 @@ auto scroll = [](auto&& v, const auto& value, auto width) {
   ranges::rotate(c, begin);
 };
 
+// clang-format off
 /**
  * Creates a list of elements which could generate new matches
  *
@@ -221,6 +224,7 @@ auto scroll = [](auto&& v, const auto& value, auto width) {
  *
  * @return sorted, unique list of positions
  */
+// clang-format on
 auto affected = [](const auto& matches, auto width) {
   const auto&& columns = matches | ranges::view::transform([=](/*auto*/ int m) {
                            return ranges::view::ints |

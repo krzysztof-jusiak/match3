@@ -7,7 +7,7 @@
 //
 #pragma once
 
-#include "fwd.hpp"
+#include "pph.hpp"
 #include "view/icanvas.hpp"
 
 namespace match3 {
@@ -35,8 +35,7 @@ class sdl_canvas : public icanvas {
     SDL_Quit();
   }
 
-  void draw(std::shared_ptr<void> texture, int x, int y,
-            bool clean) override {
+  void draw(std::shared_ptr<void> texture, int x, int y, bool clean) override {
     SDL_Rect pos{x, y, 0, 0};
     const auto sprite = static_cast<SDL_Texture*>(texture.get());
     SDL_QueryTexture(sprite, nullptr, nullptr, &pos.w, &pos.h);
@@ -49,8 +48,8 @@ class sdl_canvas : public icanvas {
   }
 
   std::shared_ptr<void> load_image(const std::string& file) const override {
-    return std::shared_ptr<void>(
-        IMG_LoadTexture(renderer_.get(), file.c_str()), SDL_DestroyTexture);
+    return std::shared_ptr<void>(IMG_LoadTexture(renderer_.get(), file.c_str()),
+                                 SDL_DestroyTexture);
   }
 
   std::shared_ptr<void> create_text(const std::string& str,
@@ -71,8 +70,7 @@ class sdl_canvas : public icanvas {
     SDL_RenderClear(renderer_.get());
     for (const auto& element : elements_) {
       const auto sprite = static_cast<SDL_Texture*>(element.first.get());
-      SDL_RenderCopy(renderer_.get(), sprite, nullptr,
-                     &element.second);
+      SDL_RenderCopy(renderer_.get(), sprite, nullptr, &element.second);
     }
     SDL_RenderPresent(renderer_.get());
   }

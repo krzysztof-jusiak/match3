@@ -54,64 +54,45 @@ test $match_n_success_5 = [] {
 };
 
 test $is_match_fail = [] {
-  int v[] = {1, 2, 3
-           , 4, 3, 6
-           , 7, 2, 9};
+  int v[] = {1, 2, 3, 4, 3, 6, 7, 2, 9};
 
   expect(!is_match(v, 1, 3));
 };
 
 test $is_match_success = [] {
-  int v[] = {1, 2, 3
-           , 4, 2, 6
-           , 7, 2, 9};
+  int v[] = {1, 2, 3, 4, 2, 6, 7, 2, 9};
 
   expect(is_match(v, 1, 3));
 };
 
 test $match_fail = [] {
-  int v[] = {1, 2, 3,
-             4, 3, 3,
-             7, 2, 4};
+  int v[] = {1, 2, 3, 4, 3, 3, 7, 2, 4};
 
   expect(ranges::equal(std::vector<int>{}, match(v, 2, 3)));
 };
 
 test $match_success = [] {
-  int v[] = {1, 2, 3,
-             4, 3, 3,
-             7, 2, 3};
+  int v[] = {1, 2, 3, 4, 3, 3, 7, 2, 3};
 
   expect(ranges::equal({2, 5, 8}, match(v, 2, 3)));
 };
 
-
 test $scroll = [] {
-  int v[] = {1, 1, 3,
-             4, 0, 2,
-             7, 2, 3};
+  int v[] = {1, 1, 3, 4, 0, 2, 7, 2, 3};
 
   scroll(v, 4, 3);
 
-  expect(ranges::equal({1, 0, 3,
-                        4, 1, 2,
-                        7, 2, 3}, v));
+  expect(ranges::equal({1, 0, 3, 4, 1, 2, 7, 2, 3}, v));
 };
 
 test $scroll_many = [] {
-  int v[] = {1, 1, 3,
-             4, 0, 2,
-             7, 0, 3};
+  int v[] = {1, 1, 3, 4, 0, 2, 7, 0, 3};
 
   scroll(v, 4, 3);
-  expect(ranges::equal({1, 0, 3,
-                        4, 1, 2,
-                        7, 0, 3}, v));
+  expect(ranges::equal({1, 0, 3, 4, 1, 2, 7, 0, 3}, v));
 
   scroll(v, 7, 3);
-  expect(ranges::equal({1, 0, 3,
-                        4, 0, 2,
-                        7, 1, 3}, v));
+  expect(ranges::equal({1, 0, 3, 4, 0, 2, 7, 1, 3}, v));
 };
 
 test $affected = [] {
@@ -124,5 +105,4 @@ test $affected_all = [] {
   expect(ranges::equal(v, affected(v, 3)));
 };
 
-} // match3
-
+}  // match3
