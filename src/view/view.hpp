@@ -54,8 +54,8 @@ class view {
   void clear() { canvas_.clear(); }
 
  private:
-  std::vector<std::shared_ptr<Sprite>> grids;
-  std::shared_ptr<Sprite> match_;
+  std::vector<std::shared_ptr<void>> grids;
+  std::shared_ptr<void> match_;
   icanvas& canvas_;
   config config_;
 };

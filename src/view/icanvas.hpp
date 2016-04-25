@@ -9,20 +9,16 @@
 
 #include "fwd.hpp"
 
-struct SDL_Texture;
-
 namespace match3 {
-
-using Sprite = SDL_Texture;
 
 class icanvas {
  public:
   virtual ~icanvas() noexcept = default;
-  virtual std::shared_ptr<Sprite> load_image(const std::string&) const = 0;
-  virtual std::shared_ptr<Sprite> create_text(const std::string&,
-                                              const std::string&,
-                                              int) const = 0;
-  virtual void draw(std::shared_ptr<Sprite>, int x = 0, int y = 0,
+  virtual std::shared_ptr<void> load_image(const std::string&) const = 0;
+  virtual std::shared_ptr<void> create_text(const std::string&,
+                                            const std::string&,
+                                            int) const = 0;
+  virtual void draw(std::shared_ptr<void>, int x = 0, int y = 0,
                     bool = true) = 0;
   virtual void render() = 0;
   virtual void clear() = 0;

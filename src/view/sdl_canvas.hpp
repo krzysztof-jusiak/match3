@@ -35,10 +35,11 @@ class sdl_canvas : public icanvas {
     SDL_Quit();
   }
 
-  void draw(std::shared_ptr<Sprite> texture, int x, int y,
+  void draw(std::shared_ptr<void> texture, int x, int y,
             bool clean) override {
     SDL_Rect pos{x, y, 0, 0};
-    SDL_QueryTexture(texture.get(), nullptr, nullptr, &pos.w, &pos.h);
+    const auto sprite = static_cast<SDL_Texture*>(texture.get());
+    SDL_QueryTexture(sprite, nullptr, nullptr, &pos.w, &pos.h);
     if (clean) {
       elements_.erase(ranges::remove_if(elements_, [=](const auto& pair) {
                         return pair.second.x == x && pair.second.y == y;
@@ -47,21 +48,21 @@ class sdl_canvas : public icanvas {
     elements_.push_back(std::make_pair(texture, pos));
   }
 
-  std::shared_ptr<Sprite> load_image(const std::string& file) const override {
-    return std::shared_ptr<Sprite>(
+  std::shared_ptr<void> load_image(const std::string& file) const override {
+    return std::shared_ptr<void>(
         IMG_LoadTexture(renderer_.get(), file.c_str()), SDL_DestroyTexture);
   }
 
-  std::shared_ptr<Sprite> create_text(const std::string& str,
-                                      const std::string& font_file,
-                                      int font_size) const override {
+  std::shared_ptr<void> create_text(const std::string& str,
+                                    const std::string& font_file,
+                                    int font_size) const override {
     std::shared_ptr<TTF_Font> font(TTF_OpenFont(font_file.c_str(), font_size),
                                    TTF_CloseFont);
     std::shared_ptr<SDL_Surface> surface(
         TTF_RenderText_Blended(font.get(), str.c_str(),
                                SDL_Color{255, 255, 255, 0}),
         SDL_FreeSurface);
-    return std::shared_ptr<Sprite>(
+    return std::shared_ptr<void>(
         SDL_CreateTextureFromSurface(renderer_.get(), surface.get()),
         SDL_DestroyTexture);
   }
@@ -69,7 +70,8 @@ class sdl_canvas : public icanvas {
   void render() override {
     SDL_RenderClear(renderer_.get());
     for (const auto& element : elements_) {
-      SDL_RenderCopy(renderer_.get(), element.first.get(), nullptr,
+      const auto sprite = static_cast<SDL_Texture*>(element.first.get());
+      SDL_RenderCopy(renderer_.get(), sprite, nullptr,
                      &element.second);
     }
     SDL_RenderPresent(renderer_.get());
@@ -83,7 +85,7 @@ class sdl_canvas : public icanvas {
  private:
   std::shared_ptr<SDL_Window> window_;
   std::shared_ptr<SDL_Renderer> renderer_;
-  std::vector<std::pair<std::shared_ptr<Sprite>, SDL_Rect>> elements_;
+  std::vector<std::pair<std::shared_ptr<void>, SDL_Rect>> elements_;
 };
 
 }  // match3
