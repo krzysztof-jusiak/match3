@@ -30,7 +30,7 @@ before_script:
   - sudo apt-get -qq install libsdl2-dev libsdl2-image-dev libsdl2-ttf-dev
 
 script:
-  - if [ "${CXX}" != "" ]; then (travis_wait make app); fi
+  - if [ "${CXX}" != "" ]; then (travis_wait make app test); fi
 
 notifications:
   on_success: change
