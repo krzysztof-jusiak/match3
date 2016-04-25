@@ -7,22 +7,14 @@
 //
 #include <range/v3/algorithm/equal.hpp>
 #include "common/logger.hpp"
+#include "fakes/fake_canvas.hpp"
 #include "fwd.hpp"
-#include "view/icanvas.hpp"
 #include "model/config.hpp"
 #include "model/board.hpp"
 #include "controller/controller.hpp"
 
 namespace di = boost::di;
 namespace msm = boost::msm::lite;
-
-struct fake_canvas : match3::icanvas {
-  virtual std::shared_ptr<void> load_image(const std::string&) const { return {}; }
-  virtual std::shared_ptr<void> create_text(const std::string&, const std::string&, int) const { return {}; }
-  virtual void draw(std::shared_ptr<void>, int x = 0, int y = 0, bool = true) {}
-  virtual void render() {}
-  virtual void clear() {};
-};
 
 template<class T>
 auto make_click_event(int x, int y) {
@@ -59,7 +51,7 @@ test match5 = [] {
   // clang-format on
 
   expect(ranges::equal(injector.create<match3::board>().grids, injector.create<match3::board&>().grids));
-  auto sm = injector.create<msm::testing::sm<match3::controller>>();
+  auto sm = injector.create<msm::sm<match3::controller>>();
   swipe(sm, {3, 5}, {3, 6});
   expect(ranges::equal({
         /*0 1 2 3 4 5 6*/
@@ -74,4 +66,3 @@ test match5 = [] {
     /*8*/ 3,2,2,5,4,4,1,
     /*9*/ 1,2,3,4,1,3,4}, injector.create<match3::board&>().grids));
 };
-

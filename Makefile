@@ -1,3 +1,10 @@
+#
+# Copyright (c) 2016 Krzysztof Jusiak (krzysztof at jusiak dot net)
+#
+# Distributed under the Boost Software License, Version 1.0.
+# (See accompanying file LICENSE_1_0.txt or copy at
+# http://www.boost.org/LICENSE_1_0.txt)
+#
 TGT:=match3
 CXXFLAGS:=-O2 -std=c++14 -I src -I libs/msm-lite/include -Ilibs/di/include -Ilibs/range-v3/include #-Wall -Wextra -Wno-c99-extensions
 CXXFLAGS_EMSCRIPTEN:=-Wwarn-absolute-paths --emrun -s USE_SDL=2 -s USE_SDL_IMAGE=2 -s USE_SDL_TTF=2
@@ -33,5 +40,13 @@ release: clean web
 clean:
 	rm -f index.* $(TGT) *.out
 
-test:
-	$(CXX) $(CXXFLAGS) -include test/common/test.hpp test/functional_tests.cpp -o functional_tests.out && ./functional_tests.out
+test: test_unit_tests test_integration_tests test_functional_tests
+
+test_%:
+	$(CXX) $(CXXFLAGS) -include test/common/test.hpp test/$*.cpp -o $*.out && ./$*.out
+
+test_unit_tests:
+	$(CXX) $(CXXFLAGS) -include test/common/test.hpp test/unit_tests/actions.cpp -o unit_tests_actions.out && ./unit_tests_actions.out
+	$(CXX) $(CXXFLAGS) -include test/common/test.hpp test/unit_tests/guards.cpp -o unit_tests_guards.out && ./unit_tests_guards.out
+	$(CXX) $(CXXFLAGS) -include test/common/test.hpp test/unit_tests/logic.cpp -o unit_tests_logic.out && ./unit_tests_logic.out
+
