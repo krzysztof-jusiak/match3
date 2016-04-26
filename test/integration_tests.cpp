@@ -16,7 +16,54 @@
 namespace di = boost::di;
 namespace msm = boost::msm::lite;
 
-test match5 = [] {
+test $match3 = [] {
+  using namespace msm;
+
+  // clang-format off
+  auto injector = di::make_injector(
+    di::bind<match3::icanvas>.to<fake_canvas>()
+  , di::bind<>.to(match3::config{"", 0, 0, 7, 10, 5, 10})
+  , di::bind<match3::board::color[]>.to({
+        /*0 1 2 3 4 5 6*/
+    /*0*/ 3,5,1,4,3,2,2,
+    /*1*/ 1,1,4,2,5,1,3,
+    /*2*/ 5,3,5,4,5,3,2,
+    /*3*/ 4,4,2,1,3,4,5,
+    /*4*/ 5,1,1,2,4,5,1,
+    /*5*/ 5,2,3,5,4,2,1,
+    /*6*/ 1,5,5,1,5,5,4,
+    /*7*/ 2,3,3,1,3,3,4,
+    /*8*/ 3,2,2,5,4,4,1,
+    /*9*/ 1,2,3,4,1,3,4
+    })
+  , di::bind<match3::randomize>.to([](int, int) { static auto i = 42; return i++; })
+  );
+  // clang-format on
+
+  auto&& board = injector.create<match3::board&>();
+  auto&& selected = injector.create<match3::selected&>();
+  auto sm = injector.create<msm::testing::sm<match3::controller>>();
+
+  sm.set_current_states("wait_for_first_item"_s, "handle_matches"_s);
+  std::swap(board.grids[2], board.grids[9]);
+  selected = {2, 9};
+  sm.process_event(match3::matches{.arity = int(selected.size())});
+
+  expect(ranges::equal({/*0 1 2 3 4 5 6*/
+                        /*0*/ 42, 43, 44, 4, 3, 2, 2,
+                        /*1*/ 3, 5, 4, 2, 5, 1, 3,
+                        /*2*/ 5, 3, 5, 4, 5, 3, 2,
+                        /*3*/ 4, 4, 2, 1, 3, 4, 5,
+                        /*4*/ 5, 1, 1, 2, 4, 5, 1,
+                        /*5*/ 5, 2, 3, 5, 4, 2, 1,
+                        /*6*/ 1, 5, 5, 1, 5, 5, 4,
+                        /*7*/ 2, 3, 3, 1, 3, 3, 4,
+                        /*8*/ 3, 2, 2, 5, 4, 4, 1,
+                        /*9*/ 1, 2, 3, 4, 1, 3, 4},
+                       injector.create<match3::board&>().grids));
+};
+
+test $match5 = [] {
   using namespace msm;
 
   // clang-format off
