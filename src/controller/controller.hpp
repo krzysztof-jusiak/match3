@@ -242,7 +242,7 @@ struct controller {
                                                                                       [](moves& m) {--m;}, show_moves,
                                                                                       msm::queue_event(matches{.arity = 2})
                                                                                     )
-      , "wait_for_first_item"_s  <=   "match_items"_s                               / (swap_items, clear_selected, show_board)
+      , "wait_for_first_item"_s  <=   "match_items"_s                               / (swap_items, show_swap, clear_selected)
      // +--------------------------------------------------------------------------------------------------------------------------------------------+
       ,                             *("handle_matches"_s)      + event<matches>     [ has_items and is_item_winning ] / (
                                                                                        find_matches, show_matches

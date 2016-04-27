@@ -7,7 +7,7 @@
 //
 #include <range/v3/algorithm/equal.hpp>
 #include "common/logger.hpp"
-#include "fakes/fake_canvas.hpp"
+#include "common/mocks_provider.hpp"
 #include "pph.hpp"
 #include "model/config.hpp"
 #include "model/board.hpp"
@@ -40,9 +40,8 @@ test match5_out_of_moves = [] {
   constexpr auto moves = 1;
 
   // clang-format off
-  auto injector = di::make_injector(
-    di::bind<match3::icanvas>.to<fake_canvas>()
-  , di::bind<>.to(match3::config{"", 0, 0, 7, 10, 5, moves})
+  auto injector = di::make_injector<mocks_provider>(
+    di::bind<>.to(match3::config{"", 0, 0, 7, 10, 5, moves})
   , di::bind<match3::board::color[]>.to({
         /*0 1 2 3 4 5 6*/
     /*0*/ 3,5,1,4,3,2,2,
@@ -62,10 +61,19 @@ test match5_out_of_moves = [] {
 
   expect(ranges::equal(injector.create<match3::board>().grids,
                        injector.create<match3::board&>().grids));
+
+  using namespace fakeit;
+  auto&& canvas = mocks_provider::get_mock<match3::icanvas>();
+  When(Method(canvas, load_image)).AlwaysReturn(std::shared_ptr<void>{});
+  When(Method(canvas, create_text)).AlwaysReturn(std::shared_ptr<void>{});
+  When(Method(canvas, draw)).AlwaysDo([](std::shared_ptr<void>, int, int, bool){});
+  When(Method(canvas, render)).AlwaysDo([]{});
+  When(Method(canvas, clear)).AlwaysDo([]{});
+
+  // when
   auto sm = injector.create<msm::sm<match3::controller>>();
   expect(1 == injector.create<match3::moves&>());
 
-  // when
   swipe(sm, {3, 5}, {3, 6});
   expect(0 == injector.create<match3::moves&>());
 
@@ -89,9 +97,8 @@ test match3_matchl_out_of_moves_game_over_reset = [] {
   constexpr auto moves = 2;
 
   // clang-format off
-  auto injector = di::make_injector(
-    di::bind<match3::icanvas>.to<fake_canvas>()
-  , di::bind<>.to(match3::config{"", 0, 0, 7, 10, 5, moves})
+  auto injector = di::make_injector<mocks_provider>(
+    di::bind<>.to(match3::config{"", 0, 0, 7, 10, 5, moves})
   , di::bind<match3::board::color[]>.to({
         /*0 1 2 3 4 5 6*/
     /*0*/ 3,5,1,4,3,2,2,
@@ -109,12 +116,21 @@ test match3_matchl_out_of_moves_game_over_reset = [] {
   );
   // clang-format on
 
-  auto sm = injector.create<msm::sm<match3::controller>>();
+  using namespace fakeit;
+  auto&& canvas = mocks_provider::get_mock<match3::icanvas>();
+  When(Method(canvas, load_image)).AlwaysReturn(std::shared_ptr<void>{});
+  When(Method(canvas, create_text)).AlwaysReturn(std::shared_ptr<void>{});
+  When(Method(canvas, draw)).AlwaysDo([](std::shared_ptr<void>, int, int, bool){});
+  When(Method(canvas, render)).AlwaysDo([]{});
+  When(Method(canvas, clear)).AlwaysDo([]{});
+
   expect(ranges::equal(injector.create<match3::board>().grids,
                        injector.create<match3::board&>().grids));
-  expect(2 == injector.create<match3::moves&>());
 
   // when
+  auto sm = injector.create<msm::sm<match3::controller>>();
+  expect(2 == injector.create<match3::moves&>());
+
   swipe(sm, {2, 1}, {2, 0});
   expect(1 == injector.create<match3::moves&>());
 

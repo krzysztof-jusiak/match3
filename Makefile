@@ -6,7 +6,8 @@
 # http://www.boost.org/LICENSE_1_0.txt)
 #
 TGT:=match3
-CXXFLAGS:=-O2 -std=c++14 -I src -I libs/msm-lite/include -Ilibs/di/include -Ilibs/range-v3/include #-Wall -Wextra -Wno-c99-extensions
+VALGRIND:=valgrind --leak-check=full --error-exitcode=1
+CXXFLAGS:=-std=c++14 -I src -I libs/msm-lite/include -Ilibs/di/include -Ilibs/range-v3/include #-Wall -Wextra -Wno-c99-extensions
 CXXFLAGS_EMSCRIPTEN:=-Wwarn-absolute-paths --emrun -s USE_SDL=2 -s USE_SDL_IMAGE=2 -s USE_SDL_TTF=2
 CXXFLAGS_APP:=-I/usr/local/include/SDL2
 LINKFLAGS_EMSCRIPTEN:=--preload-file data --use-preload-plugins
@@ -20,10 +21,10 @@ style:
 	find src test -iname "*.hpp" -or -iname "*.cpp" | xargs clang-format -i
 
 pph:
-	$(CXX) $(CXXFLAGS) $(CXXFLAGS_APP) src/fwd.hpp
+	$(CXX) $(CXXFLAGS) $(CXXFLAGS_APP) -O2 src/fwd.hpp
 
 web:
-	em++ $(CXXFLAGS) $(CXXFLAGS_EMSCRIPTEN) $(LINKFLAGS_EMSCRIPTEN) src/main.cpp -o index.html --shell-file data/template.html
+	em++ $(CXXFLAGS) $(CXXFLAGS_EMSCRIPTEN) -O2 $(LINKFLAGS_EMSCRIPTEN) src/main.cpp -o index.html --shell-file data/template.html
 
 web_run:
 	emrun --port 8080 index.html
@@ -43,10 +44,9 @@ clean:
 test: test_unit_tests test_integration_tests test_functional_tests
 
 test_%:
-	$(CXX) $(CXXFLAGS) -include test/common/test.hpp test/$*.cpp -o $*.out && ./$*.out
+	$(CXX) $(CXXFLAGS) -g -include test/common/test.hpp test/$*.cpp -o $*.out && $($(MEMCHECK)) ./$*.out
 
 test_unit_tests:
-	$(CXX) $(CXXFLAGS) -include test/common/test.hpp test/unit_tests/actions.cpp -o unit_tests_actions.out && ./unit_tests_actions.out
-	$(CXX) $(CXXFLAGS) -include test/common/test.hpp test/unit_tests/guards.cpp -o unit_tests_guards.out && ./unit_tests_guards.out
-	$(CXX) $(CXXFLAGS) -include test/common/test.hpp test/unit_tests/logic.cpp -o unit_tests_logic.out && ./unit_tests_logic.out
-
+	$(CXX) $(CXXFLAGS) -g -include test/common/test.hpp test/unit_tests/actions.cpp -o unit_tests_actions.out && $($(MEMCHECK)) ./unit_tests_actions.out
+	$(CXX) $(CXXFLAGS) -g -include test/common/test.hpp test/unit_tests/guards.cpp -o unit_tests_guards.out && $($(MEMCHECK)) ./unit_tests_guards.out
+	$(CXX) $(CXXFLAGS) -g -include test/common/test.hpp test/unit_tests/logic.cpp -o unit_tests_logic.out && $($(MEMCHECK)) ./unit_tests_logic.out
