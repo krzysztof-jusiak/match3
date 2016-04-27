@@ -216,18 +216,28 @@ Match can generate new matches
 
 ----
 
-* C++14 compiler
-    * Clang-3.7+
-    * GCC-6+
-    * Emscripten-1.35
+###C++14 / STL
 
-* SDL2
-    * SDL2_image
-    * SDL2_ttf
+* Clang-3.7+
+* GCC-6+
+* Emscripten-1.35
 
 ----
 
-##Libraries
+##Dependencies
+
+----
+
+##SDL2
+
+---
+
+https://www.libsdl.org
+
+---
+
+* SDL2_image
+* SDL2_ttf
 
 ----
 
@@ -329,25 +339,31 @@ int main() {
 
 ----
 
-* Dependency Injection: Experimental Boost.DI
-
-  * Model
-
-  * View
-
-    * SDL2
-
-  * Controller
-
-    * Meta State Machine: Experimental Boost.MSM-lite
-    * Logic: Range-V3
+Model-View-Controller
 
 ----
 
-* TODO MVC diagram
-* TODO why MVC is good for apps and games
-* TODO ECS what about it
-* TODO State machine diagram
+![MVC](images/mvc.png)
+
+----
+
+* Seperates business logic and view
+* Good for aplications and/or games
+* Compatible with Entity-Component-System
+
+----
+
+State Machine
+
+----
+
+![Swap](images/swap.png)
+
+----
+
+![Swap](images/match.png)
+
+----
 
 ==============================================================================
 
@@ -499,6 +515,10 @@ struct board {
 ----
 
 ##View
+
+---
+
+SDL2
 
 ----
 

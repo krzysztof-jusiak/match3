@@ -1,0 +1,9 @@
+@startuml
+title Match
+
+state handle_matches
+
+[*] --> handle_matches
+handle_matches -> handle_matches : [ has_items and is_item_winning ] / find_matches, destroy_matches, scroll_board, generate_new, queue_event(matches(arity = 1))
+handle_matches -> handle_matches : [ has_items and not is_item_winning ] / drop_item, queue_event(matches(arity = 1))
+@enduml

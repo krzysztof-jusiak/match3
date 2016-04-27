@@ -232,7 +232,7 @@ struct controller {
 
       , "wait_for_second_item"_s <=   "wait_for_first_item"_s  + event<touch_down>  [ is_mobile ] / select_item
       , "match_items"_s          <=   "wait_for_second_item"_s + event<touch_up>    [ is_mobile and is_allowed ] / (select_item, swap_items, show_swap)
-      , "wait_for_first_item"_s  <=   "wait_for_second_item"_s + event<touch_up>    [ is_mobile and  not is_allowed ] / drop_item
+      , "wait_for_first_item"_s  <=   "wait_for_second_item"_s + event<touch_up>    [ is_mobile and not is_allowed ] / drop_item
 
       , "wait_for_second_item"_s <=   "wait_for_first_item"_s  + event<button_down> [ not is_mobile ] / select_item
       , "match_items"_s          <=   "wait_for_second_item"_s + event<button_up>   [ not is_mobile and is_allowed ] / (select_item, swap_items, show_swap)

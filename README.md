@@ -14,8 +14,11 @@
 
 ###Requirements
 
-* [Clang-3.7+](http://clang.llvm.org) / C++14 / STL
-* [Emscripten - 1.35.0](http://kripken.github.io/emscripten-site/docs/getting_started/downloads.html)
+* C++14 / STL
+
+  * [Clang-3.7+](http://clang.llvm.org)
+  * [GCC-6+](https://gcc.gnu.org/gcc-6/changes.html)
+  * [Emscripten - 1.35.0](http://kripken.github.io/emscripten-site/docs/getting_started/downloads.html)
 
 ###Dependencies
 
