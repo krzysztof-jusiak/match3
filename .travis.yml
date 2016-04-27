@@ -12,13 +12,13 @@ matrix:
   fast_finish: true
   include:
   - os: linux
-    env: CXX=clang++-3.7 MEMCHECK=VALGRIND
+    env: CXX=clang++-3.7
     addons:
       apt:
         packages: ["clang-3.7", "libstdc++-5-dev", "valgrind"]
         sources: ["ubuntu-toolchain-r-test", "llvm-toolchain-precise-3.7"]
   - os: linux
-    env: CXX=clang++-3.8 MEMCHECK=VALGRIND
+    env: CXX=clang++-3.8
     addons:
       apt:
         packages: ["clang-3.8", "libstdc++-5-dev", "valgrind"]
