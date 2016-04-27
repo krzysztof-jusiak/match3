@@ -15,10 +15,10 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
 
 		<link rel="stylesheet" href="css/reveal.css">
-    <link rel="stylesheet" href="css/theme/black.css" id="theme">
+        <link rel="stylesheet" href="css/theme/black.css" id="theme">
 
 		<!-- Code syntax highlighting -->
-    <link rel="stylesheet" href="lib/css/github.css">
+        <link rel="stylesheet" href="lib/css/github.css">
 
 		<!-- Printing and PDF exports -->
 		<script>
@@ -102,7 +102,7 @@ Combine C++ with JS
 
 ----
 
-Emscripten
+![Emscripten](images/emscripten.png)
 
 > Emscripten is an LLVM-based project that compiles C and C++ into highly-optimizable JavaScript in asm.js format
 
@@ -125,9 +125,19 @@ $browser index.html
 
 ----
 
-WebAssemlby
+![Cheerp](images/cheerp.png)
+
+> Cheerp is the C++ compiler for the web
+write a web application, or port your existing one, all in C++.
+cheerp will generate JavaScript code that can run on any browser
+
+----
+
+##WebAssemlby
 
 > WebAssembly or wasm is a new portable, size- and load-time-efficient format suitable for compilation to the web
+
+---
 
 In Progress!
 
@@ -136,15 +146,6 @@ In Progress!
 ##Let's match some <s>candies</s> / jewels
 
 ![Candy Crush](images/candy_crush.jpg)
-
-----
-
-##Match3 Game
-
-<img width=250 height=400 src="images/game.png" />
-
-http://modern-cpp-examples.github.io/match3
-
 
 ==============================================================================
 
@@ -215,30 +216,112 @@ Match can generate new matches
 
 ----
 
-* C++14 compiler (Clang-3.7+) / Emscripten (1.35.0)
-* SDL2 / SDL2_image / SDL2_ttf
+* C++14 compiler
+    * Clang-3.7+
+    * GCC-6+
+    * Emscripten-1.35
+
+* SDL2
+    * SDL2_image
+    * SDL2_ttf
+
+----
+
+##Libraries
 
 ----
 
 ##Experimental Boost.DI
 
+---
+
+https://github.com/boost-experimental/di
+
 ----
 
-example
+```cpp
+#include <boost/di.hpp>
+
+namespace di = boost::di;
+
+struct renderer { int device; };
+struct view { view(std::string title, const renderer&) {} };
+class model {};
+struct controller { controller(model&, view&) {} };
+class user {};
+struct app { app(controller&, const user&) {} };
+
+int main() {
+  auto injector = di::make_injector();
+  injector.create<app>();
+}
+```
 
 ----
 
 ##Experimental Boost.MSM-lite
 
-----
+---
 
-example
-
-----
-
-##Range-v3
+https://github.com/boost-experimental/msm-lite
 
 ----
+
+```cpp
+#include <boost/msm-lite.hpp>
+
+namespace msm = boost::msm::lite;
+
+auto guard = [] { return true; };
+auto action = [] { std::cout << "action" << std::endl; };
+
+struct hello_world {
+  auto configure() const noexcept {
+    using namespace msm;
+    return make_transition_table(
+       *"idle"_s + event1 = "s1"_s
+      , "s1"_s + event2 [ guard ] / action = "s2"_s
+    );
+  }
+};
+```
+
+```cpp
+int main() {
+  msm::sm<hello_world> sm;
+  using namespace msm;
+  sm.process_event(event1{});
+  sm.process_event(event2{});
+}
+```
+
+----
+
+##Range-V3
+
+---
+
+https://github.com/ericniebler/range-v3
+
+----
+
+```cpp
+#include <range/v3/all.hpp>
+
+int main() {
+  using namespace ranges::view;
+
+  ranges::recursive_range_fn<int> const fibs {[&]{
+    return concat(
+      closed_ints(0,1)
+    , zip_with(std::plus<int>{}, fibs(), tail(fibs()))
+    );
+  }};
+
+  auto x = take(fibs(), 20);
+  ranges::for_each(x, [](int i) { std::cout << i << std::endl; });
+}
+```
 
 ==============================================================================
 
@@ -261,7 +344,10 @@ example
 
 ----
 
-State machine diagram
+* TODO MVC diagram
+* TODO why MVC is good for apps and games
+* TODO ECS what about it
+* TODO State machine diagram
 
 ==============================================================================
 
@@ -306,61 +392,58 @@ int main() {
 
 ----
 
-```cpp
-auto configuration = []() {
-  using namespace match3;
+Experimental Boost.DI
 
-  return di::make_injector(
+---
+
+https://github.com/boost-experimental/di
+
+----
+
+```cpp
+  di::bind<icanvas>.to<sdl_canvas>()
 ```
 
 ----
 
 ```cpp
-    di::bind<icanvas>.to<sdl_canvas>()
+  di::bind<>.to(
+    config{.win_title = "match3",
+           .win_width = 320,
+           .win_height = 480,
+           .board_width = 7,
+           .board_height = 10,
+           .board_colors = 5,
+           .max_moves = 10}
+  )
 ```
 
 ----
 
 ```cpp
-  , di::bind<>.to(
-      config{.win_title = "match3",
-             .win_width = 320,
-             .win_height = 480,
-             .board_width = 7,
-             .board_height = 10,
-             .board_colors = 5,
-             .max_moves = 10}
-    )
+ di::bind<board::color[]>.to({
+    3,5,1,4,3,2,2,
+    1,1,4,2,5,1,3,
+    5,3,5,4,5,3,2,
+    4,4,2,1,3,4,5,
+    5,1,1,2,4,5,1,
+    5,2,3,5,4,2,1,
+    1,5,5,1,5,5,4,
+    2,3,3,1,3,3,4,
+    3,2,2,5,4,4,1,
+    1,2,3,4,1,3,4
+  })
 ```
 
 ----
 
 ```cpp
-  , di::bind<board::color[]>.to({
-      3,5,1,4,3,2,2,
-      1,1,4,2,5,1,3,
-      5,3,5,4,5,3,2,
-      4,4,2,1,3,4,5,
-      5,1,1,2,4,5,1,
-      5,2,3,5,4,2,1,
-      1,5,5,1,5,5,4,
-      2,3,3,1,3,3,4,
-      3,2,2,5,4,4,1,
-      1,2,3,4,1,3,4
-    })
-```
-
-----
-
-```cpp
-  , di::bind<randomize>.to([](int begin, int end) {
-      std::random_device rd;
-      std::mt19937 gen(rd());
-      std::uniform_int_distribution<int> dis(begin, end);
-      return dis(gen);
-    })
-  );
-};
+  di::bind<randomize>.to([](int begin, int end) {
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_int_distribution<int> dis(begin, end);
+    return dis(gen);
+  })
 ```
 
 ----
@@ -385,7 +468,7 @@ class game {
 
 ```cpp
   static void play_impl(void* c) {
-    auto& controller_ = 
+    auto& controller_ =
       *reinterpret_cast<msm::sm<controller>*>(c);
 
     do {
@@ -437,7 +520,40 @@ class icanvas {
 
 ----
 
+```cpp
+class view {
+  view(icanvas&, config);
+  void set_grid(int x, int y, int c);
+  void update_grid(int x, int y);
+  auto get_position(int x, int y) const;
+  void set_text(const std::string& text, int x, int y);
+  void update() { canvas_.render(); }
+  void clear() { canvas_.clear();
+};
+```
+
+----
+
+```cpp
+class animations {
+  explicit animations(view& v);
+  void queue_animation(const std::function<void()>& f
+                     , std::chrono::milliseconds length = {});
+  void update();
+};
+```
+
+----
+
 ##Controller
+
+----
+
+Experimental Boost.MSM-lite
+
+---
+
+https://github.com/boost-experimental/msm-lite
 
 ----
 
@@ -445,7 +561,60 @@ class icanvas {
 
 ----
 
+Guards/Actions
+
+----
+
+```cpp
+auto is_allowed =
+  [](auto event, const view& v, const selected& s, config c) {
+  assert(!s.empty());
+  const auto _1 = s.back();
+  const auto _2 = v.get_position(event.x, event.y);
+  const auto diff = std::abs(_1 - _2);
+  const auto board_size = c.board_width * c.board_height;
+  return (_1 >= 0 && _1 < board_size) &&
+         (_2 >= 0 && _2 < board_size) &&
+         (diff == 1 || diff == c.board_width);
+};
+```
+
+----
+
+```cpp
+auto generate_new = [](board& b, const auto& m, selected& s, config c,
+                       randomize r) {
+  ranges::action::transform(b.grids,
+    [c, r](auto i) { return i ? i : r(1, c.board_colors); }
+  );
+
+  s |= ranges::action::push_front(affected(m.matches, c.board_width))
+    | ranges::action::sort | ranges::action::unique;
+};
+```
+
+----
+
+```cpp
+auto swap_items = [](const selected& s, board& b) {
+  assert(s.size() == 2);
+  const auto _1 = *s.begin();
+  const auto _2 = *(s.begin() + 1);
+  std::swap(b.grids[_1], b.grids[_2]);
+};
+```
+
+----
+
 ##Logic
+
+----
+
+Range-V3
+
+---
+
+https://github.com/ericniebler/range-v3
 
 ----
 
@@ -721,6 +890,166 @@ Run
 browser index.html
 ```
 
+----
+
+| Compiler (-O2) | Note |Time |
+| - | - | - |
+| Clang-3.8 | Without Range-V3 | 2.122s |
+| Clang-3.8 | With Range-V3 | 9.521s |
+| Emscripten-1.35 | Without Range-v3 | 2.822s |
+| Emscripten-1.35 | With Range-V3 | 9.912s |
+
+==============================================================================
+
+##Test
+
+----
+
+Unit Tests
+
+----
+
+```cpp
+test $swap_items = [] {
+  board b;
+  b.grids = {1, 2};
+  selected s = {0, 1};
+  swap_items(s, b);
+  expect(ranges::equal({2, 1}, b.grids));
+};
+```
+
+----
+
+* Integration Tests
+* Functional Tests
+
+----
+
+##FakeIt
+
+---
+
+https://github.com/eranpeer/FakeIt.git
+
+----
+
+Helpers
+
+----
+
+```cpp
+template <class SM>
+void
+swipe(SM& sm, std::pair<int, int> from, std::pair<int, int> to) {
+ sm.process_event(
+  make_click_event<match3::button_down>(from.first, from.second));
+ sm.process_event(
+  make_click_event<match3::button_up>(to.first, to.second));
+};
+```
+
+----
+
+Mocks provider
+
+----
+
+Automatically creates mocks using FakeIt for abstract types
+
+---
+
+```cpp
+auto injector = di::make_injector<mocks_provider>(...);
+```
+
+----
+
+Given
+
+----
+
+
+```cpp
+  di::bind<>.to(match3::config{"", 0, 0, 7, 10, 5, 10})
+```
+
+----
+
+```cpp
+  di::bind<match3::board::color[]>.to({
+      /*0 1 2 3 4 5 6*/
+  /*0*/ 3,5,1,4,3,2,2,
+  /*1*/ 1,1,4,2,5,1,3,
+  /*2*/ 5,3,5,4,5,3,2,
+  /*3*/ 4,4,2,1,3,4,5,
+  /*4*/ 5,1,1,2,4,5,1,
+  /*5*/ 5,2,3,5,4,2,1,
+  /*6*/ 1,5,5,1,5,5,4,
+  /*7*/ 2,3,3,1,3,3,4,
+  /*8*/ 3,2,2,5,4,4,1,
+  /*9*/ 1,2,3,4,1,3,4
+  })
+```
+
+----
+
+```cpp
+  di::bind<match3::randomize>.to([](int, int) {
+    static auto i = 42; return i++;
+  })
+```
+
+----
+
+```cpp
+  using namespace fakeit;
+  auto&& canvas = mocks_provider::get_mock<match3::icanvas>();
+  When(Method(canvas, load_image)).AlwaysReturn(shared_ptr<void>{});
+  When(Method(canvas, create_text)).AlwaysReturn(shared_ptr<void>{});
+  When(Method(canvas, draw)).AlwaysDo([](...){});
+  When(Method(canvas, render)).AlwaysDo([]{});
+  When(Method(canvas, clear)).AlwaysDo([]{});
+```
+
+----
+
+```cpp
+  auto sm = injector.create<msm::sm<match3::controller>>();
+```
+
+----
+
+When
+
+----
+
+```cpp
+  swipe(sm, {3, 5}, {3, 6});
+```
+
+----
+
+Then
+
+----
+
+```cpp
+  expect(ranges::equal({/*0 1 2 3 4 5 6*/
+                        /*0*/ 3, 42, 43, 44, 45, 46, 2,
+                        /*1*/ 1, 5, 1, 4, 3, 2, 3,
+                        /*2*/ 5, 1, 4, 2, 5, 1, 2,
+                        /*3*/ 4, 3, 5, 4, 5, 3, 5,
+                        /*4*/ 5, 4, 2, 1, 3, 4, 1,
+                        /*5*/ 5, 1, 1, 2, 4, 5, 1,
+                        /*6*/ 1, 2, 3, 1, 4, 2, 4,
+                        /*7*/ 2, 3, 3, 1, 3, 3, 4,
+                        /*8*/ 3, 2, 2, 5, 4, 4, 1,
+                        /*9*/ 1, 2, 3, 4, 1, 3, 4},
+                       injector.create<match3::board&>().grids));
+};
+```
+
 ==============================================================================
 
 ##Let's try something crazy?
@@ -756,96 +1085,6 @@ Finger touch instead of button click
 
 "second_item"_s <= "first_item"_s  + button_down [!is_mobile] ...
 "match_items"_s <= "second_item"_s + button_up   [!is_mobile] ...
-```
-
-==============================================================================
-
-Testing
-
-----
-
-* Unit Tests
-* Integration Tests
-* Functional Tests
-
-----
-
-```cpp
-template <class SM>
-void
-swipe(SM& sm, std::pair<int, int> from, std::pair<int, int> to) {
- sm.process_event(
-  make_click_event<match3::button_down>(from.first, from.second));
- sm.process_event(
-  make_click_event<match3::button_up>(to.first, to.second));
-};
-```
-
-----
-
-```cpp
-test match5 = [] {
-  //given
-  auto injector = di::make_injector(
-    di::bind<match3::icanvas>.to<fake_canvas>()
-  , di::bind<>.to(match3::config{"", 0, 0, 7, 10, 5, 10})
-```
-
-----
-
-```cpp
-  , di::bind<match3::board::color[]>.to({
-        /*0 1 2 3 4 5 6*/
-    /*0*/ 3,5,1,4,3,2,2,
-    /*1*/ 1,1,4,2,5,1,3,
-    /*2*/ 5,3,5,4,5,3,2,
-    /*3*/ 4,4,2,1,3,4,5,
-    /*4*/ 5,1,1,2,4,5,1,
-    /*5*/ 5,2,3,5,4,2,1,
-    /*6*/ 1,5,5,1,5,5,4,
-    /*7*/ 2,3,3,1,3,3,4,
-    /*8*/ 3,2,2,5,4,4,1,
-    /*9*/ 1,2,3,4,1,3,4
-    })
-  , di::bind<match3::randomize>.to([](int, int) {
-      static auto i = 42; return i++;
-    })
-  );
-```
-
-----
-
-```cpp
-  expect(ranges::equal(injector.create<match3::board>().grids,
-                       injector.create<match3::board&>().grids));
-```
-
-----
-
-```cpp
-  auto sm = injector.create<msm::sm<match3::controller>>();
-
-  //when
-  swipe(sm, {3, 5}, {3, 6});
-```
-
-----
-
-```cpp
-  //then
-  expect(ranges::equal({/*0 1 2 3 4 5 6*/
-                        /*0*/ 3, 42, 43, 44, 45, 46, 2,
-                        /*1*/ 1, 5, 1, 4, 3, 2, 3,
-                        /*2*/ 5, 1, 4, 2, 5, 1, 2,
-                        /*3*/ 4, 3, 5, 4, 5, 3, 5,
-                        /*4*/ 5, 4, 2, 1, 3, 4, 1,
-                        /*5*/ 5, 1, 1, 2, 4, 5, 1,
-                        /*6*/ 1, 2, 3, 1, 4, 2, 4,
-                        /*7*/ 2, 3, 3, 1, 3, 3, 4,
-                        /*8*/ 3, 2, 2, 5, 4, 4, 1,
-                        /*9*/ 1, 2, 3, 4, 1, 3, 4},
-                       injector.create<match3::board&>().grids));
-};
 ```
 
 ==============================================================================
