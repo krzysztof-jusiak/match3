@@ -3506,10 +3506,8 @@ struct MethodInvocationHandler : Destructible {
 
 namespace fakeit {
 
-#ifdef __GNUG__
-#ifndef __clang__
-#pragma GCC diagnostic ignored "-Wpedantic"
-#endif
+#ifdef __clang__
+#pragma GCC diagnostic ignored "-Wzero-length-array"
 #endif
 
 #ifdef _MSC_VER

@@ -7,7 +7,7 @@
 #
 TGT:=match3
 VALGRIND:=valgrind --leak-check=full --error-exitcode=1
-CXXFLAGS:=-std=c++14 -I src -I libs/msm-lite/include -Ilibs/di/include -Ilibs/range-v3/include #-Wall -Wextra -Wno-c99-extensions
+CXXFLAGS:=-std=c++14 -I src -I libs/msm-lite/include -Ilibs/di/include -Ilibs/range-v3/include -Wall -Wextra -pedantic -pedantic-errors -Wno-c99-extensions -Wno-dollar-in-identifier-extension
 CXXFLAGS_EMSCRIPTEN:=-Wwarn-absolute-paths --emrun -s USE_SDL=2 -s USE_SDL_IMAGE=2 -s USE_SDL_TTF=2
 CXXFLAGS_APP:=-I/usr/local/include/SDL2
 LINKFLAGS_EMSCRIPTEN:=--preload-file data --use-preload-plugins

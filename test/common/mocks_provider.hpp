@@ -36,7 +36,7 @@ struct mocks_provider : di::config {
     template <class T, class... TArgs>
     std::enable_if_t<std::is_polymorphic<T>::value, T*> get(
         const di::type_traits::uniform&, const di::type_traits::heap&,
-        TArgs&&... args) {
+        TArgs&&...) {
       return &mocks_provider::get_mock<T>(false).get();
     }
 
