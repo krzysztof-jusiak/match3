@@ -346,7 +346,7 @@ int main() {
 
 ----
 
-Model-View-Controller
+###Model-View-Controller
 
 ----
 
@@ -360,7 +360,7 @@ Model-View-Controller
 
 ----
 
-State Machine
+###State Machine
 
 ----
 
@@ -376,7 +376,7 @@ State Machine
 
 ----
 
-Match-3 Game
+###Match-3 Game
 
 ---
 
@@ -615,8 +615,8 @@ auto is_allowed =
 ----
 
 ```cpp
-auto generate_new = [](board& b, const auto& m, selected& s, config c,
-                       randomize r) {
+auto generate_new = [](board& b, const auto& m, selected& s, 
+                       config c, randomize r) {
   ranges::action::transform(b.grids,
     [c, r](auto i) { return i ? i : r(1, c.board_colors); }
   );
@@ -838,6 +838,10 @@ auto scroll = [](auto&& v, const auto& value, auto width) {
   ranges::rotate(c, begin);
 };
 ````
+
+----
+
+##Affected
 
 ----
 
