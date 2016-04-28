@@ -66,9 +66,10 @@ test match5_out_of_moves = [] {
   auto&& canvas = mocks_provider::get_mock<match3::icanvas>();
   When(Method(canvas, load_image)).AlwaysReturn(std::shared_ptr<void>{});
   When(Method(canvas, create_text)).AlwaysReturn(std::shared_ptr<void>{});
-  When(Method(canvas, draw)).AlwaysDo([](std::shared_ptr<void>, int, int, bool){});
-  When(Method(canvas, render)).AlwaysDo([]{});
-  When(Method(canvas, clear)).AlwaysDo([]{});
+  When(Method(canvas, draw))
+      .AlwaysDo([](std::shared_ptr<void>, int, int, bool) {});
+  When(Method(canvas, render)).AlwaysDo([] {});
+  When(Method(canvas, clear)).AlwaysDo([] {});
 
   // when
   auto sm = injector.create<msm::sm<match3::controller>>();
@@ -120,9 +121,10 @@ test match3_matchl_out_of_moves_game_over_reset = [] {
   auto&& canvas = mocks_provider::get_mock<match3::icanvas>();
   When(Method(canvas, load_image)).AlwaysReturn(std::shared_ptr<void>{});
   When(Method(canvas, create_text)).AlwaysReturn(std::shared_ptr<void>{});
-  When(Method(canvas, draw)).AlwaysDo([](std::shared_ptr<void>, int, int, bool){});
-  When(Method(canvas, render)).AlwaysDo([]{});
-  When(Method(canvas, clear)).AlwaysDo([]{});
+  When(Method(canvas, draw))
+      .AlwaysDo([](std::shared_ptr<void>, int, int, bool) {});
+  When(Method(canvas, render)).AlwaysDo([] {});
+  When(Method(canvas, clear)).AlwaysDo([] {});
 
   expect(ranges::equal(injector.create<match3::board>().grids,
                        injector.create<match3::board&>().grids));

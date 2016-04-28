@@ -42,9 +42,10 @@ test $match3 = [] {
   auto&& canvas = mocks_provider::get_mock<match3::icanvas>();
   When(Method(canvas, load_image)).AlwaysReturn(std::shared_ptr<void>{});
   When(Method(canvas, create_text)).AlwaysReturn(std::shared_ptr<void>{});
-  When(Method(canvas, draw)).AlwaysDo([](std::shared_ptr<void>, int, int, bool){});
-  When(Method(canvas, render)).AlwaysDo([]{});
-  When(Method(canvas, clear)).AlwaysDo([]{});
+  When(Method(canvas, draw))
+      .AlwaysDo([](std::shared_ptr<void>, int, int, bool) {});
+  When(Method(canvas, render)).AlwaysDo([] {});
+  When(Method(canvas, clear)).AlwaysDo([] {});
 
   auto&& board = injector.create<match3::board&>();
   auto&& selected = injector.create<match3::selected&>();
@@ -102,9 +103,10 @@ test $match5 = [] {
   auto&& canvas = mocks_provider::get_mock<match3::icanvas>();
   When(Method(canvas, load_image)).AlwaysReturn(std::shared_ptr<void>{});
   When(Method(canvas, create_text)).AlwaysReturn(std::shared_ptr<void>{});
-  When(Method(canvas, draw)).AlwaysDo([](std::shared_ptr<void>, int, int, bool){});
-  When(Method(canvas, render)).AlwaysDo([]{});
-  When(Method(canvas, clear)).AlwaysDo([]{});
+  When(Method(canvas, draw))
+      .AlwaysDo([](std::shared_ptr<void>, int, int, bool) {});
+  When(Method(canvas, render)).AlwaysDo([] {});
+  When(Method(canvas, clear)).AlwaysDo([] {});
 
   // when
   using namespace msm;
