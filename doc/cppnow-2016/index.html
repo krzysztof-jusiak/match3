@@ -883,7 +883,7 @@ auto affected = [](const auto& matches, auto width) {
 
 ----
 
-Desktop
+###Desktop
 
 ----
 
@@ -902,7 +902,53 @@ Run
 
 ----
 
-Web
+CMake
+
+```sh
+mkdir build
+cmake ..
+make app
+```
+
+----
+
+###Web
+
+----
+
+Emscripten
+
+----
+
+```sh
+curl -o emsdk-1.35.0-portable-64bit.zip https://s3.amazonaws.com/mozilla-games/emscripten/releases/emsdk-1.35.0-portable-64bit.zip
+```
+
+----
+
+```sh
+# Fetch the latest registry of available tools.
+./emsdk update
+
+# Download and install the latest SDK tools.
+./emsdk install latest
+
+# Make the "latest" SDK "active"
+./emsdk activate latest
+
+# Set the current Emscripten path on Linux/Mac OS X
+source ./emsdk_env.sh
+```
+
+----
+
+```sh
+./emsdk list
+```
+
+----
+
+<img width=550 height=600 src="images/emsdk.png" />
 
 ----
 
@@ -920,7 +966,21 @@ em++ -s USE_SDL=2 -s USE_SDL_IMAGE=2 -s USE_SDL_TTF=2
 Run
 
 ```sh
-browser index.html
+$browser index.html
+```
+
+```sh
+emrun --port 8080 index.html
+```
+
+----
+
+CMake
+
+```sh
+mkdir build
+CXX=em++ cmake ..
+make web emrun
 ```
 
 ----
@@ -938,7 +998,7 @@ browser index.html
 
 ----
 
-Unit Tests
+###Unit Tests
 
 ----
 
@@ -954,8 +1014,8 @@ test $swap_items = [] {
 
 ----
 
-* Integration Tests
-* Functional Tests
+* ###Integration Tests
+* ###Functional Tests
 
 ----
 
