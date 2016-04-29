@@ -924,9 +924,15 @@ Emscripten
 
 ----
 
-```sh
-curl -o emsdk-1.35.0-portable-64bit.zip https://s3.amazonaws.com/mozilla-games/emscripten/releases/emsdk-1.35.0-portable-64bit.zip
-```
+Linux / Mac OSX
+
+https://s3.amazonaws.com/mozilla-games/emscripten/releases/emsdk-portable.tar.gz
+
+---
+
+Windows (*Installer available)
+
+https://s3.amazonaws.com/mozilla-games/emscripten/releases/emsdk-1.35.0-portable-64bit.zip
 
 ----
 
@@ -939,8 +945,10 @@ curl -o emsdk-1.35.0-portable-64bit.zip https://s3.amazonaws.com/mozilla-games/e
 
 # Make the "latest" SDK "active"
 ./emsdk activate latest
+```
 
-# Set the current Emscripten path on Linux/Mac OS X
+```sh
+# Set the current Emscripten path on Linux/Mac OSX
 source ./emsdk_env.sh
 ```
 
@@ -959,7 +967,7 @@ source ./emsdk_env.sh
 Compile
 
 ```sh
-em++ -s USE_SDL=2 -s USE_SDL_IMAGE=2 -s USE_SDL_TTF=2
+em++ -std=c++14 -s USE_SDL=2 -s USE_SDL_IMAGE=2 -s USE_SDL_TTF=2
      --emrun # log to the console
      --preload-file data # images and fonts
      --use-preload-plugins # load data
@@ -973,8 +981,11 @@ Run
 $browser index.html
 ```
 
+or
+
 ```sh
 emrun --port 8080 index.html
+$browser localhost:8080
 ```
 
 ----
