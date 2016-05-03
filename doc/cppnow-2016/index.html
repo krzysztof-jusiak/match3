@@ -893,6 +893,30 @@ auto affected = [](const auto& matches, auto width) {
 };
 ```
 
+----
+
+###Warning
+
+---
+
+> It's not 100% C++14!
+
+----
+
+####For convenience some non-standard extensions were used
+
+----
+
+* `"state"_s` - GNU extension / string-literal-operator-template
+
+* `$name` - GNU extensions / dollar-in-identifier-extension
+
+* `matches{.arity = 2}` - C99 / designated-initializer
+
+----
+
+####They might be replaced with a standard solution
+
 ==============================================================================
 
 ##Compile & Run
