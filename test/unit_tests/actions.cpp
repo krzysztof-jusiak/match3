@@ -37,7 +37,7 @@ test $find_matches_empty = [] {
   selected s = {0, 1};
   struct {
     int arity;
-    std::vector<board::color> matches;
+    std::vector<board::color> matches = {};
   } event{int(s.size())};
 
   find_matches(b, event, s, config{.board_width = 2});
@@ -54,7 +54,7 @@ test $find_matches = [] {
   selected s = {0};
   struct {
     int arity;
-    std::vector<board::color> matches;
+    std::vector<board::color> matches = {};
   } event{int(s.size())};
 
   find_matches(b, event, s, config{.board_width = 3});
@@ -71,7 +71,7 @@ test $find_matches_more = [] {
   selected s = {1, 3};
   struct {
     int arity;
-    std::vector<board::color> matches;
+    std::vector<board::color> matches = {};
   } event{int(s.size())};
 
   find_matches(b, event, s, config{.board_width = 3});
