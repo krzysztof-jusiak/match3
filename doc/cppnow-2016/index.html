@@ -364,7 +364,7 @@ int main() {
 
 ----
 
-<img width=650 height=550 src="images/cd_match3.png" />
+<img src="images/cd_match3.png" />
 
 ----
 
@@ -627,7 +627,7 @@ auto is_allowed =
 ----
 
 ```cpp
-auto generate_new = [](board& b, const auto& m, selected& s, 
+auto generate_new = [](board& b, const auto& m, selected& s,
                        config c, randomize r) {
   ranges::action::transform(b.grids,
     [c, r](auto i) { return i ? i : r(1, c.board_colors); }
