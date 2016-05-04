@@ -35,6 +35,6 @@
 |          | Web                              | Desktop               |
 | -------- | -------------------------------- | --------------------- |
 | Download | <code>git clone --recurisve https://github.com/modern-cpp-examples/match3.git</code>                                            |
-| Compile  | <code>mkdir build && cmake .. && make web</code> | <code>mkdir build && cmake .. && make app</code> |
+| Compile  | <code>mkdir build && CXX=em++ cmake .. && make web</code> | <code>mkdir build && cmake .. && make app</code> |
 | Run      | <code>$browser index.html</code> | <code>./match3</code> |
 
