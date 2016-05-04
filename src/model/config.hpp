@@ -12,13 +12,13 @@
 namespace match3 {
 
 struct config {
-  std::string win_title;
-  int win_width;
-  int win_height;
-  int board_width;
-  int board_height;
-  int board_colors;
-  int max_moves;
+  const std::string win_title;
+  const int win_width;
+  const int win_height;
+  const int board_width;
+  const int board_height;
+  const int board_colors;
+  const int max_moves;
 };
 
 }  // match3

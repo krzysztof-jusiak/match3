@@ -14,7 +14,7 @@ namespace match3 {
 
 class animations {
   struct animation {
-    std::function<void()> f;
+    std::function<void()> animate;
     std::chrono::milliseconds length;
     std::chrono::milliseconds start = {};
   };
@@ -22,9 +22,9 @@ class animations {
  public:
   explicit animations(view& v) : view_(v) {}
 
-  void queue_animation(const std::function<void()>& f,
+  void queue_animation(const std::function<void()>& animate,
                        std::chrono::milliseconds length = {}) {
-    anims_.emplace_back(animation{f, length});
+    anims_.emplace_back(animation{animate, length});
   }
 
   void update() {
@@ -37,7 +37,7 @@ class animations {
         if (a.start == 0ms) {
           a.start = now;
         }
-        a.f();
+        a.animate();
         view_.update();
         break;
       }

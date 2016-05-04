@@ -14,7 +14,7 @@ namespace match3 {
 /**
  * Row view
  *
- * @param v view
+ * @param view view
  * @param n row number
  * @param width row width
  *
@@ -30,14 +30,14 @@ namespace match3 {
  *
  * @return row view
  */
-auto row = [](auto&& v, auto n, auto width) {
-  return v | ranges::view::drop(width * n) | ranges::view::take(width);
+auto row = [](auto&& view, auto n, auto width) {
+  return view | ranges::view::drop(width * n) | ranges::view::take(width);
 };
 
 /**
  * Column view
  *
- * @param v view
+ * @param view view
  * @param n column number
  * @param width row width
  *
@@ -53,14 +53,14 @@ auto row = [](auto&& v, auto n, auto width) {
  *
  * @return column view
  */
-auto col = [](auto&& v, auto n, auto width) {
-  return v | ranges::view::drop(n) | ranges::view::stride(int(width));
+auto col = [](auto&& view, auto n, auto width) {
+  return view | ranges::view::drop(n) | ranges::view::stride(int(width));
 };
 
 /**
  * Look for at least n consecutive same elements
  *
- * @param v view
+ * @param view view
  * @param color element to be looked for
  * @param width row width
  *
@@ -75,18 +75,21 @@ auto col = [](auto&& v, auto n, auto width) {
  *
  * @return column view
  */
-auto match_n = [](auto&& v, auto color, int n = 3) {
+auto match_n = [](auto&& view, auto color, int max_match_length = 3) {
   const auto&& matches =
-      ranges::view::ints | ranges::view::take(ranges::size(v) - n + 1) |
+      ranges::view::ints |
+      ranges::view::take(ranges::size(view) - max_match_length + 1) |
       ranges::view::transform([=](/*auto*/ int i) {
-        return ranges::count(v | ranges::view::drop(i) | ranges::view::take(n),
-                             color) == n;
+        return ranges::count(view | ranges::view::drop(i) |
+                                 ranges::view::take(max_match_length),
+                             color) == max_match_length;
       });
 
-  constexpr auto is_match = 1;
+  constexpr auto is_match = true;
   const auto it = ranges::find(matches, is_match);
   const auto found = it != ranges::end(matches);
-  const auto mlength = found ? ranges::count(matches, is_match) + (n - 1) : 0;
+  const auto mlength =
+      found ? ranges::count(matches, is_match) + (max_match_length - 1) : 0;
   const auto mbegin = found ? ranges::distance(ranges::begin(matches), it) : 0;
 
   struct {
@@ -99,7 +102,7 @@ auto match_n = [](auto&& v, auto color, int n = 3) {
 /**
  * Checks whether there is a match for given position
  *
- * @param v view
+ * @param view view
  * @param value position value
  * @param width row width
  *
@@ -124,19 +127,19 @@ auto match_n = [](auto&& v, auto color, int n = 3) {
  *
  * @return true, if there is a match, false otherwise
  */
-auto is_match = [](auto&& v, auto value, auto width) {
-  const auto color = v[value];
+auto is_match = [](auto&& view, auto value, auto width) {
+  const auto color = view[value];
   const auto x = value % width;
   const auto y = value / width;
-  return match_n(row(v, y, width), color).length ||
-         match_n(col(v, x, width), color).length;
+  return match_n(row(view, y, width), color).length ||
+         match_n(col(view, x, width), color).length;
 };
 
 // clang-format off
 /**
  * Creates a sorted and unique list of positions which matches
  *
- * @param v view`
+ * @param view view`
  * @param value position value
  * @param width row width
  *
@@ -156,12 +159,12 @@ auto is_match = [](auto&& v, auto value, auto width) {
  * @return sorted, unique list of positions which matches
  */
 // clang-format on
-auto match = [](auto&& v, auto value, auto width) {
-  const auto color = v[value];
+auto match = [](auto&& view, auto value, auto width) {
+  const auto color = view[value];
   const auto x = value % width;
   const auto y = value / width;
-  const auto match_r = match_n(row(v, y, width), color);
-  const auto match_c = match_n(col(v, x, width), color);
+  const auto match_r = match_n(row(view, y, width), color);
+  const auto match_c = match_n(col(view, x, width), color);
   const auto transform = [](/*auto*/ int length, auto expr) {
     return ranges::view::ints | ranges::view::take(length) |
            ranges::view::transform(expr);
@@ -191,13 +194,13 @@ auto match = [](auto&& v, auto value, auto width) {
  *
  * \endcode
  *
- * @param v view
- * @param value matched position
+ * @param view view
+ * @param value position
  * @param width row width
  */
-auto scroll = [](auto&& v, const auto& value, auto width) {
+auto scroll = [](auto&& view, auto value, auto width) {
   const auto&& c =
-      col(v, value % width, width) | ranges::view::take(value / width + 1);
+      col(view, value % width, width) | ranges::view::take(value / width + 1);
   auto begin = ranges::begin(c);
   ranges::advance(begin, value / width);
   ranges::rotate(c, begin);

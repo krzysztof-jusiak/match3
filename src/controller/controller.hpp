@@ -29,32 +29,32 @@ struct touch_down {
   static constexpr auto id = SDL_FINGERDOWN;
   explicit touch_down(const SDL_Event& event)
       : x(int(event.tfinger.x)), y(int(event.tfinger.y)) {}
-  int x = 0;
-  int y = 0;
+  const int x = 0;
+  const int y = 0;
 };
 
 struct button_down {
   static constexpr auto id = SDL_MOUSEBUTTONDOWN;
   explicit button_down(const SDL_Event& event)
       : x(event.button.x), y(event.button.y) {}
-  int x = 0;
-  int y = 0;
+  const int x = 0;
+  const int y = 0;
 };
 
 struct touch_up {
   static constexpr auto id = SDL_FINGERUP;
   explicit touch_up(const SDL_Event& event)
       : x(int(event.tfinger.x)), y(int(event.tfinger.y)) {}
-  int x = 0;
-  int y = 0;
+  const int x = 0;
+  const int y = 0;
 };
 
 struct button_up {
   static constexpr auto id = SDL_MOUSEBUTTONUP;
   explicit button_up(const SDL_Event& event)
       : x(event.button.x), y(event.button.y) {}
-  int x = 0;
-  int y = 0;
+  const int x = 0;
+  const int y = 0;
 };
 
 struct matches {
@@ -87,17 +87,19 @@ auto is_mobile = [] {
 
 auto has_items = [](const selected& s) { return !s.empty(); };
 
-auto is_swap_items_winning = [](const board& b, const selected& s, config c) {
+auto is_swap_items_winning = [](const board& b, const selected& s,
+                                const config c) {
   assert(s.size() == 2);
-  return is_match(b.grids, *(s.end() - 1), c.board_width) ||
-         is_match(b.grids, *(s.end() - 2), c.board_width);
+  return is_match(b.grids, s[0], c.board_width) ||
+         is_match(b.grids, s[1], c.board_width);
 };
 
-auto is_item_winning = [](const board& b, const selected& s, config c) {
-  return !s.empty() && is_match(b.grids, *(s.end() - 1), c.board_width);
+auto is_item_winning = [](const board& b, const selected& s, const config c) {
+  return !s.empty() && is_match(b.grids, s.back(), c.board_width);
 };
 
-auto is_allowed = [](auto event, const view& v, const selected& s, config c) {
+auto is_allowed = [](auto event, const view& v, const selected& s,
+                     const config c) {
   assert(!s.empty());
   const auto _1 = s.back();
   const auto _2 = v.get_position(event.x, event.y);
@@ -131,7 +133,7 @@ auto swap_items = [](const selected& s, board& b) {
   std::swap(b.grids[_1], b.grids[_2]);
 };
 
-auto find_matches = [](const board& b, auto& m, selected& s, config c) {
+auto find_matches = [](const board& b, auto& m, selected& s, const config c) {
   assert(m.arity >= 0);
   auto arity = m.arity;
   while (arity--) {
@@ -146,12 +148,12 @@ auto destroy_matches = [](board& b, const auto& m) {
   ranges::for_each(m.matches, [&](auto i) { b.grids[i] = {}; });
 };
 
-auto scroll_board = [](board& b, const auto& m, config c) {
+auto scroll_board = [](board& b, const auto& m, const config c) {
   ranges::for_each(m.matches,
                    [&](auto i) { scroll(b.grids, i, c.board_width); });
 };
 
-auto generate_new = [](board& b, const auto& m, selected& s, config c,
+auto generate_new = [](board& b, const auto& m, selected& s, const config c,
                        randomize r) {
   ranges::action::transform(
       b.grids, [c, r](auto i) { return i ? i : r(1, c.board_colors); });
@@ -170,7 +172,7 @@ auto reset = [](config c, board original, board& b, points& p, moves& m,
 };
 
 auto show_swap = [](const board& b, const selected& s, animations& a, view& v,
-                    config c) {
+                    const config c) {
   assert(s.size() == 2);
   using namespace std::chrono_literals;
   a.queue_animation([b, c, s, &v] {
@@ -181,7 +183,7 @@ auto show_swap = [](const board& b, const selected& s, animations& a, view& v,
   }, 150ms);
 };
 
-auto show_board = [](const board& b, animations& a, view& v, config c) {
+auto show_board = [](const board& b, animations& a, view& v, const config c) {
   using namespace std::chrono_literals;
   a.queue_animation([b, c, &v] {
     for (auto i = 0; i < c.board_width * c.board_height; ++i) {
@@ -190,7 +192,7 @@ auto show_board = [](const board& b, animations& a, view& v, config c) {
   }, 150ms);
 };
 
-auto show_matches = [](const auto& m, animations& a, view& v, config c) {
+auto show_matches = [](const auto& m, animations& a, view& v, const config c) {
   using namespace std::chrono_literals;
   a.queue_animation([m, c, &v] {
     for (auto i : m.matches) {
