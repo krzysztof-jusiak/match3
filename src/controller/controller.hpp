@@ -89,7 +89,7 @@ const auto has_items = [](const selected& s) { return !s.empty(); };
 
 const auto is_swap_items_winning = [](const board& b, const selected& s,
                                       const config c) {
-  assert(s.size() == 2);
+  assert(s.size() >= 2);
   return is_match(b.grids, s[0], c.board_width) ||
          is_match(b.grids, s[1], c.board_width);
 };
@@ -128,10 +128,8 @@ const auto drop_item = [](selected& s) {
 const auto clear_selected = [](selected& s) { s.clear(); };
 
 const auto swap_items = [](const selected& s, board& b) {
-  assert(s.size() == 2);
-  const auto _1 = *s.begin();
-  const auto _2 = *(s.begin() + 1);
-  std::swap(b.grids[_1], b.grids[_2]);
+  assert(s.size() >= 2);
+  std::swap(b.grids[s[0]], b.grids[s[1]]);
 };
 
 const auto find_matches = [](const board& b, auto& m, selected& s,
@@ -175,12 +173,12 @@ const auto reset = [](config c, board original, board& b, points& p, moves& m,
 
 const auto show_swap = [](const board& b, const selected& s, animations& a,
                           view& v, const config c) {
-  assert(s.size() == 2);
+  assert(s.size() >= 2);
   using namespace std::chrono_literals;
   a.queue_animation([b, c, s, &v] {
-    const auto _1 = *s.begin();
+    const auto _1 = s[0];
+    const auto _2 = s[1];
     v.set_grid(_1 % c.board_width, _1 / c.board_width, b.grids[_1]);
-    const auto _2 = *(s.begin() + 1);
     v.set_grid(_2 % c.board_width, _2 / c.board_width, b.grids[_2]);
   }, 150ms);
 };

@@ -642,10 +642,8 @@ auto generate_new = [](board& b, const auto& m, selected& s,
 
 ```cpp
 auto swap_items = [](const selected& s, board& b) {
-  assert(s.size() == 2);
-  const auto _1 = *s.begin();
-  const auto _2 = *(s.begin() + 1);
-  std::swap(b.grids[_1], b.grids[_2]);
+  assert(s.size() >= 2);
+  std::swap(b.grids[s[0]], b.grids[s[1]]);
 };
 ```
 
@@ -674,7 +672,7 @@ https://github.com/ericniebler/range-v3
 ```
 
 ```cpp
-auto row = [](auto&& v, auto n, auto width) {
+auto row = [](View&& v, Number n, Number width) {
   return v | ranges::view::drop(width * n) |
              ranges::view::take(width);
 };
@@ -693,7 +691,7 @@ auto row = [](auto&& v, auto n, auto width) {
 ```
 
 ```cpp
-auto col = [](auto&& v, auto n, auto width) {
+auto col = [](View&& v, Number n, Number width) {
   return v | ranges::view::drop(n) |
              ranges::view::stride(int(width));
 };
@@ -714,7 +712,7 @@ auto col = [](auto&& v, auto n, auto width) {
 ----
 
 ```cpp
-auto match_n = [](auto&& v, auto color, int n = 3) {
+auto match_n = [](View&& v, Color color, Number n = 3) {
   const auto&& matches =
     ranges::view::ints |
     ranges::view::take(ranges::size(v) - n + 1) |
@@ -727,7 +725,7 @@ auto match_n = [](auto&& v, auto color, int n = 3) {
 ----
 
 ```cpp
-  constexpr auto is_match = 1;
+  constexpr auto is_match = true;
   const auto it = ranges::find(matches, is_match);
   const auto found = it != ranges::end(matches);
   const auto mlength =
@@ -767,7 +765,7 @@ auto match_n = [](auto&& v, auto color, int n = 3) {
 ----
 
 ```cpp
-auto is_match = [](auto&& v, auto value, auto width) {
+auto is_match = [](View&& v, Number value, Number width) {
   const auto color = v[value];
   const auto x = value % width;
   const auto y = value / width;
@@ -799,7 +797,7 @@ auto is_match = [](auto&& v, auto value, auto width) {
 ----
 
 ```cpp
-auto match = [](auto&& v, auto value, auto width) {
+auto match = [](View&& v, Number value, Number width) {
   const auto color = v[value];
   const auto x = value % width;
   const auto y = value / width;
@@ -842,7 +840,7 @@ auto match = [](auto&& v, auto value, auto width) {
 ----
 
 ```cpp
-auto scroll = [](auto&& v, const auto& value, auto width) {
+auto scroll = [](View&& v, const Container& value, Number width) {
   const auto&& c = col(v, value % width, width) |
                    ranges::view::take(value / width + 1);
   auto begin = ranges::begin(c);
@@ -876,7 +874,7 @@ auto scroll = [](auto&& v, const auto& value, auto width) {
 ----
 
 ```cpp
-auto affected = [](const auto& matches, auto width) {
+auto affected = [](const Container& matches, Number width) {
   const auto&& columns =
     matches | ranges::view::transform([=](auto m) {
       return ranges::view::ints |
@@ -899,7 +897,7 @@ auto affected = [](const auto& matches, auto width) {
 
 ---
 
-> It's not 100% C++14!
+>It's not 100% C++14!
 
 ----
 
@@ -907,15 +905,11 @@ auto affected = [](const auto& matches, auto width) {
 
 ----
 
-* `"state"_s` - GNU extension / string-literal-operator-template
-
-* `$name` - GNU extensions / dollar-in-identifier-extension
+* `"idle"_s` - GNU extension / string-literal-operator-template
+    * Standard replacement: `state<class state>`
 
 * `matches{.arity = 2}` - C99 / designated-initializer
-
-----
-
-####They might be replaced with a standard solution
+    * Standard replacement: `matches{2}`
 
 ==============================================================================
 
