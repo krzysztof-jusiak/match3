@@ -30,7 +30,7 @@ namespace match3 {
  *
  * @return row view
  */
-auto row = [](auto&& view, auto n, auto width) {
+const auto row = [](auto&& view, auto n, auto width) {
   return view | ranges::view::drop(width * n) | ranges::view::take(width);
 };
 
@@ -53,7 +53,7 @@ auto row = [](auto&& view, auto n, auto width) {
  *
  * @return column view
  */
-auto col = [](auto&& view, auto n, auto width) {
+const auto col = [](auto&& view, auto n, auto width) {
   return view | ranges::view::drop(n) | ranges::view::stride(int(width));
 };
 
@@ -75,7 +75,8 @@ auto col = [](auto&& view, auto n, auto width) {
  *
  * @return column view
  */
-auto match_n = [](auto&& view, auto color, int max_match_length = 3) {
+const auto match_n = [](auto&& view, auto color,
+                        const int max_match_length = 3) {
   const auto&& matches =
       ranges::view::ints |
       ranges::view::take(ranges::size(view) - max_match_length + 1) |
@@ -127,7 +128,7 @@ auto match_n = [](auto&& view, auto color, int max_match_length = 3) {
  *
  * @return true, if there is a match, false otherwise
  */
-auto is_match = [](auto&& view, auto value, auto width) {
+const auto is_match = [](auto&& view, auto value, auto width) {
   const auto color = view[value];
   const auto x = value % width;
   const auto y = value / width;
@@ -159,7 +160,7 @@ auto is_match = [](auto&& view, auto value, auto width) {
  * @return sorted, unique list of positions which matches
  */
 // clang-format on
-auto match = [](auto&& view, auto value, auto width) {
+const auto match = [](auto&& view, auto value, auto width) {
   const auto color = view[value];
   const auto x = value % width;
   const auto y = value / width;
@@ -198,7 +199,7 @@ auto match = [](auto&& view, auto value, auto width) {
  * @param value position
  * @param width row width
  */
-auto scroll = [](auto&& view, auto value, auto width) {
+const auto scroll = [](auto&& view, auto value, auto width) {
   const auto&& c =
       col(view, value % width, width) | ranges::view::take(value / width + 1);
   auto begin = ranges::begin(c);
@@ -228,7 +229,7 @@ auto scroll = [](auto&& view, auto value, auto width) {
  * @return sorted, unique list of positions
  */
 // clang-format on
-auto affected = [](const auto& matches, auto width) {
+const auto affected = [](const auto& matches, auto width) {
   const auto&& columns = matches | ranges::view::transform([=](/*auto*/ int m) {
                            return ranges::view::ints |
                                   ranges::view::take(m / width + 1) |
