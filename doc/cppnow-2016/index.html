@@ -1047,8 +1047,42 @@ make web emrun
 
 ----
 
+###Logic
+
+----
+
 ```cpp
-test $swap_items = [] {
+"scroll"_test = [] {
+  int v[] = {1, 1, 3, 4, 0, 2, 7, 2, 3};
+  scroll(v, 4, 3);
+  expect(ranges::equal({1, 0, 3, 4, 1, 2, 7, 2, 3}, v));
+};
+```
+
+----
+
+###Guards
+
+----
+
+```cpp
+"is key"_test = [] {
+  constexpr auto key = 42;
+  struct {
+    int key;
+  } event{key};
+  expect(is_key(key)(event));
+};
+```
+
+----
+
+###Actions
+
+----
+
+```cpp
+"swap items"_test = [] {
   board b;
   b.grids = {1, 2};
   selected s = {0, 1};
@@ -1059,8 +1093,7 @@ test $swap_items = [] {
 
 ----
 
-* ###Integration Tests
-* ###Functional Tests
+###Integration/Functional Tests
 
 ----
 
@@ -1072,7 +1105,7 @@ https://github.com/eranpeer/FakeIt.git
 
 ----
 
-####Helpers
+###Helpers
 
 ----
 

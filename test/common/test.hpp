@@ -19,11 +19,20 @@ void expect_fail__(const char* msg, const char* file, int line) {
   std::exit(-1);
 }
 
+template <char...>
 struct test {
   template <class Test>
-  test(const Test& test) {
+  bool operator=(const Test& test) {
     test();
+    return true;
   }
 };
 
-int main() {}
+#if defined(__clang__)
+#pragma clang diagnostic ignored "-Wgnu-string-literal-operator-template"
+#endif
+
+template <class T, T... Chars>
+constexpr auto operator""_test() {
+  return test<Chars...>{};
+}
