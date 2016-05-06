@@ -14,27 +14,40 @@
 
 ###Requirements
 
-* C++14 / STL
-
-  * [Clang-3.7+](http://clang.llvm.org)
-  * [GCC-6+](https://gcc.gnu.org/gcc-6/changes.html)
-  * [Emscripten - 1.35.0](http://kripken.github.io/emscripten-site/docs/getting_started/downloads.html)
+* [Clang-3.7+](http://clang.llvm.org)
+* [GCC-6+](https://gcc.gnu.org/gcc-6/changes.html)
+* [Emscripten - 1.35.0](http://kripken.github.io/emscripten-site/docs/getting_started/downloads.html)
 
 ###Dependencies
 
 * [SDL2](https://www.libsdl.org/download-2.0.php)
 * [SDL2-image](https://www.libsdl.org/projects/SDL_image/)
 * [SDL2-ttf](https://www.libsdl.org/download-2.0.php)
-* [boost.di](https://github.com/boost-experimental/di)
-* [boost.msm-lite](https://github.com/boost-experimental/msm-lite)
-* [range-v3](https://github.com/ericniebler/range-v3)
+* [Boost.DI](https://github.com/boost-experimental/di)
+* [Boost.MSM-Lite](https://github.com/boost-experimental/msm-lite)
+* [Range-V3](https://github.com/ericniebler/range-v3)
 
 
 ###Quick start
 
-|          | Web                              | Desktop               |
-| -------- | -------------------------------- | --------------------- |
-| Download | <code>git clone --recurisve https://github.com/modern-cpp-examples/match3.git</code>                                            |
-| Compile  | <code>mkdir build && CXX=em++ cmake .. && make web</code> | <code>mkdir build && cmake .. && make app</code> |
-| Run      | <code>$browser index.html</code> | <code>./match3</code> |
-
+<table>
+  <tr>
+    <td></td>
+    <td>desktop</td>
+    <td>web</td>
+  </tr>
+  <tr>
+    <td>download</td>
+    <td colspan="2"><code>git clone --recurisve https://github.com/modern-cpp-examples/match3.git</code></td>
+  </tr>
+  <tr>
+    <td>compile</td>
+    <td><code>mkdir build &amp;&amp; cmake .. &amp;&amp; make app</code></td>
+    <td><code>mkdir build &amp;&amp; cxx=em++ cmake .. &amp;&amp; make web</code></td>
+  </tr>
+  <tr>
+    <td>run</td>
+    <td><code>./match3</code></td>
+    <td><code>$browser index.html</code></td>
+  </tr>
+</table>
