@@ -12,7 +12,7 @@
 
 ---
 
-###Requirements
+###Tested Compilers
 
 * [Clang-3.7+](http://clang.llvm.org)
 * [GCC-6+](https://gcc.gnu.org/gcc-6/changes.html)
