@@ -33,20 +33,20 @@
 <table>
   <tr>
     <td></td>
-    <td>desktop</td>
-    <td>web</td>
+    <td>Desktop</td>
+    <td>Web</td>
   </tr>
   <tr>
-    <td>download</td>
+    <td>Download</td>
     <td colspan="2"><code>git clone --recurisve https://github.com/modern-cpp-examples/match3.git</code></td>
   </tr>
   <tr>
-    <td>compile</td>
+    <td>Compile</td>
     <td><code>mkdir build &amp;&amp; cmake .. &amp;&amp; make app</code></td>
     <td><code>mkdir build &amp;&amp; cxx=em++ cmake .. &amp;&amp; make web</code></td>
   </tr>
   <tr>
-    <td>run</td>
+    <td>Run</td>
     <td><code>./match3</code></td>
     <td><code>$browser index.html</code></td>
   </tr>
