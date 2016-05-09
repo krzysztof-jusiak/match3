@@ -39,8 +39,6 @@
 		<div class="reveal">
 			<div class="slides">
 
-		  <section fullscreen-img="images/king.png" fullscreen-size="contain" data-background="images/king_logo_light.png"></section>
-
           <section data-markdown=""
                    data-separator="^====+$"
                    data-separator-vertical="^----+$"
@@ -73,7 +71,7 @@ Kris Jusiak, King
 
 ----
 
-| Apps | |
+| Applications | |
 | ------ | - |
 | Mobile | QT/NDK+djinni |
 | Desktop | QT/wxWidgets |
@@ -89,7 +87,7 @@ Kris Jusiak, King
 
 ----
 
-Combine C++ with JS
+###Combine C++ with JS
 
 * Cordova
 * Titanium
@@ -674,7 +672,7 @@ https://github.com/ericniebler/range-v3
 ```cpp
 auto row = [](View&& v, Number n, Number width) {
   return v | ranges::view::drop(width * n) |
-             ranges::view::take(width);
+             ranges::view::take(width); // or slice
 };
 ```
 
@@ -906,7 +904,7 @@ auto affected = [](const Container& matches, Number width) {
 ----
 
 * `"idle"_s` - GNU extension / string-literal-operator-template
-    * Standard replacement: `state<class state>`
+    * Standard replacement: `state<class idle>`
 
 * `matches{.arity = 2}` - C99 / designated-initializer
     * Standard replacement: `matches{2}`
@@ -1260,9 +1258,30 @@ auto is_mobile = [] {
 "match_items"_s <= "second_item"_s + button_up   [!is_mobile] ...
 ```
 
+----
+
+###Problems / Limitations
+
+----
+
+###iOS
+
+> Security reasons
+
+* JS is not compiled causing a slow execution
+* Full screen is not allowed
+
+
 ==============================================================================
 
 ###Debugging C++ -> JS -> Mobile -> Chrome
+
+----
+
+###Android / Chrome
+
+----
+
 
 ![Chrome Discover Devices](images/chrome-discover-usb.png)
 
@@ -1273,6 +1292,14 @@ chrome://inspect/#devices
 ----
 
 ![Debug](images/debug.jpg)
+
+----
+
+###iOS / Safari
+
+----
+
+###[Safari Web Inspector](https://developer.apple.com/library/mac/documentation/AppleApplications/Conceptual/Safari_Developer_Guide/GettingStarted/GettingStarted.html)
 
 ==============================================================================
 
