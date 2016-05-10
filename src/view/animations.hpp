@@ -24,32 +24,29 @@ class animations {
 
   void queue_animation(const std::function<void()>& animate,
                        std::chrono::milliseconds length = {}) {
-    anims_.emplace_back(animation{animate, length});
+    animations_.emplace_back(animation{animate, length});
   }
 
   void update() {
     using namespace std::chrono_literals;
+    constexpr auto async_limit = 1;
     const auto now = std::chrono::duration_cast<std::chrono::milliseconds>(
         std::chrono::system_clock::now().time_since_epoch());
 
-    for (auto& a : anims_) {
-      if (a.length >= 0ms) {
-        if (a.start == 0ms) {
-          a.start = now;
-        }
-        a.animate();
-        view_.update();
-        break;
-      }
-    }
+    ranges::for_each(animations_ | ranges::view::take(async_limit),
+                     [&](auto& a) {
+                       a.start = a.start == 0ms ? now : a.start;
+                       a.animate();
+                       view_.update();
+                     });
 
-    anims_.erase(ranges::remove_if(anims_, [&](const auto& a) {
-                   return a.start > 0ms && now >= a.start + a.length;
-                 }), anims_.end());
+    animations_.erase(ranges::remove_if(animations_, [&](const auto& a) {
+                        return a.start > 0ms && now >= a.start + a.length;
+                      }), animations_.end());
   }
 
  private:
-  std::vector<animation> anims_;
+  std::vector<animation> animations_;
   view& view_;
 };
 

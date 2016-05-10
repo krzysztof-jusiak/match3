@@ -31,7 +31,8 @@ namespace match3 {
  * @return row view
  */
 const auto row = [](auto&& view, auto n, auto width) {
-  return view | ranges::view::drop(width * n) | ranges::view::take(width); // or slice
+  return view | ranges::view::drop(width * n) |
+         ranges::view::take(width);  // or slice
 };
 
 /**
