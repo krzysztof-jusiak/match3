@@ -378,6 +378,133 @@ int main() {
 
 ==============================================================================
 
+##Compile & Run
+
+----
+
+###Desktop
+
+----
+
+Compile
+
+```sh
+clang++ -std=c++14 -lSDL2 -lSDL2_image -lSDL2_ttf
+        -o match3 src/main.cpp
+```
+
+Run
+
+```sh
+./match3
+```
+
+----
+
+CMake
+
+```sh
+mkdir build
+cmake ..
+make app
+```
+
+----
+
+###Web
+
+----
+
+####Emscripten
+
+----
+
+Linux / Mac OSX
+
+https://s3.amazonaws.com/mozilla-games/emscripten/releases/emsdk-portable.tar.gz
+
+---
+
+Windows (*Installer available)
+
+https://s3.amazonaws.com/mozilla-games/emscripten/releases/emsdk-1.35.0-portable-64bit.zip
+
+----
+
+```sh
+# Fetch the latest registry of available tools.
+./emsdk update
+
+# Download and install the latest SDK tools.
+./emsdk install latest
+
+# Make the "latest" SDK "active"
+./emsdk activate latest
+```
+
+```sh
+# Set the current Emscripten path on Linux/Mac OSX
+source ./emsdk_env.sh
+```
+
+----
+
+```sh
+./emsdk list
+```
+
+----
+
+<img width=550 height=600 src="images/emsdk.png" />
+
+----
+
+Compile
+
+```sh
+em++ -std=c++14 -s USE_SDL=2 -s USE_SDL_IMAGE=2 -s USE_SDL_TTF=2
+     --emrun # log to the console
+     --preload-file data # images and fonts
+     --use-preload-plugins # load data
+     --shell-file data/template.html # custom html template
+     -o index.html src/main.cpp
+```
+
+Run
+
+```sh
+$browser index.html
+```
+
+Or
+
+```sh
+emrun --port 8080 index.html
+$browser localhost:8080
+```
+
+----
+
+CMake
+
+```sh
+mkdir build
+CXX=em++ cmake ..
+make web emrun
+```
+
+----
+
+| Compiler (-O2) | Note |Time |
+| - | - | - |
+| Clang-3.8 | Without Range-V3 | 2.122s |
+| Clang-3.8 | With Range-V3 | 9.521s |
+| Emscripten-1.35 | Without Range-v3 | 2.822s |
+| Emscripten-1.35 | With Range-V3 | 9.912s |
+
+==============================================================================
+
+
 ##Implementation
 
 ----
@@ -908,132 +1035,6 @@ auto affected = [](const Container& matches, Number width) {
 
 * `matches{.arity = 2}` - C99 / designated-initializer
     * Standard replacement: `matches{2}`
-
-==============================================================================
-
-##Compile & Run
-
-----
-
-###Desktop
-
-----
-
-Compile
-
-```sh
-clang++ -std=c++14 -lSDL2 -lSDL2_image -lSDL2_ttf
-        -o match3 src/main.cpp
-```
-
-Run
-
-```sh
-./match3
-```
-
-----
-
-CMake
-
-```sh
-mkdir build
-cmake ..
-make app
-```
-
-----
-
-###Web
-
-----
-
-####Emscripten
-
-----
-
-Linux / Mac OSX
-
-https://s3.amazonaws.com/mozilla-games/emscripten/releases/emsdk-portable.tar.gz
-
----
-
-Windows (*Installer available)
-
-https://s3.amazonaws.com/mozilla-games/emscripten/releases/emsdk-1.35.0-portable-64bit.zip
-
-----
-
-```sh
-# Fetch the latest registry of available tools.
-./emsdk update
-
-# Download and install the latest SDK tools.
-./emsdk install latest
-
-# Make the "latest" SDK "active"
-./emsdk activate latest
-```
-
-```sh
-# Set the current Emscripten path on Linux/Mac OSX
-source ./emsdk_env.sh
-```
-
-----
-
-```sh
-./emsdk list
-```
-
-----
-
-<img width=550 height=600 src="images/emsdk.png" />
-
-----
-
-Compile
-
-```sh
-em++ -std=c++14 -s USE_SDL=2 -s USE_SDL_IMAGE=2 -s USE_SDL_TTF=2
-     --emrun # log to the console
-     --preload-file data # images and fonts
-     --use-preload-plugins # load data
-     --shell-file data/template.html # custom html template
-     -o index.html src/main.cpp
-```
-
-Run
-
-```sh
-$browser index.html
-```
-
-Or
-
-```sh
-emrun --port 8080 index.html
-$browser localhost:8080
-```
-
-----
-
-CMake
-
-```sh
-mkdir build
-CXX=em++ cmake ..
-make web emrun
-```
-
-----
-
-| Compiler (-O2) | Note |Time |
-| - | - | - |
-| Clang-3.8 | Without Range-V3 | 2.122s |
-| Clang-3.8 | With Range-V3 | 9.521s |
-| Emscripten-1.35 | Without Range-v3 | 2.822s |
-| Emscripten-1.35 | With Range-V3 | 9.912s |
 
 ==============================================================================
 

@@ -11,8 +11,11 @@
 
 namespace match3 {
 
+template<int Min, int Max>
+using safe_int = int;
+
 struct board {
-  using color = int;
+  using color = safe_int<0, 5>;
   std::vector<color> grids;
 };
 

@@ -167,7 +167,7 @@ const auto match = [](auto&& view, auto value, auto width) {
   const auto y = value / width;
   const auto match_r = match_n(row(view, y, width), color);
   const auto match_c = match_n(col(view, x, width), color);
-  const auto transform = [](/*auto*/ int length, auto expr) {
+  const auto transform = [](auto length, auto expr) {
     return ranges::view::ints | ranges::view::take(length) |
            ranges::view::transform(expr);
   };
