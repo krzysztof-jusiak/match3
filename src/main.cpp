@@ -43,7 +43,7 @@ auto configuration = []() {
     })
 
   , di::bind<randomize>.to([](int begin, int end) {
-      std::random_device rd;
+      static std::random_device rd;
       std::mt19937 gen(rd());
       std::uniform_int_distribution<int> dis(begin, end);
       return dis(gen);
