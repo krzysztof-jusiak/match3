@@ -386,14 +386,14 @@ int main() {
 
 ----
 
-Compile
+####Compile
 
 ```sh
 clang++ -std=c++14 -lSDL2 -lSDL2_image -lSDL2_ttf
         -o match3 src/main.cpp
 ```
 
-Run
+####Run
 
 ```sh
 ./match3
@@ -401,7 +401,7 @@ Run
 
 ----
 
-CMake
+####CMake
 
 ```sh
 mkdir build
@@ -459,7 +459,7 @@ source ./emsdk_env.sh
 
 ----
 
-Compile
+####Compile
 
 ```sh
 em++ -std=c++14 -s USE_SDL=2 -s USE_SDL_IMAGE=2 -s USE_SDL_TTF=2
@@ -470,22 +470,22 @@ em++ -std=c++14 -s USE_SDL=2 -s USE_SDL_IMAGE=2 -s USE_SDL_TTF=2
      -o index.html src/main.cpp
 ```
 
-Run
+####Run
 
 ```sh
 $browser index.html
 ```
 
-Or
+####Or
 
 ```sh
-emrun --port 8080 index.html
+emrun --port 8080 index.html # start http server
 $browser localhost:8080
 ```
 
 ----
 
-CMake
+####CMake
 
 ```sh
 mkdir build
@@ -495,6 +495,10 @@ make web emrun
 
 ----
 
+###Compilation time benchmark
+
+---
+
 | Compiler (-O2) | Note |Time |
 | - | - | - |
 | Clang-3.8 | Without Range-V3 | 2.122s |
@@ -503,7 +507,6 @@ make web emrun
 | Emscripten-1.35 | With Range-V3 | 9.912s |
 
 ==============================================================================
-
 
 ##Implementation
 
@@ -517,6 +520,7 @@ https://github.com/modern-cpp-examples/match3
 
 ----
 
+####Files...
 ```sh
 ▾ src/
   ▾ controller/
@@ -541,6 +545,7 @@ https://github.com/modern-cpp-examples/match3
 
 ----
 
+####Main
 ```cpp
 int main() {
   auto injector = di::make_injector(configuration());
@@ -562,26 +567,29 @@ https://github.com/boost-experimental/di
 
 ----
 
+####Bind icanvas to sdl_canvas
 ```cpp
-  di::bind<icanvas>.to<sdl_canvas>()
+di::bind<icanvas>.to<sdl_canvas>()
 ```
 
 ----
 
+###Set-up configuration details
 ```cpp
-  di::bind<>.to(
-    config{.win_title = "match3",
-           .win_width = 320,
-           .win_height = 480,
-           .board_width = 7,
-           .board_height = 10,
-           .board_colors = 5,
-           .max_moves = 10}
-  )
+di::bind<>.to(
+  config{.win_title = "match3",
+         .win_width = 320,
+         .win_height = 480,
+         .board_width = 7,
+         .board_height = 10,
+         .board_colors = 5,
+         .max_moves = 10}
+)
 ```
 
 ----
 
+####Set-up board
 ```cpp
  di::bind<board::color[]>.to({
     3,5,1,4,3,2,2,
@@ -599,6 +607,7 @@ https://github.com/boost-experimental/di
 
 ----
 
+####Bind randomizer
 ```cpp
   di::bind<randomize>.to([](int begin, int end) {
     static std::random_device rd;
@@ -614,6 +623,7 @@ https://github.com/boost-experimental/di
 
 ----
 
+####Game loop
 ```cpp
 class game {
  public:
@@ -628,6 +638,7 @@ class game {
 
 ----
 
+####Play
 ```cpp
   static void play_impl(void* c) {
     auto& controller_ =
@@ -651,6 +662,7 @@ class game {
 
 ----
 
+####Board
 ```cpp
 struct board {
   using color = int;
@@ -672,6 +684,7 @@ https://www.libsdl.org
 
 ----
 
+####Canvas
 ```cpp
 class icanvas {
  public:
@@ -690,6 +703,7 @@ class icanvas {
 
 ----
 
+####View
 ```cpp
 class view {
   view(icanvas&, config);
@@ -704,6 +718,7 @@ class view {
 
 ----
 
+####Animations
 ```cpp
 class animations {
   explicit animations(view& v);
@@ -735,6 +750,7 @@ https://github.com/boost-experimental/msm-lite
 
 ----
 
+####Is move allowed
 ```cpp
 auto is_allowed =
   [](auto event, const view& v, const selected& s, config c) {
@@ -751,6 +767,7 @@ auto is_allowed =
 
 ----
 
+####Generate new items
 ```cpp
 auto generate_new = [](board& b, const auto& m, selected& s,
                        config c, randomize r) {
@@ -765,12 +782,21 @@ auto generate_new = [](board& b, const auto& m, selected& s,
 
 ----
 
+####Swap items
 ```cpp
 auto swap_items = [](const selected& s, board& b) {
   assert(s.size() >= 2);
   std::swap(b.grids[s[0]], b.grids[s[1]]);
 };
 ```
+
+----
+
+###More Guards/Actions
+
+---
+
+https://github.com/modern-cpp-examples/match3/blob/master/src/controller/controller.hpp
 
 ----
 
@@ -790,12 +816,14 @@ https://github.com/ericniebler/range-v3
 
 ----
 
+####Idea
 ```cpp
 | 1 2 3 |           |  1   2   3  |
 | 3 4 5 | => n:1 -> | [3] [4] [5] |
 | 6 7 8 |           |  6   7   8  |
 ```
 
+####Row
 ```cpp
 auto row = [](View&& v, Number n, Number width) {
   return v | ranges::view::drop(width * n) |
@@ -809,12 +837,14 @@ auto row = [](View&& v, Number n, Number width) {
 
 ----
 
+####Idea
 ```cpp
 | 1 2 3 |           | 1 [2] 3 |
 | 3 4 5 | => n:1 -> | 3 [4] 5 |
 | 6 7 8 |           | 6 [7] 8 |
 ```
 
+####Column
 ```cpp
 auto col = [](View&& v, Number n, Number width) {
   return v | ranges::view::drop(n) |
@@ -829,6 +859,7 @@ auto col = [](View&& v, Number n, Number width) {
 
 ----
 
+####Idea
 ```cpp
 | 1 3 3 3 2 1 | => color:3, n:3 -> {begin: 1, length: 3}
 | 1 2 3 3 3 3 | => color:3, n:3 -> {begin: 2, length: 4}
@@ -836,6 +867,7 @@ auto col = [](View&& v, Number n, Number width) {
 
 ----
 
+####Match 3
 ```cpp
 auto match_n = [](View&& v, Color color, Number n = 3) {
   const auto&& matches =
@@ -849,6 +881,7 @@ auto match_n = [](View&& v, Color color, Number n = 3) {
 
 ----
 
+####Match 3
 ```cpp
   constexpr auto is_match = true;
   const auto it = ranges::find(matches, is_match);
@@ -871,6 +904,7 @@ auto match_n = [](View&& v, Color color, Number n = 3) {
 
 ----
 
+####Idea - match found
 ```cpp
 | 2 3 4 5 |                | 2 3  4  5 |    | 2 3  4  5 |
 | 7 7 9 3 |                | 7 7  9  3 |    | 7 7  9  3 |
@@ -879,6 +913,7 @@ auto match_n = [](View&& v, Color color, Number n = 3) {
 | 2 1 5 8 |                | 2 1  5  8 |    | 2 1 [5] 8 |
 ```
 
+####Idea - no match
 ```cpp
 | 2 3 4 5 |                | 2 3 4  5  |    | 2 3 4 5 |
 | 7 7 9 3 |                | 7 7 9  3  |    | 7 7 9 3 |
@@ -889,6 +924,7 @@ auto match_n = [](View&& v, Color color, Number n = 3) {
 
 ----
 
+####Is match
 ```cpp
 auto is_match = [](View&& v, Number value, Number width) {
   const auto color = v[value];
@@ -905,6 +941,7 @@ auto is_match = [](View&& v, Number value, Number width) {
 
 ----
 
+####Idea
 ```cpp
 | 1 2 3 4 5 |                 | 1  2 3  4  5 |
 | 6 7 7 9 3 |                 | 6  7 7  9  3 |
@@ -921,6 +958,7 @@ auto is_match = [](View&& v, Number value, Number width) {
 
 ----
 
+####Match
 ```cpp
 auto match = [](View&& v, Number value, Number width) {
   const auto color = v[value];
@@ -936,6 +974,7 @@ auto match = [](View&& v, Number value, Number width) {
 
 ----
 
+####Match
 ```cpp
   std::vector<decltype(value)> result = ranges::view::concat(
       transform(match_r.length,
@@ -954,6 +993,7 @@ auto match = [](View&& v, Number value, Number width) {
 
 ----
 
+####Idea
 ```cpp
 | 3 |                |  3  |    | 0 |
 | 0 |                | [0] |    | 0 |
@@ -964,6 +1004,7 @@ auto match = [](View&& v, Number value, Number width) {
 
 ----
 
+####Scroll
 ```cpp
 auto scroll = [](View&& v, const Container& value, Number width) {
   const auto&& c = col(v, value % width, width) |
@@ -980,6 +1021,7 @@ auto scroll = [](View&& v, const Container& value, Number width) {
 
 ----
 
+####Idea
 ```cpp
                         | 1  2   3   4  5 |
                         | 6  7   7   9  3 |
@@ -998,6 +1040,7 @@ auto scroll = [](View&& v, const Container& value, Number width) {
 
 ----
 
+####Affected
 ```cpp
 auto affected = [](const Container& matches, Number width) {
   const auto&& columns =
@@ -1024,11 +1067,7 @@ auto affected = [](const Container& matches, Number width) {
 
 >It's not 100% C++14!
 
-----
-
-####For convenience some non-standard extensions were used
-
-----
+---
 
 * `"idle"_s` - GNU extension / string-literal-operator-template
     * Standard replacement: `state<class idle>`
@@ -1092,11 +1131,11 @@ auto affected = [](const Container& matches, Number width) {
 
 ----
 
-###Integration/Functional Tests
+###Functional Tests
 
 ----
 
-##FakeIt
+##FakeIt - mocking framework
 
 ---
 
@@ -1108,6 +1147,7 @@ https://github.com/eranpeer/FakeIt.git
 
 ----
 
+####Fake swipe
 ```cpp
 template <class SM>
 void
@@ -1129,6 +1169,7 @@ swipe(SM& sm, std::pair<int, int> from, std::pair<int, int> to) {
 
 ---
 
+####DI - mocks provider
 ```cpp
 auto injector = di::make_injector<mocks_provider>(...);
 ```
@@ -1139,53 +1180,57 @@ auto injector = di::make_injector<mocks_provider>(...);
 
 ----
 
-
+####Configuration
 ```cpp
-  di::bind<>.to(match3::config{"", 0, 0, 7, 10, 5, 10})
+di::bind<>.to(match3::config{"", 0, 0, 7, 10, 5, 10})
 ```
 
 ----
 
+####Board
 ```cpp
-  di::bind<match3::board::color[]>.to({
-      /*0 1 2 3 4 5 6*/
-  /*0*/ 3,5,1,4,3,2,2,
-  /*1*/ 1,1,4,2,5,1,3,
-  /*2*/ 5,3,5,4,5,3,2,
-  /*3*/ 4,4,2,1,3,4,5,
-  /*4*/ 5,1,1,2,4,5,1,
-  /*5*/ 5,2,3,5,4,2,1,
-  /*6*/ 1,5,5,1,5,5,4,
-  /*7*/ 2,3,3,1,3,3,4,
-  /*8*/ 3,2,2,5,4,4,1,
-  /*9*/ 1,2,3,4,1,3,4
-  })
+di::bind<match3::board::color[]>.to({
+    /*0 1 2 3 4 5 6*/
+/*0*/ 3,5,1,4,3,2,2,
+/*1*/ 1,1,4,2,5,1,3,
+/*2*/ 5,3,5,4,5,3,2,
+/*3*/ 4,4,2,1,3,4,5,
+/*4*/ 5,1,1,2,4,5,1,
+/*5*/ 5,2,3,5,4,2,1,
+/*6*/ 1,5,5,1,5,5,4,
+/*7*/ 2,3,3,1,3,3,4,
+/*8*/ 3,2,2,5,4,4,1,
+/*9*/ 1,2,3,4,1,3,4
+})
 ```
 
 ----
 
+####Fake randomizer
 ```cpp
-  di::bind<match3::randomize>.to([](int, int) {
-    static auto i = 42; return i++;
-  })
+di::bind<match3::randomize>.to([](int, int) {
+  static auto i = 42; return i++;
+})
 ```
 
 ----
 
+####Canvas mock
 ```cpp
-  using namespace fakeit;
-  auto&& canvas = mocks_provider::get_mock<match3::icanvas>();
-  When(Method(canvas, load_image)).AlwaysReturn(shared_ptr<void>{});
-  When(Method(canvas, create_text)).AlwaysReturn(shared_ptr<void>{});
-  When(Method(canvas, draw)).AlwaysDo([](...){});
-  When(Method(canvas, render)).AlwaysDo([]{});
-  When(Method(canvas, clear)).AlwaysDo([]{});
+using namespace fakeit;
+auto&& canvas = mocks_provider::get_mock<match3::icanvas>();
+When(Method(canvas, load_image)).AlwaysReturn(shared_ptr<void>{});
+When(Method(canvas, create_text)).AlwaysReturn(shared_ptr<void>{});
+When(Method(canvas, draw)).AlwaysDo([](...){});
+When(Method(canvas, render)).AlwaysDo([]{});
+When(Method(canvas, clear)).AlwaysDo([]{});
 ```
 
 ----
 
+####Controller
 ```cpp
-  auto sm = injector.create<msm::sm<match3::controller>>();
+auto sm = injector.create<msm::sm<match3::controller>>();
 ```
 
 ----
@@ -1194,8 +1239,9 @@ auto injector = di::make_injector<mocks_provider>(...);
 
 ----
 
+####Trigger swipe
 ```cpp
-  swipe(sm, {3, 5}, {3, 6});
+swipe(sm, {3, 5}, {3, 6});
 ```
 
 ----
@@ -1204,6 +1250,7 @@ auto injector = di::make_injector<mocks_provider>(...);
 
 ----
 
+####Board should change
 ```cpp
   expect(ranges::equal({/*0 1 2 3 4 5 6*/
                         /*0*/ 3, 42, 43, 44, 45, 46, 2,
@@ -1238,6 +1285,7 @@ auto injector = di::make_injector<mocks_provider>(...);
 
 ----
 
+####Is mobile device
 ```cpp
 auto is_mobile = [] {
   return bool(EM_ASM_INT_V({
@@ -1251,6 +1299,7 @@ auto is_mobile = [] {
 
 ----
 
+####Transition table
 ```cpp
 "second_item"_s <= "first_item"_s  + touch_down  [is_mobile] ...
 "match_items"_s <= "second_item"_s + touch_up    [is_mobile] ...
@@ -1271,7 +1320,6 @@ auto is_mobile = [] {
 
 * JS is not compiled causing a slow execution
 * Full screen is not allowed
-
 
 ==============================================================================
 
