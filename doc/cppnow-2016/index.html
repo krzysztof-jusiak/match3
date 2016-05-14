@@ -601,7 +601,7 @@ https://github.com/boost-experimental/di
 
 ```cpp
   di::bind<randomize>.to([](int begin, int end) {
-    std::random_device rd;
+    static std::random_device rd;
     std::mt19937 gen(rd());
     std::uniform_int_distribution<int> dis(begin, end);
     return dis(gen);
@@ -1400,7 +1400,7 @@ chrome://inspect/#devices
         previewLinks: false,
 
         // Transition style
-        transition: 'slide', // none/fade/slide/convex/concave/zoom
+        transition: 'convex', // none/fade/slide/convex/concave/zoom
 
         // Transition speed
         transitionSpeed: 'default', // default/fast/slow
