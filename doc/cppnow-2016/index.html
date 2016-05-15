@@ -545,7 +545,7 @@ https://github.com/modern-cpp-examples/match3
 
 ----
 
-####Main
+####Create and play the game
 ```cpp
 int main() {
   auto injector = di::make_injector(configuration());
@@ -574,7 +574,7 @@ di::bind<icanvas>.to<sdl_canvas>()
 
 ----
 
-###Set-up configuration details
+####Set-up configuration details
 ```cpp
 di::bind<>.to(
   config{.win_title = "match3",
@@ -623,7 +623,7 @@ di::bind<>.to(
 
 ----
 
-####Game loop
+####Play
 ```cpp
 class game {
  public:
@@ -638,7 +638,7 @@ class game {
 
 ----
 
-####Play
+####Handle events
 ```cpp
   static void play_impl(void* c) {
     auto& controller_ =
@@ -958,7 +958,7 @@ auto is_match = [](View&& v, Number value, Number width) {
 
 ----
 
-####Match
+####Match 1/2
 ```cpp
 auto match = [](View&& v, Number value, Number width) {
   const auto color = v[value];
@@ -974,7 +974,7 @@ auto match = [](View&& v, Number value, Number width) {
 
 ----
 
-####Match
+####Match 2/2
 ```cpp
   std::vector<decltype(value)> result = ranges::view::concat(
       transform(match_r.length,
@@ -1017,7 +1017,7 @@ auto scroll = [](View&& v, const Container& value, Number width) {
 
 ----
 
-##Affected
+##Affected items
 
 ----
 
@@ -1063,11 +1063,7 @@ auto affected = [](const Container& matches, Number width) {
 
 ###Warning
 
----
-
 >It's not 100% C++14!
-
----
 
 * `"idle"_s` - GNU extension / string-literal-operator-template
     * Standard replacement: `state<class idle>`
@@ -1161,7 +1157,7 @@ swipe(SM& sm, std::pair<int, int> from, std::pair<int, int> to) {
 
 ----
 
-####Mocks provider
+###Mocks provider
 
 ----
 
