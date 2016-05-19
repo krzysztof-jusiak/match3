@@ -38,7 +38,7 @@
   </tr>
   <tr>
     <td>Download</td>
-    <td colspan="2"><code>git clone --recurisve https://github.com/modern-cpp-examples/match3.git</code></td>
+    <td colspan="2"><code>git clone --recursive https://github.com/modern-cpp-examples/match3.git</code></td>
   </tr>
   <tr>
     <td>Compile</td>
