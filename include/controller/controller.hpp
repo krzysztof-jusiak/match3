@@ -7,12 +7,11 @@
 //
 #pragma once
 
-#include "pph.hpp"
-#include "model/config.hpp"
+#include "config.hpp"
 #include "model/board.hpp"
-#include "view/view.hpp"
+#include "pph.hpp"
 #include "view/animations.hpp"
-#include "controller/logic.hpp"
+#include "view/view.hpp"
 
 namespace msm = boost::msm::lite;
 
@@ -28,8 +27,8 @@ using moves = short;
 struct down {
   static constexpr auto id = EM(SDL_FINGERDOWN)(SDL_MOUSEBUTTONDOWN);
   explicit down(const SDL_Event& event)
-      : EM(x(int(event.tfinger.x)), y(int(event.tfinger.y)))
-          (x(event.button.x), y(event.button.y)) {}
+      : EM(x(int(event.tfinger.x)), y(int(event.tfinger.y)))(
+            x(event.button.x), y(event.button.y)) {}
   const int x = 0;
   const int y = 0;
 };
@@ -37,8 +36,8 @@ struct down {
 struct up {
   static constexpr auto id = EM(SDL_FINGERUP)(SDL_MOUSEBUTTONUP);
   explicit up(const SDL_Event& event)
-      : EM(x(int(event.tfinger.x)), y(int(event.tfinger.y)))
-          (x(event.button.x), y(event.button.y)) {}
+      : EM(x(int(event.tfinger.x)), y(int(event.tfinger.y)))(
+            x(event.button.x), y(event.button.y)) {}
   const int x = 0;
   const int y = 0;
 };
@@ -67,16 +66,13 @@ struct key_pressed {
 
 const auto has_items = [](const selected& s) { return !s.empty(); };
 
-const auto is_swap_items_winning = [](const board& b, const selected& s,
-                                      const config c) {
-  assert(s.size() >= 2);
-  return is_match(b.grids, s[0], c.board_width) ||
-         is_match(b.grids, s[1], c.board_width);
+const auto is_swap_items_winning = [](const board& b, const selected& s) {
+  assert(s.size() == 2);
+  return b.is_match(s[0]) || b.is_match(s[1]);
 };
 
-const auto is_item_winning = [](const board& b, const selected& s,
-                                const config c) {
-  return !s.empty() && is_match(b.grids, s.back(), c.board_width);
+const auto is_item_winning = [](const board& b, const selected& s) {
+  return !s.empty() && b.is_match(s.back());
 };
 
 const auto is_allowed = [](auto event, const view& v, const selected& s,
@@ -108,17 +104,15 @@ const auto drop_item = [](selected& s) {
 const auto clear_selected = [](selected& s) { s.clear(); };
 
 const auto swap_items = [](const selected& s, board& b) {
-  assert(s.size() >= 2);
-  std::swap(b.grids[s[0]], b.grids[s[1]]);
+  assert(s.size() == 2);
+  std::swap(b[s[0]], b[s[1]]);
 };
 
-const auto find_matches = [](const board& b, auto& m, selected& s,
-                             const config c) {
+const auto find_matches = [](const board& b, auto& m, selected& s) {
   assert(m.arity >= 0);
   auto arity = m.arity;
   while (arity--) {
-    m.matches |=
-        ranges::action::push_back(match(b.grids, s.back(), c.board_width));
+    m.matches |= ranges::action::push_back(b.match(s.back()));
     s.pop_back();
   }
   m.matches |= ranges::action::sort | ranges::action::unique;
@@ -128,16 +122,16 @@ const auto destroy_matches = [](board& b, const auto& m) {
   ranges::for_each(m.matches, [&](auto i) { b.grids[i] = {}; });
 };
 
-const auto scroll_board = [](board& b, const auto& m, const config c) {
-  ranges::for_each(m.matches,
-                   [&](auto i) { scroll(b.grids, i, c.board_width); });
+const auto scroll_board = [](board& b, const auto& m) {
+  ranges::for_each(m.matches, [&](auto i) { b.scroll(i); });
 };
 
 const auto generate_new = [](board& b, const auto& m, selected& s,
                              const config c, randomize r) {
   ranges::action::transform(
       b.grids, [c, r](auto i) { return i ? i : r(1, c.board_colors); });
-  s |= ranges::action::push_front(affected(m.matches, c.board_width)) |
+  s |= ranges::action::push_front(
+           board_logic::affected(m.matches, c.board_width)) |
        ranges::action::sort | ranges::action::unique;
 };
 
@@ -153,34 +147,40 @@ const auto reset = [](config c, board original, board& b, points& p, moves& m,
 
 const auto show_swap = [](const board& b, const selected& s, animations& a,
                           view& v, const config c) {
-  assert(s.size() >= 2);
+  assert(s.size() == 2);
   using namespace std::chrono_literals;
-  a.queue_animation([b, c, s, &v] {
-    const auto _1 = s[0];
-    const auto _2 = s[1];
-    v.set_grid(_1 % c.board_width, _1 / c.board_width, b.grids[_1]);
-    v.set_grid(_2 % c.board_width, _2 / c.board_width, b.grids[_2]);
-  }, 150ms);
+  a.queue_animation(
+      [b, c, s, &v] {
+        const auto _1 = s[0];
+        const auto _2 = s[1];
+        v.set_grid(_1 % c.board_width, _1 / c.board_width, b[_1]);
+        v.set_grid(_2 % c.board_width, _2 / c.board_width, b[_2]);
+      },
+      150ms);
 };
 
 const auto show_board = [](const board& b, animations& a, view& v,
                            const config c) {
   using namespace std::chrono_literals;
-  a.queue_animation([b, c, &v] {
-    for (auto i = 0; i < c.board_width * c.board_height; ++i) {
-      v.set_grid(i % c.board_width, i / c.board_width, b.grids[i]);
-    }
-  }, 150ms);
+  a.queue_animation(
+      [b, c, &v] {
+        for (auto i = 0; i < c.board_width * c.board_height; ++i) {
+          v.set_grid(i % c.board_width, i / c.board_width, b[i]);
+        }
+      },
+      150ms);
 };
 
 const auto show_matches = [](const auto& m, animations& a, view& v,
                              const config c) {
   using namespace std::chrono_literals;
-  a.queue_animation([m, c, &v] {
-    for (auto i : m.matches) {
-      v.update_grid(i % c.board_width, i / c.board_width);
-    }
-  }, 150ms);
+  a.queue_animation(
+      [m, c, &v] {
+        for (auto i : m.matches) {
+          v.update_grid(i % c.board_width, i / c.board_width);
+        }
+      },
+      150ms);
 };
 
 const auto show_points = [](view& v, const points& p, animations& a) {
@@ -232,7 +232,7 @@ struct controller {
                                                                                      , add_points, show_points
                                                                                      , scroll_board, show_board
                                                                                      , generate_new, show_board
-                                                                                     , msm::queue_event(matches{.arity = 1})
+                                                                                    , msm::queue_event(matches{.arity = 1})
                                                                                     )
       ,                               "handle_matches"_s       + event<matches>     [ has_items and not is_item_winning ] / (
                                                                                       drop_item, msm::queue_event(matches{.arity = 1})

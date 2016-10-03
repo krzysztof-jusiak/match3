@@ -40,9 +40,12 @@ class animations {
                        view_.update();
                      });
 
-    animations_.erase(ranges::remove_if(animations_, [&](const auto& a) {
-                        return a.start > 0ms && now >= a.start + a.length;
-                      }), animations_.end());
+    animations_.erase(ranges::remove_if(animations_,
+                                        [&](const auto& a) {
+                                          return a.start > 0ms &&
+                                                 now >= a.start + a.length;
+                                        }),
+                      animations_.end());
   }
 
  private:

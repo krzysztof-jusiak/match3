@@ -7,34 +7,34 @@
 //
 #pragma once
 
+#include <boost/di.hpp>
+#include <boost/msm-lite.hpp>
 #include <cassert>
-#include <memory>
-#include <string>
-#include <vector>
 #include <chrono>
-#include <random>
-#include <utility>
 #include <functional>
-#include <type_traits>
-#include <range/v3/view/take.hpp>
-#include <range/v3/view/drop.hpp>
-#include <range/v3/view/stride.hpp>
-#include <range/v3/view/transform.hpp>
-#include <range/v3/view/concat.hpp>
-#include <range/v3/view/iota.hpp>  // view::ints
-#include <range/v3/view/join.hpp>
-#include <range/v3/algorithm/count.hpp>
-#include <range/v3/algorithm/find.hpp>
-#include <range/v3/algorithm/rotate.hpp>
-#include <range/v3/algorithm/for_each.hpp>
-#include <range/v3/algorithm/remove_if.hpp>
-#include <range/v3/action/transform.hpp>
-#include <range/v3/action/sort.hpp>
-#include <range/v3/action/unique.hpp>
+#include <memory>
+#include <random>
 #include <range/v3/action/push_back.hpp>
 #include <range/v3/action/push_front.hpp>
-#include <boost/msm-lite.hpp>
-#include <boost/di.hpp>
+#include <range/v3/action/sort.hpp>
+#include <range/v3/action/transform.hpp>
+#include <range/v3/action/unique.hpp>
+#include <range/v3/algorithm/count.hpp>
+#include <range/v3/algorithm/find.hpp>
+#include <range/v3/algorithm/for_each.hpp>
+#include <range/v3/algorithm/remove_if.hpp>
+#include <range/v3/algorithm/rotate.hpp>
+#include <range/v3/view/concat.hpp>
+#include <range/v3/view/drop.hpp>
+#include <range/v3/view/iota.hpp>  // view::ints
+#include <range/v3/view/join.hpp>
+#include <range/v3/view/stride.hpp>
+#include <range/v3/view/take.hpp>
+#include <range/v3/view/transform.hpp>
+#include <string>
+#include <type_traits>
+#include <utility>
+#include <vector>
 // clang-format off
 #if __has_include(<SDL2/SDL.h>)
 #include <SDL2/SDL.h>

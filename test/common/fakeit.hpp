@@ -10,8 +10,8 @@
 #include <functional>
 #include <memory>
 #include <set>
-#include <vector>
 #include <stdexcept>
+#include <vector>
 #if defined(__GNUG__) || _MSC_VER >= 1900
 #define THROWS noexcept(false)
 #define NO_THROWS noexcept(true)
@@ -19,13 +19,13 @@
 #define THROWS throw(...)
 #define NO_THROWS
 #endif
+#include <atomic>
+#include <iosfwd>
+#include <string>
+#include <tuple>
+#include <tuple>
 #include <typeinfo>
 #include <unordered_set>
-#include <tuple>
-#include <string>
-#include <iosfwd>
-#include <atomic>
-#include <tuple>
 
 namespace fakeit {
 
@@ -86,7 +86,7 @@ class is_ostreamable {
 
  public:
   static const bool value =
-      std::is_same<decltype(test(*(std::ostream *) nullptr, std::declval<T>())),
+      std::is_same<decltype(test(*(std::ostream *)nullptr, std::declval<T>())),
                    std::ostream &>::value;
 };
 
@@ -99,12 +99,12 @@ struct VTableMethodType {
 #endif
 };
 }
-#include <typeinfo>
-#include <tuple>
-#include <string>
 #include <iosfwd>
 #include <sstream>
 #include <string>
+#include <string>
+#include <tuple>
+#include <typeinfo>
 
 namespace fakeit {
 
@@ -190,10 +190,10 @@ struct Invocation : Destructible {
 };
 }
 #include <iosfwd>
-#include <tuple>
-#include <string>
-#include <sstream>
 #include <ostream>
+#include <sstream>
+#include <string>
+#include <tuple>
 
 namespace fakeit {
 
@@ -606,8 +606,8 @@ struct EventHandler : public VerificationEventHandler {
   virtual void handle(const UnexpectedMethodCallEvent &e) = 0;
 };
 }
-#include <vector>
 #include <string>
+#include <vector>
 
 namespace fakeit {
 
@@ -690,8 +690,8 @@ struct FakeitContext : public EventHandler, protected EventFormatter {
   }
 };
 }
-#include <iostream>
 #include <iosfwd>
+#include <iostream>
 
 namespace fakeit {
 
@@ -1035,12 +1035,12 @@ static fakeit::DefaultFakeit &Fakeit = fakeit::StandaloneFakeit::getInstance();
 #include <type_traits>
 #include <unordered_set>
 
-#include <memory>
+#include <array>
 #include <functional>
+#include <memory>
+#include <new>
 #include <type_traits>
 #include <vector>
-#include <array>
-#include <new>
 
 #include <functional>
 #include <type_traits>
@@ -3342,8 +3342,8 @@ struct VirtualTable : public VirtualTableBase {
 }
 #else
 #ifndef __clang__
-#include <type_traits>
 #include <tr2/type_traits>
+#include <type_traits>
 
 namespace fakeit {
 template <typename... T1>
@@ -3817,13 +3817,13 @@ struct DynamicProxy {
 };
 }
 #include <functional>
-#include <type_traits>
-#include <memory>
-#include <iosfwd>
-#include <vector>
 #include <functional>
+#include <iosfwd>
+#include <memory>
 #include <tuple>
 #include <tuple>
+#include <type_traits>
+#include <vector>
 
 namespace fakeit {
 
@@ -3918,9 +3918,9 @@ struct ActualInvocationHandler : Destructible {
 };
 }
 #include <functional>
-#include <tuple>
-#include <string>
 #include <iosfwd>
+#include <string>
+#include <tuple>
 #include <type_traits>
 #include <typeinfo>
 
@@ -4558,11 +4558,11 @@ class RecordedMethodBody : public MethodInvocationHandler<R, arglist...>,
 };
 }
 #include <functional>
-#include <type_traits>
-#include <stdexcept>
-#include <utility>
 #include <functional>
+#include <stdexcept>
 #include <type_traits>
+#include <type_traits>
+#include <utility>
 
 namespace fakeit {
 
@@ -4624,8 +4624,8 @@ inline QuantifierFunctor operator""
 
 #endif
 }
-#include <functional>
 #include <atomic>
+#include <functional>
 #include <tuple>
 #include <type_traits>
 
@@ -4844,8 +4844,8 @@ struct MethodStubbingProgress<void, arglist...> {
   virtual ~MethodStubbingProgress() THROWS {}
 
   MethodStubbingProgress<void, arglist...> &Return() {
-    auto lambda = [](
-        const typename fakeit::test_arg<arglist>::type...) -> void {
+    auto lambda =
+        [](const typename fakeit::test_arg<arglist>::type...) -> void {
       return DefaultValue<void>::value();
     };
     return Do(lambda);
@@ -4881,8 +4881,8 @@ struct MethodStubbingProgress<void, arglist...> {
   template <typename E>
   MethodStubbingProgress<void, arglist...> &Throw(const Quantifier<E> &q) {
     const E &value = q.value;
-    auto method = [value](
-        const typename fakeit::test_arg<arglist>::type...) -> void {
+    auto method =
+        [value](const typename fakeit::test_arg<arglist>::type...) -> void {
       throw value;
     };
     return DoImpl(new Repeat<void, arglist...>(method, q.quantity));
@@ -4931,8 +4931,8 @@ struct MethodStubbingProgress<void, arglist...> {
       delete;
 };
 }
-#include <vector>
 #include <functional>
+#include <vector>
 
 namespace fakeit {
 
@@ -5009,14 +5009,14 @@ class DataMemberStubbingRoot {
 };
 }
 #include <functional>
-#include <utility>
-#include <type_traits>
-#include <tuple>
-#include <memory>
-#include <vector>
-#include <unordered_set>
-#include <set>
 #include <iosfwd>
+#include <memory>
+#include <set>
+#include <tuple>
+#include <type_traits>
+#include <unordered_set>
+#include <utility>
+#include <vector>
 
 namespace fakeit {
 
@@ -5042,11 +5042,11 @@ struct StubbingContext : public Xaction {
 };
 }
 #include <functional>
-#include <type_traits>
-#include <tuple>
 #include <memory>
-#include <vector>
+#include <tuple>
+#include <type_traits>
 #include <unordered_set>
+#include <vector>
 
 namespace fakeit {
 
@@ -6042,7 +6042,7 @@ struct InvocationUtils {
     auto comparator = [](Invocation *a, Invocation *b) -> bool {
       return a->getOrdinal() < b->getOrdinal();
     };
-    std::set<Invocation *, bool (*)(Invocation *a, Invocation *b)>
+    std::set<Invocation *, bool (*)(Invocation * a, Invocation * b)>
         sortedIvocations(comparator);
     for (auto i : ivocations) sortedIvocations.insert(i);
 
@@ -6104,8 +6104,8 @@ struct InvocationUtils {
 
 #include <memory>
 
-#include <vector>
 #include <unordered_set>
+#include <vector>
 
 namespace fakeit {
 struct MatchAnalysis {
@@ -6322,9 +6322,9 @@ class ThrowFalseEventHandler : public VerificationEventHandler {
   }
 };
 }
-#include <string>
-#include <sstream>
 #include <iomanip>
+#include <sstream>
+#include <string>
 
 namespace fakeit {
 
@@ -6528,8 +6528,8 @@ class VerifyFunctor {
   }
 };
 }
-#include <set>
 #include <memory>
+#include <set>
 namespace fakeit {
 
 class VerifyNoOtherInvocationsVerificationProgress {
@@ -6684,8 +6684,8 @@ class SpyFunctor {
 };
 }
 
-#include <vector>
 #include <set>
+#include <vector>
 
 namespace fakeit {
 class VerifyUnverifiedFunctor {

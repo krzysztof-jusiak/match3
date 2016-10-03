@@ -19,6 +19,7 @@ struct config {
   const int board_height;
   const int board_colors;
   const int max_moves;
+  const int max_match_length;
 };
 
 }  // match3

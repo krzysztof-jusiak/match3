@@ -7,8 +7,8 @@
 //
 #pragma once
 
-#include <type_traits>
 #include <boost/di.hpp>
+#include <type_traits>
 #include "fakeit.hpp"
 
 namespace di = boost::di;

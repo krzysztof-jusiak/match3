@@ -5,11 +5,11 @@
 // (See accompanying file LICENSE_1_0.txt or copy at
 // http://www.boost.org/LICENSE_1_0.txt)
 //
+#include "model/board.hpp"
 #include <range/v3/algorithm/equal.hpp>
-#include "controller/logic.hpp"
 
 int main() {
-  using namespace match3;
+  using namespace match3::board_logic;
 
   "row"_test = [] {
     int v[] = {1, 2, 3, 4, 5, 6};

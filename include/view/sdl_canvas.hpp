@@ -40,9 +40,12 @@ class sdl_canvas : public icanvas {
     const auto sprite = static_cast<SDL_Texture*>(texture.get());
     SDL_QueryTexture(sprite, nullptr, nullptr, &pos.w, &pos.h);
     if (clean) {
-      elements_.erase(ranges::remove_if(elements_, [=](const auto& pair) {
-                        return pair.second.x == x && pair.second.y == y;
-                      }), elements_.end());
+      elements_.erase(ranges::remove_if(elements_,
+                                        [=](const auto& pair) {
+                                          return pair.second.x == x &&
+                                                 pair.second.y == y;
+                                        }),
+                      elements_.end());
     }
     elements_.push_back(std::make_pair(texture, pos));
   }

@@ -7,9 +7,9 @@
 //
 #pragma once
 
+#include "config.hpp"
 #include "pph.hpp"
 #include "view/icanvas.hpp"
-#include "model/config.hpp"
 
 namespace match3 {
 

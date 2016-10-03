@@ -7,8 +7,8 @@
 //
 #pragma once
 
-#include "pph.hpp"
 #include "controller/controller.hpp"
+#include "pph.hpp"
 
 namespace msm = boost::msm::lite;
 
@@ -35,7 +35,7 @@ class game {
       while (SDL_PollEvent(&event)) {
         dispatch_event(event, event.type);
       }
-    } while (EM(false && )() !controller_.is(msm::X));
+    } while (EM(false &&)() !controller_.is(msm::X));
   }
 
  private:

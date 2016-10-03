@@ -5,10 +5,10 @@
 // (See accompanying file LICENSE_1_0.txt or copy at
 // http://www.boost.org/LICENSE_1_0.txt)
 //
-#include "model/config.hpp"
+#include "config.hpp"
+#include "game.hpp"
 #include "model/board.hpp"
 #include "view/sdl_canvas.hpp"
-#include "game.hpp"
 
 namespace di = boost::di;
 
@@ -26,10 +26,11 @@ auto configuration = []() {
              .board_width = 7,
              .board_height = 10,
              .board_colors = 5,
-             .max_moves = 10}
+             .max_moves = 10,
+             .max_match_length = 3}
     )
 
-  , di::bind<board::color[]>.to({
+  , di::bind<board::color_t[]>.to({
       3,5,1,4,3,2,2,
       1,1,4,2,5,1,3,
       5,3,5,4,5,3,2,

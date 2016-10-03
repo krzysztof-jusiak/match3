@@ -7,9 +7,12 @@
 //
 #pragma once
 
+#include "config.hpp"
 #include "pph.hpp"
 
 namespace match3 {
+
+namespace board_logic {
 
 /**
  * Row view
@@ -81,7 +84,7 @@ const auto match_n = [](auto&& view, auto color,
   const auto&& matches =
       ranges::view::ints |
       ranges::view::take(ranges::size(view) - max_match_length + 1) |
-      ranges::view::transform([=](/*auto*/ int i) {
+      ranges::view::transform([=](auto i) {
         return ranges::count(view | ranges::view::drop(i) |
                                  ranges::view::take(max_match_length),
                              color) == max_match_length;
@@ -173,10 +176,9 @@ const auto match = [](auto&& view, auto value, auto width) {
   };
   std::vector<decltype(value)> result = ranges::view::concat(
       transform(match_r.length,
-                [=](/*auto*/ int i) { return y * width + match_r.begin + i; }),
-      transform(match_c.length, [=](/*auto*/ int i) {
-        return (match_c.begin + i) * width + x;
-      }));
+                [=](auto i) { return y * width + match_r.begin + i; }),
+      transform(match_c.length,
+                [=](auto i) { return (match_c.begin + i) * width + x; }));
   result |= ranges::action::sort | ranges::action::unique;
   return result;
 };
@@ -231,10 +233,10 @@ const auto scroll = [](auto&& view, auto value, auto width) {
  */
 // clang-format on
 const auto affected = [](const auto& matches, auto width) {
-  const auto&& columns = matches | ranges::view::transform([=](/*auto*/ int m) {
+  const auto&& columns = matches | ranges::view::transform([=](auto m) {
                            return ranges::view::ints |
                                   ranges::view::take(m / width + 1) |
-                                  ranges::view::transform([=](/*auto*/ int i) {
+                                  ranges::view::transform([=](auto i) {
                                     return m % width + (i * width);
                                   });
                          });
@@ -242,6 +244,37 @@ const auto affected = [](const auto& matches, auto width) {
   std::decay_t<decltype(matches)> result = columns | ranges::view::join;
   result |= ranges::action::sort | ranges::action::unique;
   return result;
+};
+
+}  // board_logic
+
+class board {
+ public:
+  using color_t = int;
+
+  board(const std::vector<color_t>& grids, const config c)
+      : grids(grids), width(c.board_width) {}
+
+  bool is_match(const int position) const {
+    return board_logic::is_match(grids, position, width);
+  }
+
+  auto match(const int position) const {
+    return board_logic::match(grids, position, width);
+  }
+
+  void scroll(const int position) {
+    board_logic::scroll(grids, position, width);
+  }
+
+  decltype(auto) operator[](const int i) { return grids[i]; }
+
+  decltype(auto) operator[](const int i) const { return grids[i]; }
+
+  std::vector<color_t> grids;
+
+ private:
+  int width = 0;
 };
 
 }  // match3
