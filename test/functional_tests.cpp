@@ -31,8 +31,8 @@ auto make_click_event(int x, int y) {
 template <class SM>
 void swipe(SM& sm, std::pair<int, int> from, std::pair<int, int> to) {
   sm.process_event(
-      make_click_event<match3::button_down>(from.first, from.second));
-  sm.process_event(make_click_event<match3::button_up>(to.first, to.second));
+      make_click_event<match3::down>(from.first, from.second));
+  sm.process_event(make_click_event<match3::up>(to.first, to.second));
 };
 
 int main() {
@@ -170,7 +170,7 @@ int main() {
                          injector.create<match3::board&>().grids));
 
     // when
-    sm.process_event(make_click_event<match3::button_up>(3, 3));  // reset
+    sm.process_event(make_click_event<match3::up>(3, 3));  // reset
     expect(moves == injector.create<match3::moves&>());
   };
 }

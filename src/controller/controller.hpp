@@ -21,38 +21,24 @@ namespace match3 {
 using selected = std::vector<short>;
 using randomize = std::function<int(int, int)>;
 using points = int;
-using moves = unsigned int;
+using moves = short;
 
 /// Events
 
-struct touch_down {
-  static constexpr auto id = SDL_FINGERDOWN;
-  explicit touch_down(const SDL_Event& event)
-      : x(int(event.tfinger.x)), y(int(event.tfinger.y)) {}
+struct down {
+  static constexpr auto id = EM(SDL_FINGERDOWN)(SDL_MOUSEBUTTONDOWN);
+  explicit down(const SDL_Event& event)
+      : EM(x(int(event.tfinger.x)), y(int(event.tfinger.y)))
+          (x(event.button.x), y(event.button.y)) {}
   const int x = 0;
   const int y = 0;
 };
 
-struct button_down {
-  static constexpr auto id = SDL_MOUSEBUTTONDOWN;
-  explicit button_down(const SDL_Event& event)
-      : x(event.button.x), y(event.button.y) {}
-  const int x = 0;
-  const int y = 0;
-};
-
-struct touch_up {
-  static constexpr auto id = SDL_FINGERUP;
-  explicit touch_up(const SDL_Event& event)
-      : x(int(event.tfinger.x)), y(int(event.tfinger.y)) {}
-  const int x = 0;
-  const int y = 0;
-};
-
-struct button_up {
-  static constexpr auto id = SDL_MOUSEBUTTONUP;
-  explicit button_up(const SDL_Event& event)
-      : x(event.button.x), y(event.button.y) {}
+struct up {
+  static constexpr auto id = EM(SDL_FINGERUP)(SDL_MOUSEBUTTONUP);
+  explicit up(const SDL_Event& event)
+      : EM(x(int(event.tfinger.x)), y(int(event.tfinger.y)))
+          (x(event.button.x), y(event.button.y)) {}
   const int x = 0;
   const int y = 0;
 };
@@ -78,12 +64,6 @@ struct key_pressed {
 };
 
 /// Guards
-
-const auto is_mobile = [] {
-  // clang-format off
-  return bool(EM_ASM_INT_V({return /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);}));
-  // clang-format on
-};
 
 const auto has_items = [](const selected& s) { return !s.empty(); };
 
@@ -233,17 +213,12 @@ struct controller {
      // +--------------------------------------------------------------------------------------------------------------------------------------------+
         "wait_for_first_item"_s  <= *("idle"_s)                                     / reset_and_show
 
-      ,  "wait_for_click"_s      <=   "wait_for_first_item"_s                       [ ([](moves& m) { return not m; }) ] / show_game_over
-      ,  "wait_for_first_item"_s <=   "wait_for_click"_s       + event<touch_up>    [ is_mobile ] / reset_and_show
-      ,  "wait_for_first_item"_s <=   "wait_for_click"_s       + event<button_up>   [ not is_mobile ] / reset_and_show
+      , "wait_for_click"_s       <=   "wait_for_first_item"_s                       [ ([](moves& m) { return not m; }) ] / show_game_over
+      , "wait_for_first_item"_s  <=   "wait_for_click"_s       + event<up>          / reset_and_show
 
-      , "wait_for_second_item"_s <=   "wait_for_first_item"_s  + event<touch_down>  [ is_mobile ] / select_item
-      , "match_items"_s          <=   "wait_for_second_item"_s + event<touch_up>    [ is_mobile and is_allowed ] / select_and_swap_items
-      , "wait_for_first_item"_s  <=   "wait_for_second_item"_s + event<touch_up>    [ is_mobile and not is_allowed ] / drop_item
-
-      , "wait_for_second_item"_s <=   "wait_for_first_item"_s  + event<button_down> [ not is_mobile ] / select_item
-      , "match_items"_s          <=   "wait_for_second_item"_s + event<button_up>   [ not is_mobile and is_allowed ] / select_and_swap_items
-      , "wait_for_first_item"_s  <=   "wait_for_second_item"_s + event<button_up>   [ not is_mobile and not is_allowed ] / drop_item
+      , "wait_for_second_item"_s <=   "wait_for_first_item"_s  + event<down>        / select_item
+      , "match_items"_s          <=   "wait_for_second_item"_s + event<up>          [ is_allowed ] / select_and_swap_items
+      , "wait_for_first_item"_s  <=   "wait_for_second_item"_s + event<up>          [ not is_allowed ] / drop_item
 
       , "wait_for_first_item"_s  <=   "match_items"_s                               [ is_swap_items_winning ] / (
                                                                                       [](moves& m) {--m;}, show_moves,
