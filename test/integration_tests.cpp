@@ -12,6 +12,7 @@
 #include "controller/controller.hpp"
 #include "model/board.hpp"
 #include "pph.hpp"
+#include "boost/msm-lite/testing/state_machine.hpp"
 
 namespace di = boost::di;
 namespace msm = boost::msm::lite;

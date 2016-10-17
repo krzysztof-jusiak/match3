@@ -9,6 +9,7 @@
 
 #include <boost/di.hpp>
 #include <boost/msm-lite.hpp>
+#include <boost/msm-lite/utility/dispatch_table.hpp>
 #include <cassert>
 #include <chrono>
 #include <functional>

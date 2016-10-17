@@ -202,7 +202,7 @@ const auto show_game_over = [](view& v, animations& a) {
 };
 
 struct controller {
-  auto configure() const noexcept {
+  auto operator()() const {
     using namespace msm;
 
     const auto reset_and_show = (reset, show_board, show_points, show_moves);
@@ -222,7 +222,7 @@ struct controller {
 
       , "wait_for_first_item"_s  <=   "match_items"_s                               [ is_swap_items_winning ] / (
                                                                                       [](moves& m) {--m;}, show_moves,
-                                                                                      msm::queue_event(matches{.arity = 2})
+                                                                                      msm::queue(matches{.arity = 2})
                                                                                     )
       , "wait_for_first_item"_s  <=   "match_items"_s                               / (swap_items, show_swap, clear_selected)
      // +--------------------------------------------------------------------------------------------------------------------------------------------+
@@ -232,10 +232,10 @@ struct controller {
                                                                                      , add_points, show_points
                                                                                      , scroll_board, show_board
                                                                                      , generate_new, show_board
-                                                                                    , msm::queue_event(matches{.arity = 1})
+                                                                                     , msm::queue(matches{.arity = 1})
                                                                                     )
       ,                               "handle_matches"_s       + event<matches>     [ has_items and not is_item_winning ] / (
-                                                                                      drop_item, msm::queue_event(matches{.arity = 1})
+                                                                                      drop_item, msm::queue(matches{.arity = 1})
                                                                                     )
      // +--------------------------------------------------------------------------------------------------------------------------------------------+
       , X                        <= *("wait_for_client"_s)     + event<key_pressed> [ is_key(SDLK_ESCAPE) ]

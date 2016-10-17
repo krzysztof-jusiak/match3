@@ -8,6 +8,7 @@
 #pragma once
 
 #include <string>
+#include <cstdio>
 
 template <class T>
 auto get_type() {
@@ -25,29 +26,26 @@ auto get_type() {
 #endif
 }
 
-template <class SM, class TEvent>
-void log_process_event(const TEvent&) {
-  printf("[%s][process_event] %s\n", get_type<SM>().c_str(),
-         get_type<TEvent>().c_str());
-}
+struct my_logger {
+  template <class SM, class TEvent>
+  void log_process_event(const TEvent&) {
+    printf("[%s][process_event] %s\n", get_type<SM>().c_str(), get_type<TEvent>().c_str());
+  }
 
-template <class SM, class TAction, class TEvent>
-void log_guard(const TAction&, const TEvent&, bool result) {
-  printf("[%s][guard] %s %s %s\n", get_type<SM>().c_str(),
-         get_type<TAction>().c_str(), get_type<TEvent>().c_str(),
-         (result ? "[OK]" : "[Reject]"));
-}
+  template <class SM, class TGuard, class TEvent>
+  void log_guard(const TGuard&, const TEvent&, bool result) {
+    printf("[%s][guard] %s %s %s\n", get_type<SM>().c_str(), get_type<TGuard>().c_str(), get_type<TEvent>().c_str(),
+           (result ? "[OK]" : "[Reject]"));
+  }
 
-template <class SM, class TAction, class TEvent>
-void log_action(const TAction&, const TEvent&) {
-  printf("[%s][action] %s %s\n", get_type<SM>().c_str(),
-         get_type<TAction>().c_str(), get_type<TEvent>().c_str());
-}
+  template <class SM, class TAction, class TEvent>
+  void log_action(const TAction&, const TEvent&) {
+    printf("[%s][action] %s %s\n", get_type<SM>().c_str(), get_type<TAction>().c_str(), get_type<TEvent>().c_str());
+  }
 
-template <class SM, class TSrcState, class TDstState>
-void log_state_change(const TSrcState& src, const TDstState& dst) {
-  printf("[%s][transition] %s -> %s\n", get_type<SM>().c_str(), src.c_str(),
-         dst.c_str());
-}
+  template <class SM, class TSrcState, class TDstState>
+  void log_state_change(const TSrcState& src, const TDstState& dst) {
+    printf("[%s][transition] %s -> %s\n", get_type<SM>().c_str(), src.c_str(), dst.c_str());
+  }
+};
 
-#define BOOST_MSM_LITE_LOG(T, SM, ...) log_##T<SM>(__VA_ARGS__)

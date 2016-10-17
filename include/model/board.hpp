@@ -268,7 +268,6 @@ class board {
   }
 
   decltype(auto) operator[](const int i) { return grids[i]; }
-
   decltype(auto) operator[](const int i) const { return grids[i]; }
 
   std::vector<color_t> grids;
