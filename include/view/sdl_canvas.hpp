@@ -12,28 +12,27 @@
 
 namespace match3 {
 
-class sdl_canvas : public icanvas {
+struct sdl {
+  sdl() noexcept {
+    assert(!SDL_Init(SDL_INIT_VIDEO));
+    assert(!TTF_Init());
+  }
+
+  ~sdl() noexcept {
+    TTF_Quit();
+    SDL_Quit();
+  }
+};
+
+class sdl_canvas : sdl, public icanvas {
   static constexpr auto RENDER_DRIVER = -1;
   static constexpr auto RENDER_FLAGS = SDL_RENDERER_ACCELERATED;
 
  public:
-  explicit sdl_canvas(config c) noexcept {
-    assert(!SDL_Init(SDL_INIT_VIDEO));
-    assert(!TTF_Init());
-    window_ = std::shared_ptr<SDL_Window>(
-        SDL_CreateWindow(c.win_title.c_str(), SDL_WINDOWPOS_CENTERED,
-                         SDL_WINDOWPOS_CENTERED, c.win_width, c.win_height,
-                         SDL_WINDOW_SHOWN),
-        SDL_DestroyWindow);
-    renderer_ = std::shared_ptr<SDL_Renderer>(
-        SDL_CreateRenderer(window_.get(), RENDER_DRIVER, RENDER_FLAGS),
-        SDL_DestroyRenderer);
-  }
-
-  ~sdl_canvas() noexcept override {
-    TTF_Quit();
-    SDL_Quit();
-  }
+  explicit sdl_canvas(const config c) noexcept
+    : window_(SDL_CreateWindow(c.win_title.c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, c.win_width, c.win_height, SDL_WINDOW_SHOWN), SDL_DestroyWindow),
+      renderer_(SDL_CreateRenderer(window_.get(), RENDER_DRIVER, RENDER_FLAGS), SDL_DestroyRenderer)
+  { }
 
   void draw(std::shared_ptr<void> texture, int x, int y, bool clean) override {
     SDL_Rect pos{x, y, 0, 0};
@@ -84,8 +83,8 @@ class sdl_canvas : public icanvas {
   }
 
  private:
-  std::shared_ptr<SDL_Window> window_;
-  std::shared_ptr<SDL_Renderer> renderer_;
+  std::unique_ptr<SDL_Window, void(*)(SDL_Window*)> window_;
+  std::unique_ptr<SDL_Renderer, void(*)(SDL_Renderer*) > renderer_;
   std::vector<std::pair<std::shared_ptr<void>, SDL_Rect>> elements_;
 };
 
