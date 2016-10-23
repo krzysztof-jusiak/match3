@@ -1,0 +1,16 @@
+@startuml
+title Swap
+
+state idle
+state wait_for_first_item
+state wait_for_second_item
+state match_items
+
+[*] --> idle
+idle --> wait_for_first_item : / reset
+wait_for_first_item --> wait_for_second_item : button_down / select_item
+wait_for_second_item --> match_items : button_up [ is_allowed ] / select_item, swap_items
+wait_for_second_item --> match_items : button_up [ not is_allowed ] / drop_item
+match_items --> wait_for_first_item : [ is_swap_item_winning ] / queue_event(matches(arity = 2))
+match_items --> wait_for_first_item : [ not is_swap_item_winning ] / swap_items, clear_seleced
+@enduml
