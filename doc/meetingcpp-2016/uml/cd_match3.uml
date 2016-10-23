@@ -1,0 +1,47 @@
+@startuml
+
+package "match3" {
+
+class game {
+  play()
+}
+
+class icanvas {
+  load_image(name)
+  create_text(text, font, x, y) : texture
+  draw(texture, x, y)
+  render()
+  clear()
+}
+
+class board {
+  color grids[]
+}
+
+class view {
+  set_grid(x, y, color)
+  update_grid(x, y)
+  get_position(x, y) : int
+  update()
+}
+
+class animations {
+  queue_animation()
+}
+
+class controller {
+  configure() : transition_table
+  process_event(event)
+}
+
+game .. controller
+controller .. view
+controller .. board
+controller .. animations
+view .. sdl_canvas
+
+icanvas <|.. sdl_canvas
+
+}
+
+@enduml
