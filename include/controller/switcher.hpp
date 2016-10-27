@@ -13,7 +13,7 @@
 #include "view/animations.hpp"
 #include "view/view.hpp"
 
-namespace msm = boost::msm::lite;
+namespace sml = boost::sml;
 
 namespace match3 {
 
@@ -47,7 +47,7 @@ const auto drop_item = [](selected& s) {
   s.pop_back();
 };
 
-const auto find_matches = [](const board& b, auto& m, selected& s) {
+const auto find_matches = [](const board& b, const auto& m, selected& s) {
   assert(m.arity >= 0);
   auto arity = m.arity;
   while (arity--) {
@@ -108,7 +108,7 @@ const auto show_points = [](view& v, const points& p, animations& a) {
 
 struct switcher {
   auto operator()() const {
-    using namespace msm;
+    using namespace sml;
 
     // clang-format off
     return make_transition_table(
@@ -119,10 +119,10 @@ struct switcher {
                                                           , add_points, show_points
                                                           , scroll_board, show_board
                                                           , generate_new, show_board
-                                                          , msm::queue(matches{.arity = 1})
+                                                          , process(matches{.arity = 1})
                                                          )
       ,    "handle matches"_s       + event<matches>     [ has_items and not is_item_winning ] / (
-                                                           drop_item, msm::queue(matches{.arity = 1})
+                                                           drop_item, process(matches{.arity = 1})
                                                          )
      // +--------------------------------------------------------------------------------------------------------------------------------------------+
       //,  *("handle_animations"_s)   + event<time_tick>   / [](animations& a) { a.update(); }

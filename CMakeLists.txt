@@ -53,7 +53,7 @@ endif()
 
 include_directories(include)
 include_directories(libs/di/include)
-include_directories(libs/msm-lite/include)
+include_directories(libs/sml/include)
 include_directories(libs/range-v3/include)
 include_directories(${SDL2_INCLUDE_DIRS} ${SDL2IMAGE_INCLUDE_DIRS} ${SDL2TTF_INCLUDE_DIR})
 

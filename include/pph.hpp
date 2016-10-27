@@ -8,8 +8,8 @@
 #pragma once
 
 #include <boost/di.hpp>
-#include <boost/msm-lite.hpp>
-#include <boost/msm-lite/utility/dispatch_table.hpp>
+#include <boost/sml.hpp>
+#include <boost/sml/utility/dispatch_table.hpp>
 #include <cassert>
 #include <chrono>
 #include <functional>

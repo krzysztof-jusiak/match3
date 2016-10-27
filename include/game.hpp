@@ -10,13 +10,13 @@
 #include "controller/player.hpp"
 #include "pph.hpp"
 
-namespace msm = boost::msm::lite;
+namespace sml = boost::sml;
 
 namespace match3 {
 
 class game {
  public:
-  explicit game(msm::sm<controller>& c) : controller_(c) {}
+  explicit game(sml::sm<controller>& c) : controller_(c) {}
 
   void play() {
     EM(emscripten_set_main_loop_arg(
@@ -25,21 +25,21 @@ class game {
   }
 
   static void play_impl(void* c) {
-    auto& controller_ = *reinterpret_cast<msm::sm<controller>*>(c);
+    auto& controller_ = *reinterpret_cast<sml::sm<controller>*>(c);
     do {
       auto dispatch_event =
-          msm::make_dispatch_table<SDL_Event, SDL_QUIT, SDL_FINGERMOTION>(
+          sml::utility::make_dispatch_table<SDL_Event, SDL_QUIT, SDL_FINGERMOTION>(
               controller_);
       controller_.process_event(time_tick{});
       SDL_Event event;
       while (SDL_PollEvent(&event)) {
         dispatch_event(event, event.type);
       }
-    } while (EM(false &&)() !controller_.is(msm::X));
+    } while (EM(false &&)() !controller_.is(sml::X));
   }
 
  private:
-  msm::sm<controller>& controller_;
+  sml::sm<controller>& controller_;
 };
 
 }  // match3

@@ -14,7 +14,7 @@
 #include "view/view.hpp"
 #include "controller/switcher.hpp"
 
-namespace msm = boost::msm::lite;
+namespace sml = boost::sml;
 
 namespace match3 {
 
@@ -147,7 +147,7 @@ const auto show_game_over = [](view& v, animations& a) {
 
 struct controller {
   auto operator()() const {
-    using namespace msm;
+    using namespace sml;
 
     const auto reset_and_show = (reset, show_board, show_points, show_moves);
     const auto select_and_swap_items = (select_item, swap_items, show_swap);
@@ -169,7 +169,7 @@ struct controller {
       , "wait for first item"_s  <=   "wait for second item"_s + event<up>          [ not is_allowed ] / drop_item
       , "match items"_s          <=   "wait for second item"_s + event<up>          [ is_allowed ] / select_and_swap_items
       , "wait for first item"_s  <=   "match items"_s                               [ not is_swap_items_winning] / (swap_items, show_swap, clear_selected)
-      , state<switcher>          <=   "match items"_s                               [ is_swap_items_winning ] / ([](moves& m) {--m;}, show_moves, msm::queue(matches{.arity = 2}))
+      , state<switcher>          <=   "match items"_s                               [ is_swap_items_winning ] / ([](moves& m) {--m;}, show_moves, process(matches{.arity = 2}))
       , "wait for second item"_s <=   state<switcher>          + event<down>        / select_item
      // +--------------------------------------------------------------------------------------------------------------------------------------------+
       , X                        <= *("wait for player"_s)     + event<key_pressed> [ is_key(SDLK_ESCAPE) ]
