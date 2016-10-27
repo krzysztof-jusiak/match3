@@ -81,11 +81,6 @@ const auto select_item = [](auto event, const view& v, selected& s) {
   s.emplace_back(v.get_position(event.x, event.y));
 };
 
-//const auto drop_item = [](selected& s) {
-  //assert(!s.empty());
-  //s.pop_back();
-//};
-
 const auto clear_selected = [](selected& s) { s.clear(); };
 
 const auto swap_items = [](const selected& s, board& b) {
@@ -115,24 +110,6 @@ const auto show_swap = [](const board& b, const selected& s, animations& a,
       150ms);
 };
 
-//const auto show_board = [](const board& b, animations& a, view& v,
-                           //const config c) {
-  //using namespace std::chrono_literals;
-  //a.queue_animation(
-      //[b, c, &v] {
-        //for (auto i = 0; i < c.board_width * c.board_height; ++i) {
-          //v.set_grid(i % c.board_width, i / c.board_width, b[i]);
-        //}
-      //},
-      //150ms);
-//};
-
-//const auto show_points = [](view& v, const points& p, animations& a) {
-  //using namespace std::chrono_literals;
-  //a.queue_animation(
-      //[p, &v] { v.set_text("points: " + std::to_string(p), 10, 10); });
-//};
-
 const auto show_moves = [](view& v, const moves& m, animations& a) {
   using namespace std::chrono_literals;
   a.queue_animation(
@@ -160,22 +137,28 @@ struct controller {
      * \endcode
      */
     // clang-format off
-    return make_transition_table(
-     // +--------------------------------------------------------------------------------------------------------------------------------------------+
-        "wait for first item"_s  <= *("idle"_s)                                     / reset_and_show
       //, "wait_for_click"_s       <=   "wait for first item"_s                       [ ([](moves& m) { return not m; }) ] / show_game_over
       //, "wait for first item"_s  <=   "wait_for_click"_s       + event<up>          / reset_and_show
-      , "wait for second item"_s <=   "wait for first item"_s  + event<down>        / select_item
-      , "wait for first item"_s  <=   "wait for second item"_s + event<up>          [ not is_allowed ] / drop_item
-      , "match items"_s          <=   "wait for second item"_s + event<up>          [ is_allowed ] / select_and_swap_items
-      , "wait for first item"_s  <=   "match items"_s                               [ not is_swap_items_winning] / (swap_items, show_swap, clear_selected)
-      , state<switcher>          <=   "match items"_s                               [ is_swap_items_winning ] / ([](moves& m) {--m;}, show_moves, process(matches{.arity = 2}))
-      , "wait for second item"_s <=   state<switcher>          + event<down>        / select_item
+    return make_transition_table(
      // +--------------------------------------------------------------------------------------------------------------------------------------------+
-      , X                        <= *("wait for player"_s)     + event<key_pressed> [ is_key(SDLK_ESCAPE) ]
-      , X                        <=   "wait for player"_s      + event<quit>
+        (*"idle"_s)                    / reset_and_show                       = "first item"_s,
+         "first item"_s  + event<down> / select_item                          = "second item"_s,
+         "second item"_s + event<up>   [ is_allowed ] / select_and_swap_items = "match items"_s,
+         "second item"_s + event<up>   / drop_item                            = "first item"_s,
+         "match items"_s               [ is_swap_items_winning ] /
+                                         ([](moves& m) {--m;},
+                                          show_moves,
+                                          process(matches{.arity = 2}))       = state<switcher>,
+         "match items"_s + event<up>   / (swap_items,
+                                          show_swap,
+                                          clear_selected)                     = "first item"_s,
+         state<switcher> + event<down> / select_item                          = "second item"_s,
      // +--------------------------------------------------------------------------------------------------------------------------------------------+
-      ,  *("handle animations"_s)   + event<time_tick>   / [](animations& a) { a.update(); }
+         (*"is click"_s) + event<key_pressed> [ is_key(SDLK_ESCAPE) ]         = X,
+           "is click"_s  + event<quit>                                        = X
+     // +--------------------------------------------------------------------------------------------------------------------------------------------+
+      ,  (*"anims"_s)    + event<time_tick> / [](animations& a) { a.update(); }
+     // +--------------------------------------------------------------------------------------------------------------------------------------------+
     );
     // clang-format on
   }
