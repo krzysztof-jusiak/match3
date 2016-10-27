@@ -7,7 +7,7 @@
 //
 #pragma once
 
-#include "controller/controller.hpp"
+#include "controller/player.hpp"
 #include "pph.hpp"
 
 namespace msm = boost::msm::lite;
