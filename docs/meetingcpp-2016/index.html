@@ -58,6 +58,12 @@ Kris Jusiak
 ##Player Transition Table
 
 ```cpp
+// --------------------------------------------------------------------------------------- //
+//    src_state     + event       [ guard ] / action                    = dst_state        //
+// --------------------------------------------------------------------------------------- //
+```
+
+```
 sml::make_transition_table(
  (*"idle"_s)                    / reset_and_show                       = "first item"_s,
   "first item"_s  + event<down> / select_item                          = "second item"_s,
