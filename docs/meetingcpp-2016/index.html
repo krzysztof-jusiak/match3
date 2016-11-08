@@ -58,16 +58,33 @@ Kris Jusiak
 
 ##Agenda
 
+* Match-3 game
 * Overview
   * Emscripten/WebAssembly
   * Range-v3
   * Boost.DI*
   * Boost.SML*
 * Design
-  * Model-View-Controller
 * Implementation
 * Demo
 * Testing
+* Summary
+
+==============================================================================
+
+##Match-3 game
+
+| Match3 | Match4 | Match5 | MatchL |
+|-|-|-|-|
+| <img src="images/match3.png" /> | <img src="images/match4.png" /> | <img src="images/match5.png" /> | <img src="images/matchl.png" /> |
+
+---
+
+> ####Core Mechanics
+1. Swipe
+2. Find and remove matches
+3. Generate new items and scroll the board
+5. Goto 2 // new matches?
 
 ==============================================================================
 
@@ -77,51 +94,106 @@ Kris Jusiak
 
 ##Emscripten
 
------
+> Emscripten is an LLVM-based project that compiles C and C++ into highly-optimizable JavaScript in asm.js format
 
-asm.js
-
-a = f()...
+C++ => LLVM => Emscripten => JavaScript (asm.js)
 
 -----
 
-WebAssembly
+##ASM.JS
 
-match3.wasm
+###asm.js consists of a strict subset of JavaScript
+* Statically-typed
+* Manual memory management
+* ~ 2x slower than native
+
+----
+
+##ASM.JS example
+
+####C++
+```cpp
+size_t strlen(char *ptr) {
+  char *curr = ptr;
+  while (*curr != '\0') curr++;
+  return curr − ptr;
+}
+```
+
+####ASM.JS
+```js
+function strlen(ptr) {
+  ptr = ptr|0; // 32 bit integer
+  var curr = 0;
+  curr = ptr;
+  while (MEM8[curr]|0 != 0) // "heap" view
+    curr = (curr + 1)|0;
+  return (curr − ptr)|0;
+}
+```
+
+-----
+
+##WebAssembly
+
+> WebAssembly or wasm is a new portable, size- and load-time-efficient format suitable for compilation to the web
+
+* Binary format
+* Memory safe
+* Native speed
+
+---
 
 <a href="http://mbebenita.github.io/WasmExplorer" data-preview-link>Wasm Explorer</a>
 
-Binary format
+-----
+
+##WebAssembly Example
+
+####C++
+```cpp
+size_t strlen(char *); // same as before
+```
+
+####Wasm
+```cpp
+ sub rsp, 8                            ; 0x000020 48 83 ec 08
+ mov ecx, edi                          ; 0x000024 8b cf
+ add ecx, -1                           ; 0x000026 83 c1 ff
+0x000029:                              ; 0x000029 from: [0x00003e]
+ mov eax, ecx                          ; 0x000029 8b c1
+ add eax, 1                            ; 0x00002b 83 c0 01
+ movzx ecx, byte ptr [r15 + rcx + 1]   ; 0x00002e 41 0f b6 4c 0f 01
+ test ecx, ecx                         ; 0x000034 85 c9
+ je 0x40                               ; 0x000036 0f 84 04 00 00 00
+0x00003c:
+ mov ecx, eax                          ; 0x00003c 8b c8
+ jmp 0x29                              ; 0x00003e eb e9
+0x000040:
+ sub eax, edi                          ; 0x000040 2b c7
+ nop                                   ; 0x000042 66 90
+ add rsp, 8                            ; 0x000044 48 83 c4 08
+ ret                                   ; 0x000048 c3
+```
 
 -----
 
-Range-v3
-
-overview
-c++11
-clang/gcc
-
+##Range-v3
 
 views
 actions
 algorithms
 
+-----
+
+##Experimental Boost.DI
+
 example
 asm
 
+-----
 
-Boost.DI
-
-What DI is
-Example
-Benchmarks
-
-Boost.SML
-
-Example
-Compilers
-
-Benchmarks
+##Experimental Boost.SML
 
 uml 2.5
 sizeof(sm)
@@ -143,7 +215,7 @@ asm
 
 ##Match3 - Game
 
-![match3](images/match3.png)
+![match3](images/design.png)
 
 ==============================================================================
 
@@ -560,6 +632,14 @@ sml::make_transition_table(
   <iframe src="http://modern-cpp-examples.github.io/match3" height="100%" width="100%" />
 </div>
 
+----
+
+asm.js source code
+
+----
+
+wasm source code
+
 ==============================================================================
 
 ##Testing
@@ -569,6 +649,13 @@ Functional tests
 ==============================================================================
 
 ##Summary
+
+----
+
+* C++ on the web is happening!
+* Leverage Zero-cost libraries (not only abstractions)
+* Dependency Injection/State Machine => better design
+* Range-v3 is easy and powerful
 
 ==============================================================================
 
