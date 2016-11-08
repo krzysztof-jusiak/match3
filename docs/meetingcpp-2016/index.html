@@ -50,11 +50,191 @@ Meeting C++ 2016
 
 Kris Jusiak
 
-* kris@jusiak.net
+* [kris@jusiak.net](mailto:kris@jusiak.net)
+* [@krisjusiak](https://twitter.com/krisjusiak)
 * https://www.linkedin.com/in/kris-jusiak
-* @krisjusiak
 
 ==============================================================================
+
+##Agenda
+
+* Overview
+  * Emscripten/WebAssembly
+  * Range-v3
+  * Boost.DI*
+  * Boost.SML*
+* Design
+  * Model-View-Controller
+* Implementation
+* Demo
+* Testing
+
+==============================================================================
+
+##Overview
+
+----
+
+##Emscripten
+
+-----
+
+asm.js
+
+a = f()...
+
+-----
+
+WebAssembly
+
+match3.wasm
+
+<a href="http://mbebenita.github.io/WasmExplorer" data-preview-link>Wasm Explorer</a>
+
+Binary format
+
+-----
+
+Range-v3
+
+overview
+c++11
+clang/gcc
+
+
+views
+actions
+algorithms
+
+example
+asm
+
+
+Boost.DI
+
+What DI is
+Example
+Benchmarks
+
+Boost.SML
+
+Example
+Compilers
+
+Benchmarks
+
+uml 2.5
+sizeof(sm)
+asm
+
+==============================================================================
+
+##Design
+
+----
+
+##Model-View-Controller
+
+![mvc](images/mvc.png)
+
+> Separates internal representations from the presentation and the user
+
+----
+
+##Match3 - Game
+
+![match3](images/match3.png)
+
+==============================================================================
+
+##Implementation
+
+----
+
+##Main
+
+```cpp
+int main() {
+  const auto injector =
+    di::make_injector(configuration());
+
+  injector.create<match3::game>().play();
+}
+```
+
+----
+
+##Configuration
+
+```cpp
+const auto configuration = [] {
+  return di::make_injector(
+    di::bind<icanvas>.to<sdl_canvas>() // SDL2
+
+  , di::bind<>.to(config{ // config
+       .win_title = "match3"
+     , .board = {7, 10}
+     , .max_moves = 10
+    })
+
+  , di::bind<board::color_t[]>.to({ // initial level
+      3,5,1,4,3,2,2,
+      ...
+      1,2,3,4,1,3,4
+    })
+  );
+};
+```
+
+----
+
+##View (SDL2)
+
+```cpp
+class icanvas {
+ public:
+  virtual ~icanvas() noexcept = default;
+
+  virtual texture load_image(const std::string&) const = 0;
+  virtual texture create_text(const std::string&) const = 0;
+  virtual void draw(const texture&, int x = 0, int y = 0) = 0;
+  virtual void render() = 0;
+  virtual void clear() = 0;
+};
+```
+
+----
+
+##Game
+
+```cpp
+struct game {
+  sml::sm<player>& player_;
+
+  void play() {
+    const auto dispatch_event = 
+      sml::make_dispatch_table<SDL_Event, SDL_FIRSTEVENT, SDL_LASTEVENT>(player_);
+
+    while (!player_.is(sml::X)) {
+      SDL_Event event;
+      while (SDL_PollEvent(&event)) {
+        dispatch_event(event, event.type);
+      }
+    }
+  }
+};
+```
+
+----
+
+##Controller (Player State Machine)
+
+```cpp
+d
+```
+
+----
+
 ##Player Transition Table
 
 ```cpp
@@ -85,132 +265,44 @@ sml::make_transition_table(
 );
 ```
 
-==============================================================================
-##Agenda
-
-* Emscripten/WebAssembly
-* Range-v3
-* Boost.DI
-* Boost.SML
-* Design
-* Implementation
-* Demo
-
-==============================================================================
-
-##Emscripten
-
------
-
-asm.js
-
-a = f()...
-
------
-
-WebAssembly
-
-match3.wasm
-
-<a href="http://mbebenita.github.io/WasmExplorer" data-preview-link>Wasm Explorer</a>
-
-Binary format
-
------
-
-Range-v3
-
-Boost.DI
-
-What DI is
-Example
-Benchmarks
-
-Boost.SML
-
-Example
-Compilers
-
-Benchmarks
-
-==============================================================================
-
-###Implementation
-
-MSVC
-
 ----
 
-from main() just a simple version
+##Model (Board)
 
-Testing
-
-on the slide
-code | test
-
-Functional tests
-Mocks injector
+code|test
 
 ==============================================================================
 
-###Let's try it!
+##Demo / C++14 game on the slide!
 
 <div class="stretch">
   <iframe src="http://modern-cpp-examples.github.io/match3" height="100%" width="100%" />
 </div>
 
------
+==============================================================================
+
+##Testing
+
+Functional tests
+
+==============================================================================
 
 ##Summary
 
-----
+==============================================================================
 
 ##Questions?
+
+[kris@jusiak.net](mailto:kris@jusiak.net) | [@krisjusiak](https://twitter.com/krisjusiak)
 
 |  |  |
 | ------- | ------------- |
 | Match-3 Game | https://github.com/modern-cpp-examples/match3 |
-| Experimental Boost.DI | https://github.com/boost-experimental/di |
-| Experimental Boost.MSM-lite | https://github.com/boost-experimental/msm-lite |
+| Emscripten | http://emscripten.org |
+| WebAssembly | http://webassembly.org |
 | Range-V3 | https://github.com/ericniebler/range-v3 |
-| FakeIt | https://github.com/eranpeer/FakeIt.git |
-
-
------
-		<section id="fragments">
-						<h2>Fragments</h2>
-						<p>Hit the next arrow...</p>
-						<p class="fragment">... to step through ...</p>
-						<p><span class="fragment">... a</span> <span class="fragment">fragmented</span> <span class="fragment">slide.</span></p>
-
-						<aside class="notes">
-							This slide has fragments which are also stepped through in the notes window.
-						</aside>
-					</section>
-
-----
-
-```cpp
-return make_transition_table(
-```
-
-```cpp
-  "wait for first item"_s  <= *("idle"_s) / reset_and_show
-```
-
-```cpp
-  "wait for second item"_s <=   "wait for first item"_s + event<down> / select_item
-```
-```cpp
-  , state<switcher>          <=   "match items"_s [ is_swap_items_winning ] /
-        ([](moves& m) {--m;}, show_moves, process(matches{.arity = 2}))
-```
-```cpp
-  , "wait for second item"_s <=   state<switcher> + event<down> / select_item
-);
-
-```
-
+| Boost.DI* | https://github.com/boost-experimental/di |
+| Boost.SML* | https://github.com/boost-experimental/sml |
 					</script>
 				</section>
 
