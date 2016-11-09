@@ -4,13 +4,11 @@
 
 ---------------------------------------
 
-#Simple Match3 game in C++14 using SDL2 / MVC / Meta State Machine / Dependency Injection / Range-V3
+#Simple Match3 game in C++14 using SDL2 / MVC / Range-V3 / Meta State Machine / Dependency Injection 
 
-| Play it! | Read about it |
-| -------- | ------------- |
-| <a href="http://modern-cpp-examples.github.io/match3"><img src="doc/match3.png" width="300" height="450"/></a> | <a href="http://modern-cpp-examples.github.io/match3/cppnow-2016"><img src="doc/cppnow-2016.png" width="550" height="450"/></a> | |
-
----
+<a href="http://modern-cpp-examples.github.io/match3">
+  <img src="doc/match3.png" width="300" height="450"/>
+</a>
 
 ###Tested Compilers
 
@@ -21,10 +19,10 @@
 ###Dependencies
 
 * [SDL2](https://www.libsdl.org/download-2.0.php)
-* [SDL2-image](https://www.libsdl.org/projects/SDL_image/)
+* [SDL2-image](https://www.libsdl.org/projects/SDL_image)
 * [SDL2-ttf](https://www.libsdl.org/download-2.0.php)
 * [Boost.DI](https://github.com/boost-experimental/di)
-* [Boost.MSM-Lite](https://github.com/boost-experimental/msm-lite)
+* [Boost.SML](https://github.com/boost-experimental/sml)
 * [Range-V3](https://github.com/ericniebler/range-v3)
 
 
