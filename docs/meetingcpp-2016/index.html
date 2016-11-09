@@ -58,7 +58,7 @@ Kris Jusiak
 
 ##Agenda
 
-* Match-3 game
+* The Game
 * Overview
   * Emscripten/WebAssembly
   * Range-v3
@@ -100,12 +100,12 @@ C++ => LLVM => Emscripten => JavaScript (asm.js)
 ```cpp
 #include <iostream>
 int main() {
-  std::cout << "hello world!" << std::endl;
+  std::cout << "hello world!" << '\n';
 }
 ```
 
 ```sh
-em++ hello_world.cpp -o index.html
+$em++ hello_world.cpp -o index.html
 ```
 
 ```sh
@@ -202,16 +202,253 @@ algorithms
 
 ##Experimental Boost.DI
 
-example
-asm
+> Dependency Injection Library
 
------
+https://github.com/boost-experimental/di
+
+----
+
+##Boost.DI
+
+* One header - 3k LOC - (boost/di.hpp) / generated
+* Neither Boost nor STL is required
+* No 'if's, 'virtual', 'exceptions' (-fno-rtti, -fno-exceptions)
+* Non-intrusive
+* No run-time overhead
+* Quick compilation times
+* Short and informative error messages
+* Supported compilers (C++14)
+  * [Clang-3.4+](https://travis-ci.org/boost-experimental/di), [XCode-6.1+](https://travis-ci.org/boost-experimental/di), [GCC-5.2+](https://travis-ci.org/boost-experimental/di), [MSVC-2015+](https://ci.appveyor.com/project/krzysztof-jusiak/di)
+
+----
+
+##Boost.DI - Hello World
+
+```cpp
+#include <boost/di.hpp>
+namespace di = boost::di;
+```
+
+```cpp
+struct iworld { virtual ~iworld() noexcept = default; };
+struct world : iworld {};
+struct ihello { virtual ~ihello() noexcept = default; };
+struct hello : ihello {};
+```
+
+```cpp
+struct hello_world {
+  hello_world(const ihello&, const iworld&); // DI handles order and types
+};                  ^              ^
+                    |              \------------\
+                    \----------------------\    |
+int main() {                               |    |
+  const auto injector = di::make_injector( |    |
+     di::bind<ihello>.to<hello>() ---------/    |
+   , di::bind<iworld>.to<world>() -------------/
+  );
+
+  auto hw = injector.create<unique_ptr<hello_world>>();
+}
+```
+
+----
+
+##Hello World
+
+```sh
+time $CXX -std=c++14 hello_world.cpp # 0.102s
+```
+
+####ASM x86-64
+
+```
+push   %rbx
+mov    %rdi,%rbx
+mov    $0x8,%edi
+callq  0x4009f0 <_Znwm@plt>
+movq   $0x400e78,(%rax)
+mov    %rax,(%rbx)
+mov    %rbx,%rax
+pop    %rbx
+retq
+```
+
+####Same as
+
+```cpp
+return std::make_unique<hello_world>(...);
+```
+
+----
+
+##Hello World - Errors
+
+```cpp
+const auto injector = di::make_injector(
+// di::bind<ihello>.to<hello>() // no ihello binding
+ , di::bind<iworld>.to<world>()
+);
+auto hw = injector.create<unique_ptr<hello_world>>();
+```
+
+####Full Compilation-Time Error Message
+
+```cpp
+error: 'create<hello_world>' is deprecated: creatable constraint not satisfied
+  injector.create<hello_world>();
+           ^
+note 'create<hello_world>' has been explicitly marked deprecated here
+  create
+  ^
+error: inline function 'abstract_type<ihello>::is_not_bound::error'
+ error(_ = "type is not bound, did you forget to add:
+           'di::bind<interface>.to<implementation>()'?");
+```
+
+----
+
+##Boost.DI vs Java
+
+| **Library** | Boost.DI | Guice | Dagger2 |
+| ----------  | -------- | ------------ | ------- |
+| Language    | C++14    | Java | Java |
+| Linkage     | header only | jar | jar |
+| Approach    | compile-time | run-time | compile-time (annotation processor) |
+| Errors      | compile-time errors | exceptions | compile-time errors |
+
+----
+
+##Benchmarks (Clang-3.8/Java8)
+
+| 64 types, 1-4 ctor params, 1024 iterations | **Boost.DI** | **Guice** | **Dagger2** |
+| --------------------- | ------------ | ---------------- | ------------- |
+| Compilation time    | 0.376s       |  0.570s            | 1.411s        |
+| Execution time      | 0.002s       |  0.528s            | 0.157s        |
+
+---
+
+| 256 types, 1-4 ctor params, 1024 iterations | **Boost.DI** | **Guice** | **Dagger2** |
+| --------------------- | ------------ | ---------------- | ------------- |
+| Compilation time    | 0.706s       | 0.642s             | 1.903s        |
+| Execution time      | 0.002s       | 0.544s             | 0.210s        |
+
+----
 
 ##Experimental Boost.SML
 
-uml 2.5
-sizeof(sm)
-asm
+> UML-2.5 State Machine Language
+
+https://github.com/boost-experimental/sml
+
+-----
+
+##Boost.SML
+
+* One header - 2k LOC - (boost/sml.hpp) / generated
+* Neither Boost nor STL is required
+* Supports UML-2.5
+* Quick compilation-times
+* Fast run-time
+* Supported compilers (C++14)
+  * [Clang-3.4+](https://travis-ci.org/boost-experimental/sml), [XCode-6.1+](https://travis-ci.org/boost-experimental/sml), [GCC-5.2+](https://travis-ci.org/boost-experimental/di), [MSVC-2015+](https://ci.appveyor.com/project/krzysztof-jusiak/sml)
+
+----
+
+##Boost.SML - Hello World
+
+![hello world](images/sml.png)
+
+----
+
+##Hello World
+
+```cpp
+#include <boost/sml.hpp>
+namespace sml = boost::sml;
+```
+
+```cpp
+// events
+struct eat {};
+struct full {};
+```
+
+```cpp
+// guards/actions
+const auto is_lunch_time = [] { return true; };
+const auto go_for_food = [] { puts("going for food..."); };
+```
+
+```cpp
+struct hello_world {
+  auto operator()() const {
+    // Transition table: src_state + event [ guard ] / action = dst_state
+    return make_transition_table(
+     (*"hungry"_s) + event<eat> [ is_lunch_time ] / go_for_food = "eating"_s
+     , "eating"_s  + event<full> / [] { puts("done!"); } = X
+    );
+}};
+```
+
+----
+
+##Hello World
+
+```cpp
+int main() {
+  sml::sm<hello_world> sm;
+  static_assert(1 == sizeof(sm), "sizeof(sm) != 1b");
+
+  sm.process_event(eat{});
+  sm.process_event(full{});
+}
+```
+
+```sh
+$./a.out
+  going for food...
+  done!
+```
+
+----
+
+##Hello World
+
+```sh
+time $CXX -std=c++14 hello_world.cpp # 0.079s
+```
+
+####ASM x86-64
+
+```
+process_event<eat>:
+    movb  $1, (%r8)     // current state = 1
+    movl  $.L.str, %edi // puts("going for food...")
+    callq puts
+    movl  $1, %eax      // handled
+    ret
+
+main:
+    leaq  16(%rsp), %rdi
+    movq  %rbx, %rsi
+    movq  %rbx, %rdx
+    movq  %rbx, %rcx
+    movq  %rbx, %r8
+    call  *process_event<eat> // O(1) - jump table
+    ...
+```
+
+----
+
+##Benchmarks (Clang-3.8)
+
+| [Complex Test](https://github.com/boost-experimental/sml/tree/master/test/pt/complex) |      Boost.SML | Boost.MSM-eUML   | Boost.Statechart   |
+|------------------|----------------|------------------|--------------------|
+| Compilation time | 0.582s         | 1m15.935s        | 3.661s             |
+| Execution time   | 72ms           | 81ms             | 6221ms             |
+| Memory usage     | 1b             | 120b             | 200b               |
+| Executable size  | 35K            | 611K             | 343K               |
 
 ==============================================================================
 
@@ -639,6 +876,21 @@ sml::make_transition_table(
 );
 ```
 
+----
+
+##Compile & Run
+
+```sh
+$em++ -std=c++14 -s USE_SDL=2 -s USE_SDL_IMAGE=2 -s USE_SDL_TTF=2
+     --preload-file data # images and fonts
+     --use-preload-plugins # load data
+     -o index.html src/main.cpp
+```
+
+```sh
+$browser index.html
+```
+
 ==============================================================================
 
 ##Demo / C++14 game on the slide!
@@ -661,10 +913,19 @@ wasm source code
 
 ----
 
-* C++ on the web is happening!
-* Leverage Zero-cost libraries (not only abstractions)
-* Dependency Injection/State Machine => better design
-* Range-v3 is easy and powerful
+###C++ on the web is happening!
+
+----
+
+### Leverage Zero-cost libraries (not only abstractions)
+
+----
+
+### Range-v3 is easy and powerful (STL2)
+
+----
+
+### Dependency Injection + State Machine = Better Design
 
 ==============================================================================
 

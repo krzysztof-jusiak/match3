@@ -1,0 +1,10 @@
+@startuml
+
+State Hungry
+State Eating
+
+[*] -> Hungry
+Hungry -right-> Eating: eat [is_lunch_time] / go_for_food
+Eating -down-> [*]: done / pay
+
+@enduml
