@@ -11,11 +11,12 @@ class icanvas {
   create_text(text, font, x, y) : texture
   draw(texture, x, y)
   render()
-  clear()
 }
 
 class board {
-  color grids[]
+  is_match(position): bool
+  match(position)
+  scroll(position)
 }
 
 class view {
@@ -25,19 +26,16 @@ class view {
   update()
 }
 
-class animations {
-  queue_animation()
-}
 
-class controller {
-  configure() : transition_table
+class "player|switcher" {
+  () : transition_table
   process_event(event)
 }
 
-game .. controller
-controller .. view
-controller .. board
-controller .. animations
+
+game .. "player|switcher"
+"player|switcher" .. view
+"player|switcher" .. board
 view .. sdl_canvas
 
 icanvas <|.. sdl_canvas
@@ -45,3 +43,4 @@ icanvas <|.. sdl_canvas
 }
 
 @enduml
+
