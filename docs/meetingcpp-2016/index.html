@@ -62,12 +62,11 @@ Kris Jusiak
 * Overview
   * Emscripten/WebAssembly
   * Range-v3
-  * Boost.DI*
-  * Boost.SML*
+  * Boost.DI (Proposed)
+  * Boost.SML (Proposed)
 * Design
 * Implementation
 * Demo
-* Testing
 * Summary
 
 ==============================================================================
@@ -81,7 +80,7 @@ Kris Jusiak
 ---
 
 > ####Core Mechanics
-1. Swipe
+1. Swipe 2 items
 2. Find and remove matches
 3. Generate new items and scroll the board
 5. Goto 2 // new matches?
@@ -97,6 +96,21 @@ Kris Jusiak
 > Emscripten is an LLVM-based project that compiles C and C++ into highly-optimizable JavaScript in asm.js format
 
 C++ => LLVM => Emscripten => JavaScript (asm.js)
+
+```cpp
+#include <iostream>
+int main() {
+  std::cout << "hello world!" << std::endl;
+}
+```
+
+```sh
+em++ hello_world.cpp -o index.html
+```
+
+```sh
+$browser index.html
+```
 
 -----
 
@@ -209,7 +223,8 @@ asm
 
 ![mvc](images/mvc.png)
 
-> Separates internal representations from the presentation and the user
+* Seperates business logic from UI
+* Good for aplications and/or games
 
 ----
 
@@ -671,6 +686,13 @@ Functional tests
 | Range-V3 | https://github.com/ericniebler/range-v3 |
 | Boost.DI* | https://github.com/boost-experimental/di |
 | Boost.SML* | https://github.com/boost-experimental/sml |
+
+==============================================================================
+
+##Bonus - Testing
+
+----
+
 					</script>
 				</section>
 
