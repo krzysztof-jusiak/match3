@@ -4,10 +4,10 @@
 
 ---------------------------------------
 
-#Simple Match3 game in C++14 using SDL2 / MVC / Range-V3 / Meta State Machine / Dependency Injection 
+#Simple Web Match3 game in C++14
 
 <a href="http://modern-cpp-examples.github.io/match3">
-  <img src="doc/match3.png" width="300" height="450"/>
+  <img src="docs/match3.png" width="300" height="450"/>
 </a>
 
 ###Tested Compilers
