@@ -194,9 +194,87 @@ size_t strlen(char *); // same as before
 
 ##Range-v3
 
-views
-actions
-algorithms
+* Header only
+* Requirements
+  * STL
+* Full implementation of all the standard algorithms
+* Minimal overhead
+* Better error messages (concepts emulation)
+* Supported compilers (C++11)
+  * [Clang-3.5+](https://travis-ci.org/ericniebler/range-v3), [GCC-4.8+](https://travis-ci.org/ericniebler/range-v3), [MSVC-2015*+](https://github.com/microsoft/Range-V3-VS2015)
+
+----
+
+##Range-v3 - Hello World
+
+```cpp
+#include <range/v3/algorithm/sort.hpp>
+#include <range/v3/view/all.hpp>
+```
+
+```cpp
+int main() {
+  std::vector<int> v{3, 4, 2, 1, 7};
+  ranges::sort(v); // std::sort(v.begin(), v.end());
+  std::cout << ranges::view::all(v) << '\n';
+}
+```
+
+---
+
+```sh
+time $CXX -std=c++11 hello_world.cpp # 0.921s
+```
+
+```sh
+./a.out
+  [1,2,3,4,7]
+```
+
+----
+
+##Range-v3 - Views
+
+---
+
+####Non-mutable custom snapshot of a sequence
+
+```cpp
+std::vector<int> vi{1,2,3,4,5,6,7,8,9,10};
+auto rng = vi | ranges::view::drop(3) | ranges::view::take(2);
+assert(ranges::equal(rng, {4, 5}));
+```
+
+----
+
+##Range-v3 - Actions
+
+---
+
+####Mutate in place
+
+```cpp
+std::vector<int> vi{1,2,2,3,1,4};
+vi |= ranges::action::sort | ranges::action::unique;
+assert(ranges::equal(vi, {1,2,3,4}));
+```
+
+----
+
+##Range-v3 - Algorithms
+
+---
+
+####Functions for a variety of purposes
+
+```cpp
+std::vector<int> vi{1,2,2,3,1,2};
+assert(3 == ranges::count(vi, 2));
+```
+
+-----
+
+Benchmark
 
 -----
 
@@ -286,7 +364,7 @@ return std::make_unique<hello_world>(...);
 
 ```cpp
 const auto injector = di::make_injector(
-// di::bind<ihello>.to<hello>() // no ihello binding
+// di::bind<ihello>.to<hello>() // missing 'ihello' binding
  , di::bind<iworld>.to<world>()
 );
 auto hw = injector.create<unique_ptr<hello_world>>();
@@ -295,10 +373,10 @@ auto hw = injector.create<unique_ptr<hello_world>>();
 ####Full Compilation-Time Error Message
 
 ```cpp
-error: 'create<hello_world>' is deprecated: creatable constraint not satisfied
-  injector.create<hello_world>();
+error: 'create<unique_ptr<hello_world>>' is deprecated: creatable constraint not satisfied
+  injector.create<unique_ptr<hello_world>>();
            ^
-note 'create<hello_world>' has been explicitly marked deprecated here
+note 'create<unique_ptr<hello_world>>' has been explicitly marked deprecated here
   create
   ^
 error: inline function 'abstract_type<ihello>::is_not_bound::error'
@@ -465,9 +543,9 @@ main:
 
 ----
 
-##Match3 - Design
+##Match3 Game - Design
 
-<img src="images/design.png" width="60%" />
+<img src="images/design.png" width="65%" />
 
 ==============================================================================
 
