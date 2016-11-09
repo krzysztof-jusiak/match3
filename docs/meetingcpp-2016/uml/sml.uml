@@ -4,7 +4,8 @@ State Hungry
 State Eating
 
 [*] -> Hungry
+note bottom of Eating : Transition: src_state + event [ guard ] / action -> dst_state
 Hungry -right-> Eating: eat [is_lunch_time] / go_for_food
-Eating -down-> [*]: done / pay
+Eating -down-> [*]: full / done
 
 @enduml
