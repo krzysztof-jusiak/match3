@@ -473,8 +473,8 @@ struct hello_world {
   auto operator()() const {
     // Transition table: src_state + event [ guard ] / action = dst_state
     return make_transition_table(
-     (*"hungry"_s) + event<eat> [ is_lunch_time ] / go_for_food = "eating"_s
-     , "eating"_s  + event<full> / [] { puts("done!"); } = X
+      (*"hungry"_s) + event<eat> [ is_lunch_time ] / go_for_food = "eating"_s
+      , "eating"_s  + event<full> / [] { puts("done!"); } = X
     );
 }};
 ```
