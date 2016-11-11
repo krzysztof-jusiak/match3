@@ -148,11 +148,11 @@ struct controller {
          "match items"_s               [ is_swap_items_winning ] /
                                          ([](moves& m) {--m;},
                                           show_moves,
-                                          process(matches{.arity = 2}))       = state<switcher>,
+                                          process(matches{.arity = 2}))       = "switcher"_s.sm<switcher>(),
          "match items"_s + event<up>   / (swap_items,
                                           show_swap,
                                           clear_selected)                     = "first item"_s,
-         state<switcher> + event<down> / select_item                          = "second item"_s,
+         "switcher"_s.sm<switcher>() + event<down> / select_item              = "second item"_s,
      // +--------------------------------------------------------------------------------------------------------------------------------------------+
          (*"is click"_s) + event<key_pressed> [ is_key(SDLK_ESCAPE) ]         = X,
            "is click"_s  + event<quit>                                        = X
