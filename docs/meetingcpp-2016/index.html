@@ -87,7 +87,7 @@ Kris Jusiak
 
 ----
 
-##Play it in the browser on device!
+##Play it in the browser on your device!
 
 <img src="images/mobile.png" width="20%" />
 
@@ -596,7 +596,7 @@ const auto configuration = [] {
      , .board_size = {7, 10}
     })
 
-  , di::bind<board::color_t[]>.to({ // initial level
+  , di::bind<color_t[]>.to({ // initial level
       3,5,1,4,3,2,2,
       ...
       1,2,3,4,1,3,4
@@ -613,7 +613,6 @@ const auto configuration = [] {
 class ivew {
  public:
   virtual ~iview() noexcept = default;
-
   virtual void show_grid(int x, int y, color_t) = 0;
   virtual int get_position(int x, int y) const = 0;
   virtual void update() = 0;
@@ -630,7 +629,7 @@ struct game {
 
   void play() {
     const auto dispatch_event = // create a jump table for all SDL events
-      sml::utility::make_dispatch_table<SDL_Event, SDL_FIRSTEVENT, SDL_LASTEVENT>(player_);
+      make_dispatch_table<SDL_Event, SDL_FIRSTEVENT, SDL_LASTEVENT>(player_);
 
     while (!player_.is(sml::X)) { // is not in final state
       SDL_Event event;
@@ -662,21 +661,23 @@ struct key_pressed {
 
 ####state machine
 ```cpp
-return make_transition_table(
+make_transition_table(
   (*"idle"_s)   + event<key_pressed> = "clicked"_s // id:SDL_KEYDOWN
   , "clicked"_s + event<quit> = X                  // id:SDL_QUIT
-);
+);                      ^
+  ______________________|
+ /
 ```
 
 ####Dispatch jump table
 ```cpp
-sml::utility::make_dispatch_table<SDL_Event, SDL_FIRSTEVENT, SDL_LASTEVENT> = {
-  [...] = []{};
-  [SDL_KEYDOWN] = [](const SDL_Event& e){ example.process_event(key_pressed{e}); };
-  [...] = []{};
-  [SDL_QUIT] = [](const SDL_Event& e){ example.process_event(quit{}); };
-  [...] = []{};
-}
+ |  make_dispatch_table<SDL_Event, SDL_FIRSTEVENT, SDL_LASTEVENT> = {
+ |    [...] = []{};
+ |    [SDL_KEYDOWN] = [](const SDL_Event& e){ example.process_event(key_pressed{e}); };
+ |    [...] = []{};
+ \--> [SDL_QUIT] = [](const SDL_Event& e){ example.process_event(quit{}); };
+      [...] = []{};
+    }
 ```
 
 
@@ -772,9 +773,18 @@ const auto col = [](auto&& view, auto n, auto width) {
 
 ##Match-N (idea)
 
+####Match-3
 ```cpp
-match-n: | 1 3 3 3 2 1 | => color:3, n:3 -> {begin: 1, length: 3}
-         | 1 2 3 3 3 3 | => color:3, n:3 -> {begin: 2, length: 4}
+         | 1 3 3 3 |                    | 1 [3] [3] [3] |
+match-n: | 1 2 1 1 | => color:3, n:1 -> | 1  2   1   1  | -> { begin: 1, length: 3}
+         | 3 2 2 1 |                    | 3  2   2   1  |
+```
+
+####No Match
+```cpp
+         | 1 3 2 3 |                    | 1 3 3 3 |
+match-n: | 1 2 1 1 | => color:3, n:1 -> | 1 2 1 1 | -> { begin: 0, length: 0}
+         | 3 2 2 1 |                    | 3 2 2 1 |
 ```
 
 ----
@@ -823,12 +833,22 @@ const auto match_n = [](auto&& view, auto color, const int max_match_length = 3)
 
 ##Is match
 
+####Match
 ```cpp
-          | 1 2 3 4 5 |                | 1 2 3  4  5 |    | 1 2 3  4  5 |
-          | 6 7 7 9 3 |                | 6 7 7  9  3 |    | 6 7 7  9  3 |
-is_match: | 2 3 4 5 3 | => value:13 -> | 2 3 4 [5] 3 | => | 2 3 4 [5] 3 | => true
-          | 2 1 3 5 1 |                | 2 1 3  5  1 |    | 2 1 3 [5] 1 |
-          | 4 2 1 5 8 |                | 4 2 1  5  8 |    | 4 2 1 [5] 8 |
+       | 2 3 4 5 |            | 2 3  4  5 |    | 2 3  4  5 |
+       | 7 7 9 3 |            | 7 7  9  3 |    | 7 7  9  3 |
+match: | 3 4 5 3 | => n:10 -> | 3 4 [5] 3 | => | 3 4 [5] 3 | => true
+       | 1 3 5 1 |            | 1 3  5  1 |    | 1 3 [5] 1 |
+       | 2 1 5 8 |            | 2 1  5  8 |    | 2 1 [5] 8 |
+```
+
+####No match
+```cpp
+       | 2 3 4 5 |            | 2 3 4  5  |    | 2 3 4 5 |
+       | 7 7 9 3 |            | 7 7 9  3  |    | 7 7 9 3 |
+match: | 3 4 5 3 | => n:11 -> | 3 4 5 [3] | => | 3 4 5 3 | => false
+       | 1 3 5 1 |            | 1 3 5  1  |    | 1 3 5 1 |
+       | 2 1 5 8 |            | 2 1 5  8  |    | 2 1 5 8 |
 ```
 
 ----
@@ -836,10 +856,10 @@ is_match: | 2 3 4 5 3 | => value:13 -> | 2 3 4 [5] 3 | => | 2 3 4 [5] 3 | => tru
 ##Is match
 
 ```cpp
-const auto is_match = [](auto&& view, auto value, auto width) {
-  const auto color = view[value];
-  const auto x = value % width;
-  const auto y = value / width;
+const auto is_match = [](auto&& view, auto n, auto width) {
+  const auto color = view[n];
+  const auto x = n % width;
+  const auto y = n / width;
   return match_n(row(view, y, width), color).length ||
          match_n(col(view, x, width), color).length;
 };
@@ -861,12 +881,22 @@ const auto is_match = [](auto&& view, auto value, auto width) {
 
 ##Match
 
+####Match
 ```cpp
-       | 1 2 3 4 5 |                 | 1  2 3  4  5 |    | 1  2   3   4  5 |
-       | 6 7 7 9 3 |                 | 6  7 7  9  3 |    | 6  7   7   9  3 |
-match: | 2 5 5 5 3 |  => value:13 -> | 2  5 5 [5] 3 | => | 2 [5] [5] [5] 3 | => [11, 12, 13, 18, 23]
-       | 2 1 3 5 1 |                 | 2  1 3  5  3 |    | 2  1   3  [5] 3 |
-       | 4 2 1 5 8 |                 | 4  2 1  5  8 |    | 4  2   1  [5] 8 |
+       | 1 2 3 4 5 |            | 1  2 3  4  5 |    | 1  2   3   4  5 |
+       | 6 7 7 9 3 |            | 6  7 7  9  3 |    | 6  7   7   9  3 |
+match: | 2 5 5 5 3 | => n:13 -> | 2  5 5 [5] 3 | => | 2 [5] [5] [5] 3 | => [11, 12, 13, 18, 23]
+       | 2 1 3 5 1 |            | 2  1 3  5  3 |    | 2  1   3  [5] 3 |
+       | 4 2 1 5 8 |            | 4  2 1  5  8 |    | 4  2   1  [5] 8 |
+```
+
+####No Match
+```cpp
+       | 1 2 3 4 5 |           | [1] 2 3 4 5 |    | [1] 2 3 4 5 |
+       | 6 7 7 9 3 |           |  6  7 7 9 3 |    |  6  7 7 9 3 |
+match: | 2 5 5 5 3 | => n:1 -> |  2  5 5 5 3 | => |  2  5 5 5 3 | => []
+       | 2 1 3 5 1 |           |  2  1 3 5 3 |    |  2  1 3 5 3 |
+       | 4 2 1 5 8 |           |  4  2 1 5 8 |    |  4  2 1 5 8 |
 ```
 
 ----
@@ -874,17 +904,17 @@ match: | 2 5 5 5 3 |  => value:13 -> | 2  5 5 [5] 3 | => | 2 [5] [5] [5] 3 | => 
 ##Match
 
 ```cpp
-const auto match = [](auto&& view, auto value, auto width) {
-  const auto color = view[value];
-  const auto x = value % width;
-  const auto y = value / width;
+const auto match = [](auto&& view, auto n, auto width) {
+  const auto color = view[n];
+  const auto x = n % width;
+  const auto y = n / width;
   const auto match_r = match_n(row(view, y, width), color);
   const auto match_c = match_n(col(view, x, width), color);
   const auto transform = [](auto length, auto expr) {
     return view::ints | view::take(length) | view::transform(expr);
   };
 
-  std::vector<decltype(value)> result = view::concat(
+  std::vector<decltype(n)> result = view::concat(
       transform(match_r.length, [=](auto i) { return y * width + match_r.begin + i; }),
       transform(match_c.length, [=](auto i) { return (match_c.begin + i) * width + x; }));
   result |= action::sort | action::unique;
@@ -913,11 +943,9 @@ const auto match = [](auto&& view, auto value, auto width) {
 ##Scroll (idea)
 
 ```cpp
-        | 3 |                |  3  |    | 0 |
-        | 0 |                | [0] |    | 0 |
-scroll: | 0 |  => value:1 -> |  0  | => | 0 |
-        | 0 |                |  0  |    | 3 |
-        | 4 |                |  4  |    | 4 |
+        | 1 1 3 |                     | 1  1  3 |    | 1 0 3 |
+scroll: | 3 0 5 | => n:4, width: 3 -> | 3 [0] 5 | -> | 3 1 5 |
+        | 6 0 8 |                     | 6  0  8 |    | 6 0 8 |
 ```
 
 ----
@@ -925,24 +953,24 @@ scroll: | 0 |  => value:1 -> |  0  | => | 0 |
 ##Scroll
 
 ```cpp
-const auto scroll = [](auto&& view, auto value, auto width) {
-  const auto&& c =
-      col(view, value % width, width) | view::take(value / width + 1);
+const auto scroll = [](auto&& view, auto n, auto width) {
+  const auto&& c = col(view, n % width, width) | view::take(n / width + 1);
   auto begin = begin(c);
-  advance(begin, value / width);
+  advance(begin, n / width);
   rotate(c, begin);
 };
 ```
 
 ```cpp
 "scroll"_test = [] {
-  int v[] = {1, 1, 3, 4, 0, 2, 7, 0, 3};
+  int v[] = {1, 1, 3,
+             4, 0, 2,
+             7, 0, 3};
 
   scroll(v, 4, 3);
-  expect(equal({1, 0, 3, 4, 1, 2, 7, 0, 3}, v));
-
-  scroll(v, 7, 3);
-  expect(equal({1, 0, 3, 4, 0, 2, 7, 1, 3}, v));
+  expect(equal({1, 0, 3,
+                4, 1, 2,
+                7, 0, 3}, v));
 };
 ```
 
@@ -1276,10 +1304,9 @@ const auto has_items = [](const selected& s) { return !s.empty(); };
 ```cpp
 const auto process_match = (
     find_matches
-  , destroy_matches
   , scroll_board
-  , generate_new
-  , process(matches{.arity = 1})
+  , generate_items
+  , process(matches{.arity = 1}) // next item
 );
 ```
 
@@ -1288,14 +1315,10 @@ const auto process_match = (
 ##Find matches
 
 ```cpp
-const auto find_matches = [](const board& b, const auto& m, selected& s) {
-  assert(m.arity >= 0);
-  auto arity = m.arity;
-  while (arity--) {
-    m.matches |= action::push_back(b.match(s.back()));
-    s.pop_back();
-  }
-  m.matches |= action::sort | action::unique;
+const auto find_matches = [](const board& b, auto& m, selected& s) {
+  for (item : selected)
+     m.matches |= action::push_back(b.match(item)));
+   m.matches = | action::sort | action::unique;
 };
 ```
 
@@ -1303,10 +1326,7 @@ const auto find_matches = [](const board& b, const auto& m, selected& s) {
 "find matches"_test = [] {
   board b = {1, 2, 3, 1, 1, 1, 1, 2, 3};
   selected s = {1, 3};
-  struct {
-    int arity;
-    std::vector<board::color_t> matches = {};
-  } event{s.size()};
+  struct { int arity; std::vector<color_t> matches = {}; } event{s.size()};
 
   find_matches(b, event, s);
 
@@ -1317,72 +1337,69 @@ const auto find_matches = [](const board& b, const auto& m, selected& s) {
 
 ----
 
-  "destroy matches"_test = [] {
-    board b{{4, 2, 3, 3, 2, 2, 1, 2, 3}, config{}};
-    struct {
-      std::vector<board::color_t> matches;
-    } event{{1, 4, 7}};
+##Scroll board
 
-    destroy_matches(b, event);
-
-    expect(equal({4, 0, 3, 3, 0, 2, 1, 0, 3}, b.grids));
-  };
-
-  "scroll board"_test = [] {
-    board b{{4, 3, 3, 3, 2, 2, 0, 0, 0}, config{.board_width = 3}};
-    struct {
-      std::vector<board::color_t> matches;
-    } event{{6, 7, 8}};
-
-    scroll_board(b, event);
-
-    expect(equal({0, 0, 0, 4, 3, 3, 3, 2, 2}, b.grids));
-  };
-
-  "generate new"_test = [] {
-    static constexpr auto NEW = 42;
-    board b{{4, 0, 3, 3, 0, 2, 1, 0, 3}, config{.board_width = 3}};
-    selected s = {0, 5};
-    struct {
-      std::vector<board::color_t> matches;
-    } event{{1, 4, 7}};
-
-    generate_new(b, event, s, config{.board_width = 3},
-                 [](auto...) { return NEW; });
-
-    expect(equal({4, NEW, 3, 3, NEW, 2, 1, NEW, 3}, b.grids));
-    expect(equal({0, 1, 4, 5, 7}, s));
-  };
-
-const auto destroy_matches = [](board& b, const auto& m) {
-  for_each(m.matches, [&](auto i) { b.grids[i] = {}; });
+```cpp
+const auto scroll_board = [](board& b, const auto& matches) {
+  for (auto match: matches) b.scroll(match);
 };
+```
 
-const auto scroll_board = [](board& b, const auto& m) {
-  for_each(m.matches, [&](auto i) { b.scroll(i); });
+```cpp
+"scroll board"_test = [] {
+  board b{{4, 3, 3, 3, 2, 2, 0, 0, 0}, config{.board_width = 3}};
+  struct { std::vector<color_t> matches; } event{{6, 7, 8}};
+
+  scroll_board(b, event);
+
+  expect(equal({0, 0, 0, 4, 3, 3, 3, 2, 2}, b.grids));
 };
+```
 
-const auto generate_new = [](board& b, const auto& m, selected& s,
-                             const config c, randomize r) {
-  action::transform(
-      b.grids, [c, r](auto i) { return i ? i : r(1, c.board_colors); });
-  s |= action::push_front(
-           board_logic::affected(m.matches, c.board_width)) |
-       action::sort | action::unique;
+----
+
+##Generate items
+
+```cpp
+const auto generate_new = [](board& b, const auto& m
+                          , const std::function<color_t()>& random) {
+  for (auto match : m.matches) 
+    b[match] = random();
 };
+```
 
+```cpp
+"generate items"_test = [] {
+  static constexpr auto NEW = 42;
+  board b = {4, 0, 3, 3, 0, 2, 1, 0, 3};
+  selected s = {0, 5};
+  struct { std::vector<color_t> matches; } event{{1, 4, 7}};
+
+  generate_items(b, event, s);
+
+  expect(equal({4, NEW, 3, 3, NEW, 2, 1, NEW, 3}, b));
+  expect(equal({0, 1, 4, 5, 7}, s));
+};
+```
+
+----
+
+#Done!
 
 ----
 
 ##Compile & Run
 
 ```sh
-$em++ -std=c++14 -s USE_SDL=2 -s USE_SDL_IMAGE=2 -s USE_SDL_TTF=2
-     --preload-file data # images and fonts
-     --use-preload-plugins # load data
-     -o index.html src/main.cpp
+$em++ -std=c++14 
+      -s USE_SDL=2 -s USE_SDL_IMAGE=2 -s USE_SDL_TTF=2 #SDL2 port
+      -s BINARYEN=1 # WebAssembly (asm2wasm)
+      --preload-file data # images and fonts
+      --use-preload-plugins # load data
+      -o index.html src/main.cpp
 ```
 
+###Open in a browser
 ```sh
 $browser index.html
 ```
