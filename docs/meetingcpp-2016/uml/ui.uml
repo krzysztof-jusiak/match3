@@ -1,0 +1,9 @@
+@startuml
+
+state "ui" as ui
+
+[*] -right-> ui
+ui --> [*]: key_pressed [ is_key(Esc) ]
+ui -right-> [*]: quit
+
+@enduml

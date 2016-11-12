@@ -6,41 +6,37 @@ class game {
   play()
 }
 
-class icanvas {
-  load_image(name)
-  create_text(text, font, x, y) : texture
-  draw(texture, x, y)
-  render()
-}
-
 class board {
   is_match(position): bool
   match(position)
   scroll(position)
 }
 
-class view {
-  set_grid(x, y, color)
-  update_grid(x, y)
+class iview {
+  show_grid(x, y, color)
   get_position(x, y) : int
   update()
 }
 
 
-class "player|switcher" {
+class player {
   () : transition_table
   process_event(event)
 }
 
+class switcher {
+  () : transition_table
+  process_event(event)
+}
 
-game .. "player|switcher"
-"player|switcher" .. view
-"player|switcher" .. board
-view .. sdl_canvas
-
-icanvas <|.. sdl_canvas
+game .. player
+player .. switcher
+player .. iview
+player .. board
+switcher .. iview
+switcher .. board
+iview <|.right. sdl_view
 
 }
 
 @enduml
-

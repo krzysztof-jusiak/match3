@@ -4,7 +4,8 @@ state "first item" as first_item
 state "second item" as second_item
 state "match items" as match_items
 
-[*] --> first_item: init, show_board
+note right of first_item : Transition: src_state event [ guard ] / action -> dst_state
+[*] --> first_item: / show_board
 first_item --> second_item: down / select_item
 second_item --> match_items: up [ is_allowed ] / select_item, swap_items
 second_item --> first_item: up [ not is_allowed] / drop_item
@@ -13,10 +14,9 @@ match_items --> first_item: [ not is_swap_winning ] / swap_items, clear_selected
 switcher --> first_item
 
 state switcher {
-  state "handle matches" as handle_matches
+  state "..." as handle_matches
   [*] -right-> handle_matches
-  handle_matches --> handle_matches: matches [has_items and is_item_winning]
-  handle_matches -down-> [*]
+  handle_matches -right-> [*]
 }
 
 @enduml

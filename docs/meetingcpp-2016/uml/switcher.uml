@@ -1,0 +1,9 @@
+@startuml
+
+state "handle matches" as hm
+
+[*] -right-> hm
+hm -right-> hm : matches [ has_items ] / process_match
+hm --> [*]: matches [ not has_items ]
+
+@enduml
