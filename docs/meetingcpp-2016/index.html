@@ -1450,12 +1450,12 @@ $browser index.html
   </head>
   ...
   var xhr = new XMLHttpRequest();
-  xhr.open('GET', 'index.wasm', true);
+  xhr.open('GET', 'index.wasm', true); // try webassembly
   xhr.responseType = 'arraybuffer';
   xhr.onload = function() {
     Module.wasmBinary = xhr.response;
     var script = document.createElement('script');
-    script.src = "index.js";
+    script.src = "index.js"; // downgrade to asm.js
     document.body.appendChild(script);
   };
   xhr.send(null);
