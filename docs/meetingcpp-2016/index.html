@@ -552,7 +552,7 @@ main:
 ![mvc](images/mvc.png)
 
 * Seperates business logic from UI
-* Good for aplications and/or games
+* Good for aplications and / or games
 
 ----
 
@@ -639,12 +639,12 @@ struct game {
 
 ##make dispatch table
 
-####Events
+####Events have unique identifiers
 ```cpp
-struct quit { static constexpr auto id = SDL_QUIT; };
+struct quit { static constexpr auto id = SDL_QUIT; }; // identifier
 
 struct key_pressed {
-  static constexpr auto id = SDL_KEYDOWN;
+  static constexpr auto id = SDL_KEYDOWN; // identifier
 
   explicit key_pressed(const SDL_Event& event)
     : key(event.key.keysym.sym)
