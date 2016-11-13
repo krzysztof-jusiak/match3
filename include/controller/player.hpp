@@ -148,12 +148,12 @@ struct controller {
          "match items"_s               [ is_swap_items_winning ] /
                                           process(matches{.arity=2})             = "switcher"_s.sm<switcher>(),
          "match items"_s               / (swap_items, show_swap, clear_selected) = "first item"_s,
-         "switcher"_s.sm<switcher>()                                             = "first item"_s
+         "switcher"_s.sm<switcher>()                                             = "first item"_s,
      // +--------------------------------------------------------------------------------------------------------------------------------------------+
          (*"is click"_s) + event<key_pressed> [ is_key(SDLK_ESCAPE) ]         = X,
-           "is click"_s  + event<quit>                                        = X
+           "is click"_s  + event<quit>                                        = X,
      // +--------------------------------------------------------------------------------------------------------------------------------------------+
-      ,  (*"anims"_s)    + event<time_tick> / [](animations& a) { a.update(); }
+        (*"anims"_s)    + event<time_tick> / [](animations& a) { a.update(); }
      // +--------------------------------------------------------------------------------------------------------------------------------------------+
     );
     // clang-format on

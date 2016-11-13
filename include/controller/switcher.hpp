@@ -112,9 +112,6 @@ struct switcher {
 
     // clang-format off
     return make_transition_table(
-
-        (&"handle"_s) + event<e2> = "s2"_s
-
       (*"handle matches"_s) + event<matches>
        [ has_items and is_item_winning ] / (find_matches, show_matches
                                           , destroy_matches, show_board
