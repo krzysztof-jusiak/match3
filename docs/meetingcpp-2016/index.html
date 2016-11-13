@@ -58,7 +58,7 @@ Kris Jusiak
 
 ##Agenda
 
-* The Game
+* Match-3 Game
 * Overview
   * Emscripten/WebAssembly
   * Range-v3
@@ -168,7 +168,7 @@ function strlen(ptr) {
 
 ---
 
-<a href="http://mbebenita.github.io/WasmExplorer" data-preview-link>Wasm Explorer</a>
+<a href="http://mbebenita.github.io/WasmExplorer" data-preview-link>http://mbebenita.github.io/WasmExplorer</a>
 
 -----
 
@@ -385,16 +385,16 @@ const auto injector = di::make_injector(
 // di::bind<ihello>.to<hello>() // missing 'ihello' binding
  , di::bind<iworld>.to<world>()
 );
-auto hw = injector.create<unique_ptr<hello_world>>();
+auto hw = injector.create<hello_world>();
 ```
 
 ####Full Compilation-Time Error Message
 
 ```cpp
-error: 'create<unique_ptr<hello_world>>' is deprecated: creatable constraint not satisfied
-  injector.create<unique_ptr<hello_world>>();
+error: 'create<hello_world>' is deprecated: creatable constraint
+  injector.create<hello_world>();           not satisfied
            ^
-note 'create<unique_ptr<hello_world>>' has been explicitly marked deprecated here
+note 'create<hello_world>' has been explicitly marked deprecated here
   create
   ^
 error: inline function 'abstract_type<ihello>::is_not_bound::error'
@@ -480,13 +480,14 @@ const auto go_for_food = [] { puts("going for food..."); };
 
 ```cpp
 struct hello_world {
-  auto operator()() const {
-    // Transition table: src_state + event [ guard ] / action = dst_state
-    return make_transition_table(
-      (*"hungry"_s) + event<eat> [ is_lunch_time ] / go_for_food = "eating"_s
-      , "eating"_s  + event<full> / [] { puts("done!"); } = X
-    );
-}};
+ auto operator()() const {
+  // Transition table: src_state + event [ guard ] / action = dst_state
+  return make_transition_table(
+   *"hungry"_s + event<eat> [is_lunch_time] / go_for_food = "eating"_s
+  , "eating"_s + event<full> / [] { puts("done!"); } = X
+  );
+ }
+};
 ```
 
 ----
@@ -578,7 +579,7 @@ main:
 ```cpp
 int main() {
   const auto injector = di::make_injector(configuration());
-  injector.create<match3::game>().play(); // create a game and start playing it
+  injector.create<match3::game>().play(); // create a game and play
 }
 ```
 
@@ -625,19 +626,20 @@ class ivew {
 
 ```cpp
 struct game {
-  sml::sm<player>& player_; // controller state machine
+ sml::sm<player>& player_; // controller state machine
 
-  void play() {
-    const auto dispatch_event = // create a jump table for all SDL events
-      make_dispatch_table<SDL_Event, SDL_FIRSTEVENT, SDL_LASTEVENT>(player_);
-
-    while (!player_.is(sml::X)) { // is not in final state
-      SDL_Event event;
-      while (SDL_PollEvent(&event)) {
-        dispatch_event(event, event.type);
-      }
-    }
-  }
+ void play() {
+   const auto dispatch_event = // create a jump table for SDL events
+     make_dispatch_table<SDL_Event
+                       , SDL_FIRSTEVENT
+                       , SDL_LASTEVENT>(player_);
+   while (!player_.is(sml::X)) { // is not in final state
+     SDL_Event event;
+     while (SDL_PollEvent(&event)) {
+       dispatch_event(event, event.type);
+     }
+   }
+ }
 };
 ```
 
@@ -648,9 +650,14 @@ struct game {
 ####Events
 ```cpp
 struct quit { static constexpr auto id = SDL_QUIT; };
+
 struct key_pressed {
   static constexpr auto id = SDL_KEYDOWN;
-  explicit key_pressed(const SDL_Event& event) : key(event.key.keysym.sym) {}
+
+  explicit key_pressed(const SDL_Event& event)
+    : key(event.key.keysym.sym)
+  { }
+
   const int key = 0;
 };
 ```
@@ -673,10 +680,10 @@ make_transition_table(
 ```cpp
  |  make_dispatch_table<SDL_Event, SDL_FIRSTEVENT, SDL_LASTEVENT> = {
  |    [...] = []{};
- |    [SDL_KEYDOWN] = [](const SDL_Event& e){ example.process_event(key_pressed{e}); };
- |    [...] = []{};
- \--> [SDL_QUIT] = [](const SDL_Event& e){ example.process_event(quit{}); };
-      [...] = []{};
+ |    [SDL_KEYDOWN] = [](const SDL_Event& e) {
+ |    [...] = []{};     example.process_event(key_pressed{e}); };
+ \--> [SDL_QUIT]    = [](const SDL_Event& e) {
+      [...] = []{};     example.process_event(quit{}); };
     }
 ```
 
@@ -715,7 +722,7 @@ std::array<color_t, 3 * 3> grids = [ 3 4 5 ]
 
 ```cpp
      | 1 2 3 |           |  1   2   3  |
-row: | 3 4 5 | => n:1 -> | [3] [4] [5] |
+row: | 3 4 5 | => n:1 => | [3] [4] [5] |
      | 6 7 8 |           |  6   7   8  |
 ```
 
@@ -746,7 +753,7 @@ const auto row = [](auto&& view, auto n, auto width) {
 
 ```cpp
      | 1 2 3 |           | 1 [2] 3 |
-col: | 3 4 5 | => n:1 -> | 3 [4] 5 |
+col: | 3 4 5 | => n:1 => | 3 [4] 5 |
      | 6 7 8 |           | 6 [7] 8 |
 ```
 
@@ -775,16 +782,18 @@ const auto col = [](auto&& view, auto n, auto width) {
 
 ####Match-3
 ```cpp
-         | 1 3 3 3 |                    | 1 [3] [3] [3] |
-match-n: | 1 2 1 1 | => color:3, n:1 -> | 1  2   1   1  | -> { begin: 1, length: 3}
-         | 3 2 2 1 |                    | 3  2   2   1  |
+         | 1 3 3 3 |               | 1 [3] [3] [3] |    {
+match-n: | 1 2 1 1 | => color:3 => | 1  2   1   1  | =>   begin: 1
+         | 3 2 2 1 |    n:1        | 3  2   2   1  |      length: 3
+                                                        }
 ```
 
 ####No Match
 ```cpp
-         | 1 3 2 3 |                    | 1 3 3 3 |
-match-n: | 1 2 1 1 | => color:3, n:1 -> | 1 2 1 1 | -> { begin: 0, length: 0}
-         | 3 2 2 1 |                    | 3 2 2 1 |
+         | 1 3 2 3 |               | 1 3 3 3 |    {
+match-n: | 1 2 1 1 | => color:3 => | 1 2 1 1 | =>   begin: 0
+         | 3 2 2 1 |    n:1        | 3 2 2 1 |      length: 0
+                                                  }
 ```
 
 ----
@@ -792,19 +801,19 @@ match-n: | 1 2 1 1 | => color:3, n:1 -> | 1 2 1 1 | -> { begin: 0, length: 0}
 ##Match-N (helper)
 
 ```cpp
-const auto match_n = [](auto&& view, auto color, const int max_match_length = 3) {
-  const auto&& matches = view::ints | view::take(size(view) - max_match_length + 1) |
+const auto match_n = [](auto&& view, auto color, const int n = 3) {
+  const auto&& matches = view::ints | view::take(size(view) - n + 1) |
       view::transform([=](auto i) {
-        return count(view | view::drop(i) | view::take(max_match_length), color) ==
-        max_match_length;
-  });
+        return count(view | view::drop(i) | view::take(n), color) == n;
+      });
 
   const auto it = find(matches, true/*is match*/);
   const auto found = it != end(matches);
-  const auto mlength = found ? count(matches, is_match) + (max_match_length - 1) : 0;
+  const auto mlength = found ? count(matches, is_match) + (n - 1) : 0;
   const auto mbegin = found ? distance(begin(matches), it) : 0;
 
-  struct { decltype(mbegin) begin; decltype(mlength) length; } result{mbegin, mlength};
+  struct { decltype(mbegin) begin; decltype(mlength) length; }
+    result{mbegin, mlength};
   return result;
 };
 ```
@@ -814,19 +823,19 @@ const auto match_n = [](auto&& view, auto color, const int max_match_length = 3)
 ##Match-N (tests)
 
 ```cpp
-"match n fail"_test = [] {                   "match n success 4"_test = [] {
-  int v[] = {1, 3, 2, 3, 2};                   int v[] = {1, 3, 3, 3, 3, 2};
-  auto m = match_n(v, 3);                      auto m = match_n(v, 3);
-  expect(0 == m.begin);                        expect(1 == m.begin);
-  expect(0 == m.length);                       expect(4 == m.length);
-};                                           };
+"match n fail"_test = [] {        "match n success 4"_test = [] {
+  int v[] = {1, 3, 2, 3, 2};        int v[] = {1, 3, 3, 3, 3, 2};
+  auto m = match_n(v, 3);           auto m = match_n(v, 3);
+  expect(0 == m.begin);             expect(1 == m.begin);
+  expect(0 == m.length);            expect(4 == m.length);
+};                                };
 
-"match n success 3"_test = [] {              "match n success 5"_test = [] {
-  int v[] = {1, 3, 3, 3, 2};                   int v[] = {1, 2, 3, 3, 3, 3, 3, 1, 2};
-  auto m = match_n(v, 3);                      auto m = match_n(v, 3);
-  expect(1 == m.begin);                        expect(2 == m.begin);
-  expect(3 == m.length);                       expect(5 == m.length);
-};                                           };
+"match n success 3"_test = [] {   "match n success 5"_test = [] {
+  int v[] = {1, 3, 3, 3, 2};        int v[] = {1, 2, 3, 3, 3, 3, 3, 2};
+  auto m = match_n(v, 3);           auto m = match_n(v, 3);
+  expect(1 == m.begin);             expect(2 == m.begin);
+  expect(3 == m.length);            expect(5 == m.length);
+};                                };
 ```
 
 ----
@@ -837,7 +846,7 @@ const auto match_n = [](auto&& view, auto color, const int max_match_length = 3)
 ```cpp
        | 2 3 4 5 |            | 2 3  4  5 |    | 2 3  4  5 |
        | 7 7 9 3 |            | 7 7  9  3 |    | 7 7  9  3 |
-match: | 3 4 5 3 | => n:10 -> | 3 4 [5] 3 | => | 3 4 [5] 3 | => true
+match: | 3 4 5 3 | => n:10 => | 3 4 [5] 3 | => | 3 4 [5] 3 | => true
        | 1 3 5 1 |            | 1 3  5  1 |    | 1 3 [5] 1 |
        | 2 1 5 8 |            | 2 1  5  8 |    | 2 1 [5] 8 |
 ```
@@ -846,7 +855,7 @@ match: | 3 4 5 3 | => n:10 -> | 3 4 [5] 3 | => | 3 4 [5] 3 | => true
 ```cpp
        | 2 3 4 5 |            | 2 3 4  5  |    | 2 3 4 5 |
        | 7 7 9 3 |            | 7 7 9  3  |    | 7 7 9 3 |
-match: | 3 4 5 3 | => n:11 -> | 3 4 5 [3] | => | 3 4 5 3 | => false
+match: | 3 4 5 3 | => n:11 => | 3 4 5 [3] | => | 3 4 5 3 | => false
        | 1 3 5 1 |            | 1 3 5  1  |    | 1 3 5 1 |
        | 2 1 5 8 |            | 2 1 5  8  |    | 2 1 5 8 |
 ```
@@ -885,16 +894,18 @@ const auto is_match = [](auto&& view, auto n, auto width) {
 ```cpp
        | 1 2 3 4 5 |            | 1  2 3  4  5 |    | 1  2   3   4  5 |
        | 6 7 7 9 3 |            | 6  7 7  9  3 |    | 6  7   7   9  3 |
-match: | 2 5 5 5 3 | => n:13 -> | 2  5 5 [5] 3 | => | 2 [5] [5] [5] 3 | => [11, 12, 13, 18, 23]
+match: | 2 5 5 5 3 | => n:13 => | 2  5 5 [5] 3 | => | 2 [5] [5] [5] 3 |
        | 2 1 3 5 1 |            | 2  1 3  5  3 |    | 2  1   3  [5] 3 |
        | 4 2 1 5 8 |            | 4  2 1  5  8 |    | 4  2   1  [5] 8 |
+
+    => [11, 12, 13, 18, 23]
 ```
 
 ####No Match
 ```cpp
        | 1 2 3 4 5 |           | [1] 2 3 4 5 |    | [1] 2 3 4 5 |
        | 6 7 7 9 3 |           |  6  7 7 9 3 |    |  6  7 7 9 3 |
-match: | 2 5 5 5 3 | => n:1 -> |  2  5 5 5 3 | => |  2  5 5 5 3 | => []
+match: | 2 5 5 5 3 | => n:1 => |  2  5 5 5 3 | => |  2  5 5 5 3 | => []
        | 2 1 3 5 1 |           |  2  1 3 5 3 |    |  2  1 3 5 3 |
        | 4 2 1 5 8 |           |  4  2 1 5 8 |    |  4  2 1 5 8 |
 ```
@@ -906,17 +917,20 @@ match: | 2 5 5 5 3 | => n:1 -> |  2  5 5 5 3 | => |  2  5 5 5 3 | => []
 ```cpp
 const auto match = [](auto&& view, auto n, auto width) {
   const auto color = view[n];
-  const auto x = n % width;
-  const auto y = n / width;
+  const auto x = n % width, y = n / width;
   const auto match_r = match_n(row(view, y, width), color);
   const auto match_c = match_n(col(view, x, width), color);
   const auto transform = [](auto length, auto expr) {
     return view::ints | view::take(length) | view::transform(expr);
   };
+```
 
+```cpp
   std::vector<decltype(n)> result = view::concat(
-      transform(match_r.length, [=](auto i) { return y * width + match_r.begin + i; }),
-      transform(match_c.length, [=](auto i) { return (match_c.begin + i) * width + x; }));
+    transform(match_r.length,
+      [=](auto i) { return y * width + match_r.begin + i; }),
+    transform(match_c.length,
+      [=](auto i) { return (match_c.begin + i) * width + x; }));
   result |= action::sort | action::unique;
   return result;
 };
@@ -944,7 +958,7 @@ const auto match = [](auto&& view, auto n, auto width) {
 
 ```cpp
         | 1 1 3 |                     | 1  1  3 |    | 1 0 3 |
-scroll: | 3 0 5 | => n:4, width: 3 -> | 3 [0] 5 | -> | 3 1 5 |
+scroll: | 3 0 5 | => n:4, width: 3 => | 3 [0] 5 | => | 3 1 5 |
         | 6 0 8 |                     | 6  0  8 |    | 6 0 8 |
 ```
 
@@ -954,7 +968,8 @@ scroll: | 3 0 5 | => n:4, width: 3 -> | 3 [0] 5 | -> | 3 1 5 |
 
 ```cpp
 const auto scroll = [](auto&& view, auto n, auto width) {
-  const auto&& c = col(view, n % width, width) | view::take(n / width + 1);
+  const auto&& c =
+    col(view, n % width, width) | view::take(n / width + 1);
   auto begin = begin(c);
   advance(begin, n / width);
   rotate(c, begin);
@@ -996,20 +1011,21 @@ const auto scroll = [](auto&& view, auto n, auto width) {
 ##Show board
 
 ```cpp
-const auto show_board = [](const board& b, iview& v) { for(auto pos : b)
-                            ^               ^            v.show_grid(pos.x, pos.y, b[pos]);
-                            |               |        };
-                          where these came from?
+const auto show_board =
+  [](const board& b, iview& v) { for(auto pos : b) v.show_grid(
+           ^         ^             pos.x, pos.y, b[pos]);
+           |         |         }
+           |         | Where these came from?
 ```
 
 ####From main
 ```cpp
-                           ^                ^
-   /-----------------------/                |
+           ^         ^
+   /------/          \______________________
   |                                         |
   |     configuration -> di::bind<iview>.to<sdl_view>()
-  |     main -> injector.create<match3::game>(); // automatically injected by DI
-  |                       |
+  |     main -> injector.create<match3::game>();
+  |                       | // automatically injected by DI
   \ _____________________/
 ```
 
@@ -1020,19 +1036,22 @@ const auto show_board = [](const board& b, iview& v) { for(auto pos : b)
 
 ####Different types
 ```cpp
-const auto show_board = [](const board& b, const shared_ptr<iview>& v); // OK
+const auto show_board =
+  [](const board& b, const shared_ptr<iview>& v); // OK
 ```
 
 ####Different order
 ```cpp
-const auto show_board = [](iview& v, const board& b); // OK
+const auto show_board =
+  [](iview& v, const board& b); // OK
 ```
 
 ####Plus event
 ```cpp
-const auto show_board = [](iview& v, const auto& event, const board& b); // OK
-                                     ^
-                                     \__ from sm.process_event(event)
+const auto show_board =
+  [](iview& v, const auto& event, const board& b); // OK
+                     ^
+                     \__ from sm.process_event(event)
 ```
 
 ----
@@ -1062,8 +1081,9 @@ struct down {
 ##Select Item
 
 ```cpp
-const auto select_item = [](const auto& event, const iview& v, selected& s) {
-  s.emplace_back(v.get_position(event.x, event.y));
+const auto select_item =
+  [](const auto& event, const iview& v, selected& s) {
+    s.emplace_back(v.get_position(event.x, event.y));
 };
 ```
 
@@ -1088,17 +1108,19 @@ const auto select_item = [](const auto& event, const iview& v, selected& s) {
 ```cpp
 "second item"_s + event<up> [ is_allowed ] / select_item, swap_items = "match items"_s
 ```
+ <!-- .element: style="margin-left:-5%; width:110%" -->
 
 ----
 
 ##Is Allowed
 
 ```cpp
-const auto is_allowed = [](const view& v, const selected& s, const auto& event) {
-  assert(!s.empty());
-  const auto _1 = s.back();
-  const auto _2 = v.get_position(event.x, event.y);
-  return 1 == std::abs(_1 - _2);
+const auto is_allowed =
+  [](const view& v, const selected& s, const auto& event) {
+    assert(!s.empty());
+    const auto _1 = s.back();
+    const auto _2 = v.get_position(event.x, event.y);
+    return 1 == std::abs(_1 - _2);
 };
 ```
 
@@ -1122,6 +1144,7 @@ const auto is_allowed = [](const view& v, const selected& s, const auto& event) 
 ```cpp
 "second item"_s + event<up> [ not is_allowed ] / drop_item = "first item"_s
 ```
+ <!-- .element: style="margin-left:-5%; width:110%" -->
 
 ----
 
@@ -1151,6 +1174,7 @@ const auto drop_item = [](selected& s) {
 ```cpp
 "match items"_s [ is_swap_winning ] / process(matches{.arity=2}) = state<switcher>
 ```
+ <!-- .element: style="margin-left:-5%; width:110%" -->
 
 ----
 
@@ -1182,6 +1206,7 @@ const auto is_swap_winning = [](const board& b, const selected& s) {
 ```cpp
 "match items"_s [ not is_swap_winning ] / swap_items, clear_selected = "first item"_s
 ```
+ <!-- .element: style="margin-left:-5%; width:110%" -->
 
 ----
 
@@ -1261,12 +1286,14 @@ make_transition_table(
     "match items"_s   [ not is_swap_winning ] / swap_items, clear_selected = "first item"_s,
     state<switcher>                                                        = "first item"_s
 ```
+<!-- .element: style="margin-left:-10%; width:120%" -->
 
 ```cpp
   (*"ui"_s) + event<key_pressed> [ is_key(SDLK_ESCAPE) ]                 = X,
     "ui"_s  + event<quit>                                                = X
 );
 ```
+<!-- .element: style="margin-left:-10%; width:120%" -->
 
 ----
 
@@ -1284,6 +1311,7 @@ make_transition_table(
     "handle matches"_s  + event<matches> [ not has_items ] = X // final state
 );
 ```
+<!-- .element: style="margin-left:-5%; width:110%" -->
 
 ----
 
@@ -1326,7 +1354,8 @@ const auto find_matches = [](const board& b, auto& m, selected& s) {
 "find matches"_test = [] {
   board b = {1, 2, 3, 1, 1, 1, 1, 2, 3};
   selected s = {1, 3};
-  struct { int arity; std::vector<color_t> matches = {}; } event{s.size()};
+  struct { int arity; std::vector<color_t> matches = {}; }
+    event{s.size()};
 
   find_matches(b, event, s);
 
@@ -1363,7 +1392,7 @@ const auto scroll_board = [](board& b, const auto& matches) {
 ```cpp
 const auto generate_new = [](board& b, const auto& m
                           , const std::function<color_t()>& random) {
-  for (auto match : m.matches) 
+  for (auto match : m.matches)
     b[match] = random();
 };
 ```
@@ -1391,7 +1420,7 @@ const auto generate_new = [](board& b, const auto& m
 ##Compile & Run
 
 ```sh
-$em++ -std=c++14 
+$em++ -std=c++14
       -s USE_SDL=2 -s USE_SDL_IMAGE=2 -s USE_SDL_TTF=2 #SDL2 port
       -s BINARYEN=1 # WebAssembly (asm2wasm)
       --preload-file data # images and fonts
@@ -1417,20 +1446,19 @@ $browser index.html
 ###Asm.js - match3.js
 
 ```js
-...
-function RJ(a,b,d,e,f,h,j){a=a|0;b=b|0;d=d|0;e=e|0;f=+f;h=+h;j=+j;var k=0,l=0,m=0,n=0
-function _z(b,e){b=b|0;e=e|0;var f=0,g=0,h=0,j=0,k=0,l=0,m=0,n=0,o=0,p=0,q=0,r=0,s=0,
-function Ou(f,g,h){f=f|0;g=g|0;h=h|0;var i=0,j=0,k=0,l=0,m=0,n=0,o=0,p=0,q=0,r=0,s=0,
-function an(a,b){a=a|0;b=b|0;var d=0,e=0,f=0,g=0,h=0,i=0,j=0,k=0,l=0,m=0,n=0,o=0,p=0;
-function Mr(b,d){b=b|0;d=d|0;var e=0,f=0,g=0,h=0,i=0,j=0,k=0,l=0,m=0,n=0,o=0;e=c[b+8>
-function ox(d,f){d=d|0;f=f|0;var g=0,h=0,j=0,k=0,l=0,m=0,n=0,o=0,p=0,q=0,r=0,s=0,t=0,
-function Ag(a){a=a|0;var b=0;b=i;i=i+a|0;i=i+15&-16;return b|0}function Bg(){return i
-function kD(a){a=a|0;var b=0,d=0,e=0,f=0,g=0,h=0,i=0,j=0,k=0,l=0,m=0,n=0,o=0,p=0,q=0,
-function Op(e,f,g,h,j,k,l,m){e=e|0;f=f|0;g=g|0;h=h|0;j=j|0;k=k|0;l=l|0;m=m|0;var n=0,
-function oI(f,g,h,i,j,k,l){f=f|0;g=g|0;h=h|0;i=i|0;j=j|0;k=k|0;l=l|0;var m=0,n=0,o=0,
-function lF(b){b=b|0;var e=0,f=0,g=0,h=0,i=0,j=0,k=0,l=0,m=0,n=0,o=0,p=0,q=0,r=0,s=0,
-function LE(b){b=b|0;var f=0,g=0,h=0,i=0,j=0,k=0,l=0,m=0,n=0,o=0,p=0,q=0,r=0,s=0,t=0,
-function LP(a){a=a|0;var b=0,d=0,e=0,f=0,g=0,h=0,j=0,k=0,l=0,m=0,n=0,o=0,p=0,q=0,r=0,
+function RJ(a,b,d,e,f,h,j){a=a|0;b=b|0;d=d|0;e=e|0;f=+f;h=+h;...
+function _z(b,e){b=b|0;e=e|0;var f=0,g=0,h=0,j=0,k=0,l=0,m=0,...
+function Ou(f,g,h){f=f|0;g=g|0;h=h|0;var i=0,j=0,k=0,l=0,m=0,...
+function an(a,b){a=a|0;b=b|0;var d=0,e=0,f=0,g=0,h=0,i=0,j=0,...
+function Mr(b,d){b=b|0;d=d|0;var e=0,f=0,g=0,h=0,i=0,j=0,k=0,...
+function ox(d,f){d=d|0;f=f|0;var g=0,h=0,j=0,k=0,l=0,m=0,n=0,...
+function Ag(a){a=a|0;var b=0;b=i;i=i+a|0;i=i+15&-16;return b|...
+function kD(a){a=a|0;var b=0,d=0,e=0,f=0,g=0,h=0,i=0,j=0,k=0,...
+function Op(e,f,g,h,j,k,l,m){e=e|0;f=f|0;g=g|0;h=h|0;j=j|0;k=...
+function oI(f,g,h,i,j,k,l){f=f|0;g=g|0;h=h|0;i=i|0;j=j|0;k=k|...
+function lF(b){b=b|0;var e=0,f=0,g=0,h=0,i=0,j=0,k=0,l=0,m=0,...
+function LE(b){b=b|0;var f=0,g=0,h=0,i=0,j=0,k=0,l=0,m=0,n=0,...
+function LP(a){a=a|0;var b=0,d=0,e=0,f=0,g=0,h=0,j=0,k=0,l=0,...
 ...
 ```
 
@@ -1491,6 +1519,8 @@ function LP(a){a=a|0;var b=0,d=0,e=0,f=0,g=0,h=0,j=0,k=0,l=0,m=0,n=0,o=0,p=0,q=0
 | Range-V3 | https://github.com/ericniebler/range-v3 |
 | Boost.DI (Propsed) | https://github.com/boost-experimental/di |
 | Boost.SML (Propsed) | https://github.com/boost-experimental/sml |
+<!-- .element: style="margin-left:-15%; width:130%" -->
+
 					</script>
 				</section>
 
