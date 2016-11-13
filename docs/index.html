@@ -66,7 +66,6 @@
     </div>
     <div class="emscripten">
       <input class="keepcentered" id="play-button" type="button" value="Play" onclick="RequestFullScreen()">
-      <hr />
       <a class="github-button" href="https://github.com/modern-cpp-examples/match3" data-style="mega" data-count-href="/modern-cpp-examples/match3/stargazers" data-count-api="/repos/modern-cpp-examples/match3#stargazers_count" data-count-aria-label="# stargazers on GitHub" aria-label="Star modern-cpp-examples/match3 on GitHub">GitHub</a>
     </div>
 
@@ -144,22 +143,18 @@
     </script>
     <script>
 
-          (function() {
-            var memoryInitializer = 'index.html.mem';
-            if (typeof Module['locateFile'] === 'function') {
-              memoryInitializer = Module['locateFile'](memoryInitializer);
-            } else if (Module['memoryInitializerPrefixURL']) {
-              memoryInitializer = Module['memoryInitializerPrefixURL'] + memoryInitializer;
-            }
-            var xhr = Module['memoryInitializerRequest'] = new XMLHttpRequest();
-            xhr.open('GET', memoryInitializer, true);
-            xhr.responseType = 'arraybuffer';
-            xhr.send(null);
-          })();
+          var xhr = new XMLHttpRequest();
+          xhr.open('GET', 'index.wasm', true);
+          xhr.responseType = 'arraybuffer';
+          xhr.onload = function() {
+            Module.wasmBinary = xhr.response;
 
           var script = document.createElement('script');
           script.src = "index.js";
           document.body.appendChild(script);
+
+          };
+          xhr.send(null);
 
 </script>
     <script async defer id="github-bjs" src="https://buttons.github.io/buttons.js"></script>
