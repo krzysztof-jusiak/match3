@@ -103,28 +103,24 @@ http://modern-cpp-examples.github.io/match3
 
 ##Emscripten
 
-> Emscripten is an LLVM-based project that compiles C and C++ into highly-optimizable JavaScript in asm.js format
+> Emscripten is an LLVM-based project that compiles C and C++ into highly-optimizable JavaScript in asm.js format or WebAssembly
 
-C++ => LLVM => Emscripten => JavaScript (asm.js)
+C++ => LLVM => Emscripten => JavaScript (asm.js) => [optional] WebAssembly
 
-```cpp
-#include <iostream>
-int main() {
-  std::cout << "hello world!" << '\n';
-}
-```
-
+####Compile
 ```sh
-$em++ hello_world.cpp -o index.html
+$em++ file.cpp -o index.html
 ```
 
+####Run
 ```sh
-$browser index.html
+$browser example.html
 ```
-
 -----
 
 ##ASM.JS
+
+> asm.js is an intermediate programming language designed to allow system programming languages to be run as web applications with more speed than JavaScript
 
 ###asm.js consists of a strict subset of JavaScript
 * Statically-typed
@@ -132,31 +128,6 @@ $browser index.html
 * ~ 2x slower than native
 
 ----
-
-##ASM.JS example
-
-####C++
-```cpp
-size_t strlen(char *ptr) {
-  char *curr = ptr;
-  while (*curr != '\0') curr++;
-  return curr − ptr;
-}
-```
-
-####ASM.JS
-```js
-function strlen(ptr) {
-  ptr = ptr|0; // 32 bit integer
-  var curr = 0;
-  curr = ptr;
-  while (MEM8[curr]|0 != 0) // "heap" view
-    curr = (curr + 1)|0;
-  return (curr − ptr)|0;
-}
-```
-
------
 
 ##WebAssembly
 
@@ -166,38 +137,73 @@ function strlen(ptr) {
 * Memory safe
 * Native speed
 
----
+| | |
+|-|-|
+| Binaryen (Compiler) | https://github.com/WebAssembly/binaryen |
+| WebAssembly Explorer | <a href="http://mbebenita.github.io/WasmExplorer" data-preview-link>http://mbebenita.github.io/WasmExplorer</a> |
+<!-- .element: style="margin-left:-10%; width:120%" -->
 
-<a href="http://mbebenita.github.io/WasmExplorer" data-preview-link>http://mbebenita.github.io/WasmExplorer</a>
+----
+
+##Add Examaple
+
+```cpp
+int add(int l, int r) {
+  return l + r;
+}
+```
+
+####Compile to asm.js
+```sh
+$em++ add.cpp -ASM_JS=1 -o add.html && $browser add.html
+```
+
+####Compile to webassembly (asm2wasm)
+```sh
+$em++ add.cpp -s BINARYEN=1 -o add.html && $browser add.html
+```
+
+----
+
+##Asm.js
+```js
+function add(l, r) {
+  return (l + r)|0; // 32 bit integer
+}
+```
 
 -----
 
-##WebAssembly Example
+##Add.wast (WebAssembly AST)
 
-####C++
 ```cpp
-size_t strlen(char *); // same as before
+(module
+  (memory 1)
+  (export "memory" memory)
+  (export "_Z3addii" $_Z3addii)
+  (func $_Z3addii (param $0 i32) (param $1 i32) (result i32)
+    (return
+      (i32.add
+        (get_local $1)
+        (get_local $0)
+      )
+    )
+  )
+)
 ```
 
-####Wasm
+----
+
+##add.wasm (WebAssembly ASM)
+
 ```cpp
- sub rsp, 8                            ; 0x000020 48 83 ec 08
- mov ecx, edi                          ; 0x000024 8b cf
- add ecx, -1                           ; 0x000026 83 c1 ff
-0x000029:                              ; 0x000029 from: [0x00003e]
- mov eax, ecx                          ; 0x000029 8b c1
- add eax, 1                            ; 0x00002b 83 c0 01
- movzx ecx, byte ptr [r15 + rcx + 1]   ; 0x00002e 41 0f b6 4c 0f 01
- test ecx, ecx                         ; 0x000034 85 c9
- je 0x40                               ; 0x000036 0f 84 04 00 00 00
-0x00003c:
- mov ecx, eax                          ; 0x00003c 8b c8
- jmp 0x29                              ; 0x00003e eb e9
-0x000040:
- sub eax, edi                          ; 0x000040 2b c7
- nop                                   ; 0x000042 66 90
- add rsp, 8                            ; 0x000044 48 83 c4 08
- ret                                   ; 0x000048 c3
+wasm-function[0]:
+  sub rsp, 0x18                         ; 0x000020 48 83 ec 18
+  mov eax, esi                          ; 0x000024 8b c6
+  add eax, edi                          ; 0x000026 03 c7
+  nop                                   ; 0x000028 66 90
+  add rsp, 0x18                         ; 0x00002a 48 83 c4 18
+  ret                                   ; 0x00002e c3
 ```
 
 -----
@@ -211,8 +217,6 @@ https://github.com/ericniebler/range-v3
 ----
 
 ##Range-v3
-
----
 
 * Header only
 * Requirements
@@ -240,8 +244,6 @@ int main() {
 }
 ```
 
----
-
 ```sh
 time $CXX -std=c++11 hello_world.cpp # 0.921s
 ```
@@ -255,8 +257,6 @@ time $CXX -std=c++11 hello_world.cpp # 0.921s
 
 ##Range-v3 - Views
 
----
-
 ####Non-mutable custom snapshot of a sequence
 
 ```cpp
@@ -269,8 +269,6 @@ assert(ranges::equal(rng, {4, 5}));
 
 ##Range-v3 - Actions
 
----
-
 ####Mutate in place
 
 ```cpp
@@ -282,8 +280,6 @@ assert(ranges::equal(vi, {1,2,3,4}));
 ----
 
 ##Range-v3 - Algorithms
-
----
 
 ####Functions for a variety of purposes
 
@@ -303,8 +299,6 @@ https://github.com/boost-experimental/di
 ----
 
 ##Boost.DI
-
----
 
 * One header - 3k LOC - (boost/di.hpp) / generated
 * Neither Boost nor STL is required
@@ -440,8 +434,6 @@ https://github.com/boost-experimental/sml
 -----
 
 ##Boost.SML
-
----
 
 * One header - 2k LOC - (boost/sml.hpp) / generated
 * Neither Boost nor STL is required
@@ -1109,7 +1101,7 @@ const auto select_item =
 ```cpp
 "second item"_s + event<up> [ is_allowed ] / select_item, swap_items = "match items"_s
 ```
- <!-- .element: style="margin-left:-5%; width:110%" -->
+<!-- .element: style="margin-left:-5%; width:110%" -->
 
 ----
 
@@ -1145,7 +1137,7 @@ const auto is_allowed =
 ```cpp
 "second item"_s + event<up> [ not is_allowed ] / drop_item = "first item"_s
 ```
- <!-- .element: style="margin-left:-5%; width:110%" -->
+<!-- .element: style="margin-left:-5%; width:110%" -->
 
 ----
 
@@ -1175,7 +1167,7 @@ const auto drop_item = [](selected& s) {
 ```cpp
 "match items"_s [ is_swap_winning ] / process(matches{.arity=2}) = state<switcher>
 ```
- <!-- .element: style="margin-left:-5%; width:110%" -->
+<!-- .element: style="margin-left:-5%; width:110%" -->
 
 ----
 
@@ -1207,7 +1199,7 @@ const auto is_swap_winning = [](const board& b, const selected& s) {
 ```cpp
 "match items"_s [ not is_swap_winning ] / swap_items, clear_selected = "first item"_s
 ```
- <!-- .element: style="margin-left:-5%; width:110%" -->
+<!-- .element: style="margin-left:-5%; width:110%" -->
 
 ----
 
@@ -1422,12 +1414,12 @@ const auto generate_new = [](board& b, const auto& m
 
 ###Compile
 ```sh
-$em++ -std=c++14
+$em++ -std=c++14 src/main.cpp
       -s USE_SDL=2 -s USE_SDL_IMAGE=2 -s USE_SDL_TTF=2 #SDL2 port
       -s BINARYEN=1 # WebAssembly (asm2wasm)
       --preload-file data # images and fonts
       --use-preload-plugins # load data
-      -o index.html src/main.cpp
+      -o index.html
 ```
 
 ###Run
@@ -1437,7 +1429,43 @@ $browser index.html
 
 ----
 
-###Asm.js - match3.js
+##Match-3 details
+
+| File         | Size | Type | Description            |
+| ------------ | ---- | ---- | ---------------------- |
+| index.html   | 6.4K | HTML | Emscripten/WebAssembly |
+| index.js     | 9.6M | JS   | Asm.js / Emscripten    |
+| index.data   | 720K | BIN  | Data / Emscripten      |
+| index.wast   |  30M | TXT  | WebAssemlby AST        |
+| index.wasm   | 1.4M | BIN  | Webassembly BIN        |
+
+----
+
+##index.html
+
+````cpp
+<html lang="en-us">
+  <head>
+    <title>Match3</title>
+  </head>
+  ...
+  var xhr = new XMLHttpRequest();
+  xhr.open('GET', 'index.wasm', true);
+  xhr.responseType = 'arraybuffer';
+  xhr.onload = function() {
+    Module.wasmBinary = xhr.response;
+    var script = document.createElement('script');
+    script.src = "index.js";
+    document.body.appendChild(script);
+  };
+  xhr.send(null);
+  ...
+</html>
+```
+
+----
+
+###index.asm.js (ASM.jS)
 
 ```js
 function RJ(a,b,d,e,f,h,j){a=a|0;b=b|0;d=d|0;e=e|0;f=+f;h=+h;...
@@ -1458,7 +1486,7 @@ function LP(a){a=a|0;var b=0,d=0,e=0,f=0,g=0,h=0,j=0,k=0,l=0,...
 
 ----
 
-##WebAssembly - match.wasm
+##index.wasm (WebAssembly BIN)
 
 ```
 0000000: 4243 c0de 3514 0000 0500 0000 620c 3024  BC..5.......b.0$
