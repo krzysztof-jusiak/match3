@@ -141,18 +141,14 @@ struct controller {
       //, "wait for first item"_s  <=   "wait_for_click"_s       + event<up>          / reset_and_show
     return make_transition_table(
      // +--------------------------------------------------------------------------------------------------------------------------------------------+
-        (*"idle"_s)                    / reset_and_show                       = "first item"_s,
-         "first item"_s  + event<down> / select_item                          = "second item"_s,
-         "second item"_s + event<up>   [ is_allowed ] / select_and_swap_items = "match items"_s,
-         "second item"_s + event<up>   / drop_item                            = "first item"_s,
+        (*"idle"_s)                    / reset_and_show                          = "first item"_s,
+         "first item"_s  + event<down> / select_item                             = "second item"_s,
+         "second item"_s + event<up>   [ is_allowed ] / select_and_swap_items    = "match items"_s,
+         "second item"_s + event<up>   / drop_item                               = "first item"_s,
          "match items"_s               [ is_swap_items_winning ] /
-                                         ([](moves& m) {--m;},
-                                          show_moves,
-                                          process(matches{.arity = 2}))       = "switcher"_s.sm<switcher>(),
-         "match items"_s + event<up>   / (swap_items,
-                                          show_swap,
-                                          clear_selected)                     = "first item"_s,
-         "switcher"_s.sm<switcher>() + event<down> / select_item              = "second item"_s,
+                                          process(matches{.arity=2})             = "switcher"_s.sm<switcher>(),
+         "match items"_s               / (swap_items, show_swap, clear_selected) = "first item"_s,
+         "switcher"_s.sm<switcher>()                                             = "first item"_s
      // +--------------------------------------------------------------------------------------------------------------------------------------------+
          (*"is click"_s) + event<key_pressed> [ is_key(SDLK_ESCAPE) ]         = X,
            "is click"_s  + event<quit>                                        = X
