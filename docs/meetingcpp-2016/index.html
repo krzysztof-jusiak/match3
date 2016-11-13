@@ -87,7 +87,7 @@ Kris Jusiak
 
 ----
 
-##Play it in the browser on your device!
+##Play it in a browser on your device!
 
 <img src="images/mobile.png" width="20%" />
 
@@ -334,8 +334,8 @@ struct hello : ihello {};
 
 ```cpp
 struct hello_world {
-  hello_world(const ihello&, const iworld&); // DI handles order and types
-};                  ^              ^
+  hello_world(const ihello&, const iworld&); // DI handles
+};                  ^              ^         // order and types
                     |              \------------\
                     \----------------------\    |
 int main() {                               |    |
@@ -763,7 +763,7 @@ col: | 3 4 5 | => n:1 => | 3 [4] 5 |
 
 ```cpp
 const auto col = [](auto&& view, auto n, auto width) {
-  return view | view::drop(n) | view::stride(int(width));
+  return view | view::drop(n) | view::stride(width);
 };
 ```
 
@@ -1015,18 +1015,19 @@ const auto show_board =
   [](const board& b, iview& v) { for(auto pos : b) v.show_grid(
            ^         ^             pos.x, pos.y, b[pos]);
            |         |         }
-           |         | Where these came from?
+           |         |
+           |         | // Where these came from?
 ```
 
 ####From main
 ```cpp
-           ^         ^
+           |         |
    /------/          \______________________
   |                                         |
   |     configuration -> di::bind<iview>.to<sdl_view>()
   |     main -> injector.create<match3::game>();
-  |                       | // automatically injected by DI
-  \ _____________________/
+  |                      | // automatically injected by DI
+  \ ____________________/
 ```
 
 ----
@@ -1037,19 +1038,19 @@ const auto show_board =
 ####Different types
 ```cpp
 const auto show_board =
-  [](const board& b, const shared_ptr<iview>& v); // OK
+  [](const board& b, const shared_ptr<iview>& v); // OK -> DI
 ```
 
 ####Different order
 ```cpp
 const auto show_board =
-  [](iview& v, const board& b); // OK
+  [](iview& v, const board& b); // OK -> DI
 ```
 
 ####Plus event
 ```cpp
 const auto show_board =
-  [](iview& v, const auto& event, const board& b); // OK
+  [](iview& v, const auto& event, const board& b); // OK -> DI
                      ^
                      \__ from sm.process_event(event)
 ```
@@ -1061,8 +1062,8 @@ const auto show_board =
 ![player2](images/player2.png)
 
 ```cpp
-struct down {
-  static constexpr auto id = SDL_MOUSEBUTTONDOWN;
+struct down { // event
+  static constexpr auto id = SDL_MOUSEBUTTONDOWN; // identifier
 
   explicit down(const SDL_Event& event)
       : x(event.button.x), y(event.button.y)) {}
@@ -1120,7 +1121,7 @@ const auto is_allowed =
     assert(!s.empty());
     const auto _1 = s.back();
     const auto _2 = v.get_position(event.x, event.y);
-    return 1 == std::abs(_1 - _2);
+    return 1 == std::abs(_1 - _2); // is neighbour
 };
 ```
 
@@ -1256,8 +1257,8 @@ state<switcher> = "first item"_s
 ##Is key
 
 ```cpp
-const auto is_key = [](int Key) {
-  return [=](auto event) { return event.key == Key; };
+const auto is_key = [](int key) {
+  return [=](auto event) { return event.key == key; };
 };
 ```
 
@@ -1284,13 +1285,13 @@ make_transition_table(
     "second item"_s + event<up> [ not is_allowed ] / drop_item             = "first item"_s,
     "match items"_s   [ is_swap_winning ] / process(matches{.arity=2})     = state<switcher>,
     "match items"_s   [ not is_swap_winning ] / swap_items, clear_selected = "first item"_s,
-    state<switcher>                                                        = "first item"_s
+    state<switcher>                                                        = "first item"_s,
 ```
 <!-- .element: style="margin-left:-10%; width:120%" -->
 
 ```cpp
-  (*"ui"_s) + event<key_pressed> [ is_key(SDLK_ESCAPE) ]                 = X,
-    "ui"_s  + event<quit>                                                = X
+ (*"ui"_s) + event<key_pressed> [ is_key(SDLK_ESCAPE) ]                    = X,
+   "ui"_s  + event<quit>                                                   = X
 );
 ```
 <!-- .element: style="margin-left:-10%; width:120%" -->
@@ -1344,9 +1345,8 @@ const auto process_match = (
 
 ```cpp
 const auto find_matches = [](const board& b, auto& m, selected& s) {
-  for (item : selected)
-     m.matches |= action::push_back(b.match(item)));
-   m.matches = | action::sort | action::unique;
+  for (item : selected) m.matches |= action::push_back(b.match(item)));
+  m.matches = | action::sort | action::unique;
 };
 ```
 
@@ -1376,12 +1376,12 @@ const auto scroll_board = [](board& b, const auto& matches) {
 
 ```cpp
 "scroll board"_test = [] {
-  board b{{4, 3, 3, 3, 2, 2, 0, 0, 0}, config{.board_width = 3}};
+  board b = {4, 3, 3, 3, 2, 2, 0, 0, 0};
   struct { std::vector<color_t> matches; } event{{6, 7, 8}};
 
   scroll_board(b, event);
 
-  expect(equal({0, 0, 0, 4, 3, 3, 3, 2, 2}, b.grids));
+  expect(equal({0, 0, 0, 4, 3, 3, 3, 2, 2}, b));
 };
 ```
 
@@ -1392,8 +1392,7 @@ const auto scroll_board = [](board& b, const auto& matches) {
 ```cpp
 const auto generate_new = [](board& b, const auto& m
                           , const std::function<color_t()>& random) {
-  for (auto match : m.matches)
-    b[match] = random();
+  for (auto match : m.matches) b[match] = random();
 };
 ```
 
@@ -1413,12 +1412,15 @@ const auto generate_new = [](board& b, const auto& m
 
 ----
 
-#Done!
+<img  style="background:none; border:none; box-shadow:none;" src="images/done.png" />
 
-----
+==============================================================================
 
 ##Compile & Run
 
+----
+
+###Compile
 ```sh
 $em++ -std=c++14
       -s USE_SDL=2 -s USE_SDL_IMAGE=2 -s USE_SDL_TTF=2 #SDL2 port
@@ -1428,18 +1430,10 @@ $em++ -std=c++14
       -o index.html src/main.cpp
 ```
 
-###Open in a browser
+###Run
 ```sh
 $browser index.html
 ```
-
-==============================================================================
-
-##Demo / C++14 game on the slide!
-
-<div class="stretch">
-  <iframe src="http://modern-cpp-examples.github.io/match3" height="100%" width="100%" />
-</div>
 
 ----
 
@@ -1484,6 +1478,14 @@ function LP(a){a=a|0;var b=0,d=0,e=0,f=0,g=0,h=0,j=0,k=0,l=0,...
 00000e0: dac0 1ce4 211c daa1 1cda 001e de21 1ddc  ....!........!..
 ...
 ```
+
+==============================================================================
+
+##Demo / C++14 on the slide!
+
+<div class="stretch">
+  <iframe src="http://modern-cpp-examples.github.io/match3" height="100%" width="100%" />
+</div>
 
 ==============================================================================
 
