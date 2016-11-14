@@ -8,7 +8,6 @@
 #pragma once
 
 #include "config.hpp"
-#include "pph.hpp"
 #include "view/icanvas.hpp"
 
 namespace match3 {

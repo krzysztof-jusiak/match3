@@ -95,14 +95,4 @@ int main() {
     scroll(v, 7, 3);
     expect(ranges::equal({1, 0, 3, 4, 0, 2, 7, 1, 3}, v));
   };
-
-  "affected"_test = [] {
-    std::vector<int> v{4, 5};
-    expect(ranges::equal({1, 2, 4, 5}, affected(v, 3)));
-  };
-
-  "affected all"_test = [] {
-    std::vector<int> v{0, 1, 2};
-    expect(ranges::equal(v, affected(v, 3)));
-  };
 }

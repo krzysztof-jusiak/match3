@@ -9,12 +9,12 @@
 #include "common/logger.hpp"
 #include "common/mocks_provider.hpp"
 #include "config.hpp"
-#include "controller/controller.hpp"
+#include "controller/player.hpp"
 #include "model/board.hpp"
 #include "pph.hpp"
 
 namespace di = boost::di;
-namespace msm = boost::msm::lite;
+namespace slm = boost::sml;
 
 template <class T>
 auto make_click_event(int x, int y) {
@@ -40,23 +40,23 @@ int main() {
     constexpr auto moves = 1;
 
     // clang-format off
-  auto injector = di::make_injector<mocks_provider>(
-    di::bind<>.to(match3::config{"", 0, 0, 7, 10, 5, moves, 3})
-  , di::bind<match3::board::color_t[]>.to({
-        /*0 1 2 3 4 5 6*/
-    /*0*/ 3,5,1,4,3,2,2,
-    /*1*/ 1,1,4,2,5,1,3,
-    /*2*/ 5,3,5,4,5,3,2,
-    /*3*/ 4,4,2,1,3,4,5,
-    /*4*/ 5,1,1,2,4,5,1,
-    /*5*/ 5,2,3,5,4,2,1,
-    /*6*/ 1,5,5,1,5,5,4,
-    /*7*/ 2,3,3,1,3,3,4,
-    /*8*/ 3,2,2,5,4,4,1,
-    /*9*/ 1,2,3,4,1,3,4
-    })
-  , di::bind<match3::randomize>.to([](int, int) { static auto i = 42; return i++; })
-  );
+    const auto injector = di::make_injector<mocks_provider>(
+      di::bind<>.to(match3::config{"", 0, 0, 7, 10, 5, moves, 3})
+    , di::bind<match3::board::color_t[]>.to({
+          /*0 1 2 3 4 5 6*/
+      /*0*/ 3,5,1,4,3,2,2,
+      /*1*/ 1,1,4,2,5,1,3,
+      /*2*/ 5,3,5,4,5,3,2,
+      /*3*/ 4,4,2,1,3,4,5,
+      /*4*/ 5,1,1,2,4,5,1,
+      /*5*/ 5,2,3,5,4,2,1,
+      /*6*/ 1,5,5,1,5,5,4,
+      /*7*/ 2,3,3,1,3,3,4,
+      /*8*/ 3,2,2,5,4,4,1,
+      /*9*/ 1,2,3,4,1,3,4
+      })
+    , di::bind<match3::randomize>.to([](int, int) { static auto i = 42; return i++; })
+    );
     // clang-format on
 
     expect(ranges::equal(injector.create<match3::board>().grids,
@@ -73,7 +73,7 @@ int main() {
 
     // when
     auto sm =
-        injector.create<msm::sm<match3::controller, msm::logger<my_logger>>>();
+        injector.create<sml::sm<match3::player, sml::logger<my_logger>>>();
     expect(1 == injector.create<match3::moves&>());
 
     swipe(sm, {3, 5}, {3, 6});
@@ -131,7 +131,7 @@ int main() {
                          injector.create<match3::board&>().grids));
 
     // when
-    auto sm = injector.create<msm::sm<match3::controller>>();
+    auto sm = injector.create<sml::sm<match3::player>>();
     expect(2 == injector.create<match3::moves&>());
 
     swipe(sm, {2, 1}, {2, 0});

@@ -7,11 +7,9 @@
 //
 #pragma once
 
-#include "pph.hpp"
-
 namespace match3 {
 
-struct down : sml::utility::id<SDL_FINGERDOWN, SDL_MOUSEBUTTONDOWN> {
+struct down : boost::sml::utility::id<SDL_FINGERDOWN, SDL_MOUSEBUTTONDOWN> {
   explicit down(const SDL_Event& event)
       : down(EM_ASM_INT_V({
                return / iPhone | iPad | iPod |

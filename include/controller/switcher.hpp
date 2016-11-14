@@ -19,7 +19,6 @@
 #include "controller/events/matches.hpp"
 #include "controller/guards/has_items.hpp"
 #include "controller/guards/is_item_winning.hpp"
-#include "pph.hpp"
 
 namespace sml = boost::sml;
 

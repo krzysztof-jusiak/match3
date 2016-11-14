@@ -8,7 +8,6 @@
 #pragma once
 
 #include "config.hpp"
-#include "pph.hpp"
 
 namespace match3 {
 
@@ -108,22 +107,22 @@ const auto match_n = [](auto&& view, auto color,
  * Checks whether there is a match for given position
  *
  * @param view view
- * @param value position value
+ * @param n position n
  * @param width row width
  *
  * \code{.cpp}
  *
- * | 1 2 3 4 5 |                | 1 2 3  4  5 |    | 1 2 3  4  5 |
- * | 6 7 7 9 3 |                | 6 7 7  9  3 |    | 6 7 7  9  3 |
- * | 2 3 4 5 3 | => value:13 -> | 2 3 4 [5] 3 | => | 2 3 4 [5] 3 | => true
- * | 2 1 3 5 1 |                | 2 1 3  5  1 |    | 2 1 3 [5] 1 |
- * | 4 2 1 5 8 |                | 4 2 1  5  8 |    | 4 2 1 [5] 8 |
+ * | 1 2 3 4 5 |            | 1 2 3  4  5 |    | 1 2 3  4  5 |
+ * | 6 7 7 9 3 |            | 6 7 7  9  3 |    | 6 7 7  9  3 |
+ * | 2 3 4 5 3 | => n:13 -> | 2 3 4 [5] 3 | => | 2 3 4 [5] 3 | => true
+ * | 2 1 3 5 1 |            | 2 1 3  5  1 |    | 2 1 3 [5] 1 |
+ * | 4 2 1 5 8 |            | 4 2 1  5  8 |    | 4 2 1 [5] 8 |
  *
- * | 1 2 3 4 5 |                | 1 2 [3] 4 5 |    | 1 2 3 4 5 |
- * | 6 7 7 9 3 |                | 6 7  7  9 3 |    | 6 7 7 9 3 |
- * | 2 3 4 5 3 | => value:2 ->  | 2 3  4  5 3 | => | 2 3 4 5 3 | => false
- * | 2 1 3 5 1 |                | 2 1  3  5 1 |    | 2 1 3 5 1 |
- * | 4 2 1 5 8 |                | 4 2  1  5 8 |    | 4 2 1 5 8 |
+ * | 1 2 3 4 5 |            | 1 2 [3] 4 5 |    | 1 2 3 4 5 |
+ * | 6 7 7 9 3 |            | 6 7  7  9 3 |    | 6 7 7 9 3 |
+ * | 2 3 4 5 3 | => n:2 ->  | 2 3  4  5 3 | => | 2 3 4 5 3 | => false
+ * | 2 1 3 5 1 |            | 2 1  3  5 1 |    | 2 1 3 5 1 |
+ * | 4 2 1 5 8 |            | 4 2  1  5 8 |    | 4 2 1 5 8 |
  *
  * assert(is_match([1, 2, 3, 4, 2, 6, 7, 2, 9], 1, 3));
  * assert(!is_match([1, 2, 3, 4, 3, 6, 7, 2, 9], 1, 3));
@@ -132,10 +131,10 @@ const auto match_n = [](auto&& view, auto color,
  *
  * @return true, if there is a match, false otherwise
  */
-const auto is_match = [](auto&& view, auto value, auto width) {
-  const auto color = view[value];
-  const auto x = value % width;
-  const auto y = value / width;
+const auto is_match = [](auto&& view, auto n, auto width) {
+  const auto color = view[n];
+  const auto x = n % width;
+  const auto y = n / width;
   return match_n(row(view, y, width), color).length ||
          match_n(col(view, x, width), color).length;
 };
@@ -145,16 +144,16 @@ const auto is_match = [](auto&& view, auto value, auto width) {
  * Creates a sorted and unique list of positions which matches
  *
  * @param view view`
- * @param value position value
+ * @param n position n
  * @param width row width
  *
  * \code{.cpp}
  *
- * | 1 2 3 4 5 |                 | 1  2 3  4  5 |    | 1  2   3   4  5 |
- * | 6 7 7 9 3 |                 | 6  7 7  9  3 |    | 6  7   7   9  3 |
- * | 2 5 5 5 3 |  => value:13 -> | 2  5 5 [5] 3 | => | 2 [5] [5] [5] 3 | => [11, 12, 13, 18, 23]
- * | 2 1 3 5 1 |                 | 2  1 3  5  3 |    | 2  1   3  [5] 3 |
- * | 4 2 1 5 8 |                 | 4  2 1  5  8 |    | 4  2   1  [5] 8 |
+ * | 1 2 3 4 5 |             | 1  2 3  4  5 |    | 1  2   3   4  5 |
+ * | 6 7 7 9 3 |             | 6  7 7  9  3 |    | 6  7   7   9  3 |
+ * | 2 5 5 5 3 |  => n:13 -> | 2  5 5 [5] 3 | => | 2 [5] [5] [5] 3 | => [11, 12, 13, 18, 23]
+ * | 2 1 3 5 1 |             | 2  1 3  5  3 |    | 2  1   3  [5] 3 |
+ * | 4 2 1 5 8 |             | 4  2 1  5  8 |    | 4  2   1  [5] 8 |
  *
  * assert(match([1, 2, 3, 4, 4, 3, 7, 2, 3], 2, 3) == [2, 5, 8]);
  * assert(!match([1, 2, 3, 4, 4, 3, 7, 2, 1], 2, 3) == []);
@@ -164,17 +163,17 @@ const auto is_match = [](auto&& view, auto value, auto width) {
  * @return sorted, unique list of positions which matches
  */
 // clang-format on
-const auto match = [](auto&& view, auto value, auto width) {
-  const auto color = view[value];
-  const auto x = value % width;
-  const auto y = value / width;
+const auto match = [](auto&& view, auto n, auto width) {
+  const auto color = view[n];
+  const auto x = n % width;
+  const auto y = n / width;
   const auto match_r = match_n(row(view, y, width), color);
   const auto match_c = match_n(col(view, x, width), color);
   const auto transform = [](auto length, auto expr) {
     return ranges::view::ints | ranges::view::take(length) |
            ranges::view::transform(expr);
   };
-  std::vector<decltype(value)> result = ranges::view::concat(
+  std::vector<decltype(n)> result = ranges::view::concat(
       transform(match_r.length,
                 [=](auto i) { return y * width + match_r.begin + i; }),
       transform(match_c.length,
@@ -188,62 +187,26 @@ const auto match = [](auto&& view, auto value, auto width) {
  *
  * \code{.cpp}
  *
- * | 3 |                |  3  |    | 0 |
- * | 0 |                | [0] |    | 0 |
- * | 0 |  => value:1 -> |  0  | => | 0 |
- * | 0 |                |  0  |    | 3 |
- * | 4 |                |  4  |    | 4 |
+ * | 3 |            |  3  |    | 0 |
+ * | 0 |            | [0] |    | 0 |
+ * | 0 |  => n:1 -> |  0  | => | 0 |
+ * | 0 |            |  0  |    | 3 |
+ * | 4 |            |  4  |    | 4 |
  *
  * assert(scroll([3, 0, 0, 0, 4], 1, 3) == [0, 0, 0, 3, 4]);
  *
  * \endcode
  *
  * @param view view
- * @param value position
+ * @param n position
  * @param width row width
  */
-const auto scroll = [](auto&& view, auto value, auto width) {
+const auto scroll = [](auto&& view, auto n, auto width) {
   const auto&& c =
-      col(view, value % width, width) | ranges::view::take(value / width + 1);
+      col(view, n % width, width) | ranges::view::take(n / width + 1);
   auto begin = ranges::begin(c);
-  ranges::advance(begin, value / width);
+  ranges::advance(begin, n / width);
   ranges::rotate(c, begin);
-};
-
-// clang-format off
-/**
- * Creates a list of elements which could generate new matches
- *
- * @param matches list of matches
- * @param width row width
- *
- * \code{.cpp}
- *
- *                         | 1  2   3   4  5 |    | 1  [2] [3] [4] 5 |
- *                         | 6  7   7   9  3 |    | 6  [7] [7] [9] 3 |
- * [11, 12, 13, 18, 23] => | 2 [5] [5] [5] 3 | => | 2  [5] [5] [5] 3 | => [1, 2, 3, 6, 7, 8, 11, 12, 13, 18, 23]
- *                         | 2  1   3  [5] 3 |    | 2   1   3  [5] 3 |
- *                         | 4  2   1  [5] 8 |    | 4   2   1  [5] 8 |
- *
- * assert(affected([0, 1, 2], 3) == [0, 1, 2]);
- *
- * \endcode
- *
- * @return sorted, unique list of positions
- */
-// clang-format on
-const auto affected = [](const auto& matches, auto width) {
-  const auto&& columns = matches | ranges::view::transform([=](auto m) {
-                           return ranges::view::ints |
-                                  ranges::view::take(m / width + 1) |
-                                  ranges::view::transform([=](auto i) {
-                                    return m % width + (i * width);
-                                  });
-                         });
-
-  std::decay_t<decltype(matches)> result = columns | ranges::view::join;
-  result |= ranges::action::sort | ranges::action::unique;
-  return result;
 };
 
 }  // board_logic

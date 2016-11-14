@@ -26,7 +26,6 @@
 #include "controller/guards/is_key.hpp"
 #include "controller/guards/is_swap_items_winning.hpp"
 #include "controller/switcher.hpp"
-#include "pph.hpp"
 
 namespace sml = boost::sml;
 

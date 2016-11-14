@@ -32,6 +32,7 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pedantic")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pedantic-errors")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-c99-extensions")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -include pph.hpp")
 
 if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Emscripten")
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --emrun")
@@ -61,4 +62,4 @@ add_executable(${PROJECT_NAME} src/main.cpp)
 target_link_libraries(${PROJECT_NAME} ${SDL2_LIBRARIES} ${SDL2IMAGE_LIBRARIES} ${SDL2TTF_LIBRARIES})
 
 enable_testing()
-#add_subdirectory(test)
+add_subdirectory(test)

@@ -7,11 +7,9 @@
 //
 #pragma once
 
-#include "pph.hpp"
-
 namespace match3 {
 
-struct up : sml::utility::id<SDL_FINGERUP, SDL_MOUSEBUTTONUP> {
+struct up : boost::sml::utility::id<SDL_FINGERUP, SDL_MOUSEBUTTONUP> {
   explicit up(const SDL_Event& event)
       : up(EM_ASM_INT_V({
              return / iPhone | iPad | iPod |
