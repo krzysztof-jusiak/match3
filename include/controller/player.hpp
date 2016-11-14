@@ -25,22 +25,30 @@ using moves = short;
 
 /// Events
 
-struct down {
-  static constexpr auto id = EM(SDL_FINGERDOWN)(SDL_MOUSEBUTTONDOWN);
+struct down : sml::utility::id<SDL_FINGERDOWN, SDL_MOUSEBUTTONDOWN> {
   explicit down(const SDL_Event& event)
-      : EM(x(int(event.tfinger.x)), y(int(event.tfinger.y)))(
-            x(event.button.x), y(event.button.y)) {}
-  const int x = 0;
-  const int y = 0;
+    : down(event, EM_ASM_INT_V({return /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);}))
+  { }
+
+  explicit down(const SDL_Event& event, bool is_mobile)
+    : x(is_mobile ? int(event.tfinger.x) : int(event.button.x))
+    , y(is_mobile ? int(event.tfinger.y) : int(event.button.y))
+  { }
+
+  const int x, y = 0;
 };
 
-struct up {
-  static constexpr auto id = EM(SDL_FINGERUP)(SDL_MOUSEBUTTONUP);
+struct up : sml::utility::id<SDL_FINGERUP, SDL_MOUSEBUTTONUP> {
   explicit up(const SDL_Event& event)
-      : EM(x(int(event.tfinger.x)), y(int(event.tfinger.y)))(
-            x(event.button.x), y(event.button.y)) {}
-  const int x = 0;
-  const int y = 0;
+    : up(event, EM_ASM_INT_V({return /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);}))
+  { }
+
+  explicit up(const SDL_Event& event, bool is_mobile)
+    : x(is_mobile ? int(event.tfinger.x) : int(event.button.x))
+    , y(is_mobile ? int(event.tfinger.y) : int(event.button.y))
+  { }
+
+  const int x, y = 0;
 };
 
 struct quit {
@@ -50,7 +58,7 @@ struct quit {
 struct key_pressed {
   static constexpr auto id = SDL_KEYDOWN;
   explicit key_pressed(const SDL_Event& event) : key(event.key.keysym.sym) {}
-  int key = 0;
+  const int key = 0;
 };
 
 /// Guards

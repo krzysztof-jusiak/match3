@@ -60,4 +60,5 @@
 #else
 #define EM(...) EM_ELSE
 #define EM_ELSE(...) __VA_ARGS__
+#define EM_ASM_INT_V(...) 0
 #endif
