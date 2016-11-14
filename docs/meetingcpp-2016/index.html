@@ -1039,7 +1039,7 @@ const auto show_board =
   [](iview& v, const board& b); // OK -> DI
 ```
 
-####Plus event
+####With event
 ```cpp
 const auto show_board =
   [](iview& v, const auto& event, const board& b); // OK -> DI
@@ -1054,20 +1054,26 @@ const auto show_board =
 ![player2](images/player2.png)
 
 ```cpp
-struct down { // event
-  static constexpr auto id = SDL_MOUSEBUTTONDOWN; // identifier
-
-  explicit down(const SDL_Event& event)
-      : x(event.button.x), y(event.button.y)) {}
-
-  const int x = 0;
-  const int y = 0;
-};
-```
-
-```cpp
 "first item"_s + event<down> / select_item = "second item"_s
 ```
+
+####Where
+```cpp
+struct down { // event
+  static constexpr auto id = SDL_MOUSEBUTTONDOWN|SDL_FINGERDOWN; // identifiers
+
+  explicit down(const SDL_Event& event)
+    : down(event, EM_ASM_INT_V({return /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);}))
+  { } //          ^__ Call Java Script
+
+  down(const SDL_Event& event, bool is_mobile)
+    : x(is_mobile ? event.tfinger.x : event.button.x)
+    , y(is_mobile ? event.tfinger.y : event.button.y) { }
+
+  const int x, y = 0;
+};
+```
+<!-- .element: style="margin-left:-10%; width:120%" -->
 
 ----
 
