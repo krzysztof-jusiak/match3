@@ -4,9 +4,9 @@
 // (See accompanying file LICENSE_1_0.txt or copy at
 // http://www.boost.org/LICENSE_1_0.txt)
 //
-#include <vector>
-#include <range/v3/algorithm/equal.hpp>
 #include "controller/actions/destroy_matches.hpp"
+#include <range/v3/algorithm/equal.hpp>
+#include <vector>
 #include "model/board.hpp"
 
 int main() {

@@ -4,10 +4,10 @@
 // (See accompanying file LICENSE_1_0.txt or copy at
 // http://www.boost.org/LICENSE_1_0.txt)
 //
-#include <range/v3/algorithm/equal.hpp>
 #include "controller/actions/swap_items.hpp"
-#include "model/board.hpp"
+#include <range/v3/algorithm/equal.hpp>
 #include "config.hpp"
+#include "model/board.hpp"
 
 int main() {
   using namespace match3;

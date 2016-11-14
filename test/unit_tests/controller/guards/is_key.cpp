@@ -8,7 +8,6 @@
 #include "controller/guards/is_key.hpp"
 
 int main() {
-
   using namespace match3;
   "is key"_test = [] {
     constexpr auto key = 42;
@@ -26,4 +25,3 @@ int main() {
     expect(!is_key(key)(event));
   };
 }
-
