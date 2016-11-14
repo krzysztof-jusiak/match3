@@ -61,8 +61,8 @@ struct player {
          "match items"_s                  / (swap_items, show_swap, clear_selected)             = "first item"_s,
          "play"_s.sm<switcher>()                                                                = "first item"_s,
      // +------------------------------------------------------------------------------------------------------------------+
-         (*"ui"_s)          + event<key_pressed> [ is_key(SDLK_ESCAPE) ]                        = X,
-           "ui"_s           + event<quit>                                                       = X,
+         (*"UI"_s)          + event<key_pressed> [ is_key(SDLK_ESCAPE) ]                        = X,
+           "UI"_s           + event<quit>                                                       = X,
      // +------------------------------------------------------------------------------------------------------------------+
         (*"animations"_s)   + event<time_tick> / [](animations& a) { a.update(); }
      // +------------------------------------------------------------------------------------------------------------------+

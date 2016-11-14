@@ -14,16 +14,13 @@ int main() {
 
   "generate new"_test = [] {
     static constexpr auto NEW = 42;
-    board b{{4, 0, 3, 3, 0, 2, 1, 0, 3}, config{.board_width = 3}};
+    board b{{4, 0, 3, 3, 0, 2, 1, 0, 3},
+            config{.board_width = 3, .board_height = 3}};
     selected s = {0, 5};
-    struct {
-      std::vector<board::color_t> matches;
-    } event{{1, 4, 7}};
-
-    generate_new(b, event, s, config{.board_width = 3},
+    generate_new(b, s, config{.board_width = 3, .board_height = 3},
                  [](auto...) { return NEW; });
 
     expect(ranges::equal({4, NEW, 3, 3, NEW, 2, 1, NEW, 3}, b.grids));
-    expect(ranges::equal({0, 1, 4, 5, 7}, s));
+    expect(ranges::equal({0, 1, 2, 3, 4, 5, 6, 7, 8}, s));
   };
 }

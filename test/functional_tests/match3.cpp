@@ -14,7 +14,7 @@
 #include "pph.hpp"
 
 namespace di = boost::di;
-namespace slm = boost::sml;
+namespace sml = boost::sml;
 
 template <class T>
 auto make_click_event(int x, int y) {
@@ -99,23 +99,23 @@ int main() {
     constexpr auto moves = 2;
 
     // clang-format off
-  auto injector = di::make_injector<mocks_provider>(
-    di::bind<>.to(match3::config{"", 0, 0, 7, 10, 5, moves, 3})
-  , di::bind<match3::board::color_t[]>.to({
-        /*0 1 2 3 4 5 6*/
-    /*0*/ 3,5,1,4,3,2,2,
-    /*1*/ 1,1,4,2,5,1,3,
-    /*2*/ 5,3,5,4,5,3,2,
-    /*3*/ 4,4,2,1,3,4,5,
-    /*4*/ 5,1,1,2,4,5,1,
-    /*5*/ 5,2,3,5,4,2,1,
-    /*6*/ 1,5,5,1,5,5,4,
-    /*7*/ 2,3,3,1,3,3,4,
-    /*8*/ 3,2,2,5,4,4,1,
-    /*9*/ 1,2,3,4,1,3,4
-    })
-  , di::bind<match3::randomize>.to([](int, int) { static auto i = 42; return i++; })
-  );
+    auto injector = di::make_injector<mocks_provider>(
+      di::bind<>.to(match3::config{"", 0, 0, 7, 10, 5, moves, 3})
+    , di::bind<match3::board::color_t[]>.to({
+          /*0 1 2 3 4 5 6*/
+      /*0*/ 3,5,1,4,3,2,2,
+      /*1*/ 1,1,4,2,5,1,3,
+      /*2*/ 5,3,5,4,5,3,2,
+      /*3*/ 4,4,2,1,3,4,5,
+      /*4*/ 5,1,1,2,4,5,1,
+      /*5*/ 5,2,3,5,4,2,1,
+      /*6*/ 1,5,5,1,5,5,4,
+      /*7*/ 2,3,3,1,3,3,4,
+      /*8*/ 3,2,2,5,4,4,1,
+      /*9*/ 1,2,3,4,1,3,4
+      })
+    , di::bind<match3::randomize>.to([](int, int) { static auto i = 42; return i++; })
+    );
     // clang-format on
 
     using namespace fakeit;

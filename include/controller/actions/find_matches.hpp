@@ -9,6 +9,7 @@
 
 #include <cassert>
 #include "controller/data/selected.hpp"
+#include "controller/events/matches.hpp"
 #include "model/board.hpp"
 
 namespace match3 {
