@@ -13,15 +13,17 @@ namespace match3 {
 
 struct up : sml::utility::id<SDL_FINGERUP, SDL_MOUSEBUTTONUP> {
   explicit up(const SDL_Event& event)
-    : up(EM_ASM_INT_V({return /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);}), event)
-  { }
+      : up(EM_ASM_INT_V({
+             return / iPhone | iPad | iPod |
+                    Android / i.test(navigator.userAgent);
+           }),
+           event) {}
 
   explicit up(bool is_mobile, const SDL_Event& event)
-    : x(is_mobile ? int(event.tfinger.x) : int(event.button.x))
-    , y(is_mobile ? int(event.tfinger.y) : int(event.button.y))
-  { }
+      : x(is_mobile ? int(event.tfinger.x) : int(event.button.x)),
+        y(is_mobile ? int(event.tfinger.y) : int(event.button.y)) {}
 
   const int x, y = 0;
 };
 
-} // match3
+}  // match3

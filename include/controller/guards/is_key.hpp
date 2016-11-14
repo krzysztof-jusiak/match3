@@ -13,4 +13,4 @@ const auto is_key = [](int Key) {
   return [=](auto event) { return event.key == Key; };
 };
 
-} // match3
+}  // match3

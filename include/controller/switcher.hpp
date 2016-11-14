@@ -7,10 +7,6 @@
 //
 #pragma once
 
-#include "pph.hpp"
-#include "controller/events/matches.hpp"
-#include "controller/guards/has_items.hpp"
-#include "controller/guards/is_item_winning.hpp"
 #include "controller/actions/add_points.hpp"
 #include "controller/actions/destroy_matches.hpp"
 #include "controller/actions/drop_item.hpp"
@@ -20,6 +16,10 @@
 #include "controller/actions/show_board.hpp"
 #include "controller/actions/show_matches.hpp"
 #include "controller/actions/show_points.hpp"
+#include "controller/events/matches.hpp"
+#include "controller/guards/has_items.hpp"
+#include "controller/guards/is_item_winning.hpp"
+#include "pph.hpp"
 
 namespace sml = boost::sml;
 

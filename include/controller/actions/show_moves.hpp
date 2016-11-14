@@ -7,9 +7,9 @@
 //
 #pragma once
 
-#include "view/view.hpp"
-#include "view/animations.hpp"
 #include "controller/data/moves.hpp"
+#include "view/animations.hpp"
+#include "view/view.hpp"
 
 namespace match3 {
 
@@ -19,4 +19,4 @@ const auto show_moves = [](view& v, const moves& m, animations& a) {
       [m, &v] { v.set_text("moves: " + std::to_string(m), 240, 10); });
 };
 
-} // match3
+}  // match3

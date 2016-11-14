@@ -16,4 +16,4 @@ const auto is_item_winning = [](const board& b, const selected& s) {
   return !s.empty() && b.is_match(s.back());
 };
 
-} // match3
+}  // match3

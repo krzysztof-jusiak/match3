@@ -17,4 +17,4 @@ struct matches {
   mutable std::vector<short> matches;
 };
 
-} // match3
+}  // match3

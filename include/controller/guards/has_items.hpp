@@ -13,4 +13,4 @@ namespace match3 {
 
 const auto has_items = [](const selected& s) { return !s.empty(); };
 
-} // match3
+}  // match3

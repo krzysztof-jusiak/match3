@@ -7,8 +7,8 @@
 //
 #pragma once
 
-#include <string>
 #include <cstdio>
+#include <string>
 
 template <class T>
 auto get_type() {
@@ -29,23 +29,26 @@ auto get_type() {
 struct my_logger {
   template <class SM, class TEvent>
   void log_process_event(const TEvent&) {
-    printf("[%s][process_event] %s\n", get_type<SM>().c_str(), get_type<TEvent>().c_str());
+    printf("[%s][process_event] %s\n", get_type<SM>().c_str(),
+           get_type<TEvent>().c_str());
   }
 
   template <class SM, class TGuard, class TEvent>
   void log_guard(const TGuard&, const TEvent&, bool result) {
-    printf("[%s][guard] %s %s %s\n", get_type<SM>().c_str(), get_type<TGuard>().c_str(), get_type<TEvent>().c_str(),
+    printf("[%s][guard] %s %s %s\n", get_type<SM>().c_str(),
+           get_type<TGuard>().c_str(), get_type<TEvent>().c_str(),
            (result ? "[OK]" : "[Reject]"));
   }
 
   template <class SM, class TAction, class TEvent>
   void log_action(const TAction&, const TEvent&) {
-    printf("[%s][action] %s %s\n", get_type<SM>().c_str(), get_type<TAction>().c_str(), get_type<TEvent>().c_str());
+    printf("[%s][action] %s %s\n", get_type<SM>().c_str(),
+           get_type<TAction>().c_str(), get_type<TEvent>().c_str());
   }
 
   template <class SM, class TSrcState, class TDstState>
   void log_state_change(const TSrcState& src, const TDstState& dst) {
-    printf("[%s][transition] %s -> %s\n", get_type<SM>().c_str(), src.c_str(), dst.c_str());
+    printf("[%s][transition] %s -> %s\n", get_type<SM>().c_str(), src.c_str(),
+           dst.c_str());
   }
 };
-

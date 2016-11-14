@@ -72,7 +72,8 @@ int main() {
     When(Method(canvas, clear)).AlwaysDo([] {});
 
     // when
-    auto sm = injector.create<msm::sm<match3::controller, msm::logger<my_logger>>>();
+    auto sm =
+        injector.create<msm::sm<match3::controller, msm::logger<my_logger>>>();
     expect(1 == injector.create<match3::moves&>());
 
     swipe(sm, {3, 5}, {3, 6});

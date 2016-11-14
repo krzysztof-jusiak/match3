@@ -18,4 +18,4 @@ const auto is_swap_items_winning = [](const board& b, const selected& s) {
   return b.is_match(s[0]) || b.is_match(s[1]);
 };
 
-} // match3
+}  // match3

@@ -7,9 +7,9 @@
 //
 #pragma once
 
-#include "view/view.hpp"
-#include "view/animations.hpp"
 #include "controller/data/points.hpp"
+#include "view/animations.hpp"
+#include "view/view.hpp"
 
 namespace match3 {
 
@@ -19,4 +19,4 @@ const auto show_points = [](view& v, const points& p, animations& a) {
       [p, &v] { v.set_text("points: " + std::to_string(p), 10, 10); });
 };
 
-} // match3
+}  // match3

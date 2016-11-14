@@ -17,4 +17,4 @@ const auto drop_item = [](selected& s) {
   s.pop_back();
 };
 
-} // match3
+}  // match3

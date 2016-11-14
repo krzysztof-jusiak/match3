@@ -8,10 +8,10 @@
 #pragma once
 
 #include <cassert>
-#include "controller/data/selected.hpp"
-#include "controller/data/randomize.hpp"
-#include "model/board.hpp"
 #include "config.hpp"
+#include "controller/data/randomize.hpp"
+#include "controller/data/selected.hpp"
+#include "model/board.hpp"
 
 namespace match3 {
 
@@ -24,4 +24,4 @@ const auto generate_new = [](board& b, const auto& m, selected& s,
        ranges::action::sort | ranges::action::unique;
 };
 
-} // match3
+}  // match3

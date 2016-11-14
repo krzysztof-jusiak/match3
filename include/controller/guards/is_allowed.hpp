@@ -8,9 +8,9 @@
 #pragma once
 
 #include <cassert>
+#include "config.hpp"
 #include "controller/data/selected.hpp"
 #include "model/board.hpp"
-#include "config.hpp"
 
 namespace match3 {
 
@@ -25,4 +25,4 @@ const auto is_allowed = [](auto event, const view& v, const selected& s,
          (diff == 1 || diff == c.board_width);
 };
 
-} // match3
+}  // match3

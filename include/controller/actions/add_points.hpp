@@ -14,4 +14,4 @@ namespace match3 {
 
 const auto add_points = [](points& p, const auto& m) { p += m.matches.size(); };
 
-} // match3
+}  // match3

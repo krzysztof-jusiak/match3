@@ -7,10 +7,10 @@
 //
 #pragma once
 
-#include "model/board.hpp"
-#include "view/view.hpp"
-#include "view/animations.hpp"
 #include "config.hpp"
+#include "model/board.hpp"
+#include "view/animations.hpp"
+#include "view/view.hpp"
 
 namespace match3 {
 
@@ -26,4 +26,4 @@ const auto show_board = [](const board& b, animations& a, view& v,
       150ms);
 };
 
-} // match3
+}  // match3

@@ -7,8 +7,14 @@
 //
 #pragma once
 
-#include "pph.hpp"
-#include "controller/switcher.hpp"
+#include "controller/actions/clear_selected.hpp"
+#include "controller/actions/reset.hpp"
+#include "controller/actions/select_item.hpp"
+#include "controller/actions/show_game_over.hpp"
+#include "controller/actions/show_moves.hpp"
+#include "controller/actions/show_points.hpp"
+#include "controller/actions/show_swap.hpp"
+#include "controller/actions/swap_items.hpp"
 #include "controller/data/moves.hpp"
 #include "controller/events/down.hpp"
 #include "controller/events/key_pressed.hpp"
@@ -19,14 +25,8 @@
 #include "controller/guards/is_allowed.hpp"
 #include "controller/guards/is_key.hpp"
 #include "controller/guards/is_swap_items_winning.hpp"
-#include "controller/actions/clear_selected.hpp"
-#include "controller/actions/reset.hpp"
-#include "controller/actions/select_item.hpp"
-#include "controller/actions/show_game_over.hpp"
-#include "controller/actions/show_moves.hpp"
-#include "controller/actions/show_points.hpp"
-#include "controller/actions/show_swap.hpp"
-#include "controller/actions/swap_items.hpp"
+#include "controller/switcher.hpp"
+#include "pph.hpp"
 
 namespace sml = boost::sml;
 

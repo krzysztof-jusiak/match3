@@ -7,8 +7,8 @@
 //
 #pragma once
 
-#include "view/view.hpp"
 #include "view/animations.hpp"
+#include "view/view.hpp"
 
 namespace match3 {
 
@@ -18,4 +18,4 @@ const auto show_game_over = [](view& v, animations& a) {
       [&v] { v.set_text("GAME OVER", 20, 230, 48 /*font size*/); }, 1s);
 };
 
-} // match3
+}  // match3

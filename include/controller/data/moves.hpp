@@ -11,4 +11,4 @@ namespace match3 {
 
 using moves = short;
 
-} // match3
+}  // match3

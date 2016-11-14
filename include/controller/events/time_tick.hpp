@@ -13,4 +13,4 @@ struct time_tick {
   static constexpr auto id = __COUNTER__;
 };
 
-} // match3
+}  // match3

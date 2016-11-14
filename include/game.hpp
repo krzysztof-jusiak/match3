@@ -19,8 +19,8 @@ class game {
   explicit game(sml::sm<player>& c) : player_(c) {}
 
   void play() {
-    EM(emscripten_set_main_loop_arg(
-        play_impl, reinterpret_cast<void*>(&player_), 0, 0))
+    EM(emscripten_set_main_loop_arg(play_impl,
+                                    reinterpret_cast<void*>(&player_), 0, 0))
     (play_impl(reinterpret_cast<void*>(&player_)));
   }
 
@@ -28,8 +28,8 @@ class game {
     auto& player_ = *reinterpret_cast<sml::sm<player>*>(c);
     do {
       auto dispatch_event =
-          sml::utility::make_dispatch_table<SDL_Event, SDL_QUIT, SDL_FINGERMOTION>(
-              player_);
+          sml::utility::make_dispatch_table<SDL_Event, SDL_QUIT,
+                                            SDL_FINGERMOTION>(player_);
       player_.process_event(time_tick{});
       SDL_Event event;
       while (SDL_PollEvent(&event)) {

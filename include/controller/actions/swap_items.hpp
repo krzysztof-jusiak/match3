@@ -8,8 +8,8 @@
 #pragma once
 
 #include <cassert>
-#include "model/board.hpp"
 #include "controller/data/selected.hpp"
+#include "model/board.hpp"
 
 namespace match3 {
 
@@ -18,4 +18,4 @@ const auto swap_items = [](const selected& s, board& b) {
   std::swap(b[s[0]], b[s[1]]);
 };
 
-} // match3
+}  // match3

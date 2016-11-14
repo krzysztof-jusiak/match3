@@ -15,4 +15,4 @@ struct quit {
   static constexpr auto id = SDL_QUIT;
 };
 
-} // match3
+}  // match3

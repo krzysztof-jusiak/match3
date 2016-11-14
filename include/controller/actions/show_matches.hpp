@@ -8,10 +8,10 @@
 //
 #pragma once
 
-#include "view/view.hpp"
-#include "view/animations.hpp"
-#include "controller/events/matches.hpp"
 #include "config.hpp"
+#include "controller/events/matches.hpp"
+#include "view/animations.hpp"
+#include "view/view.hpp"
 
 namespace match3 {
 
@@ -27,4 +27,4 @@ const auto show_matches = [](const auto& m, animations& a, view& v,
       150ms);
 };
 
-} // match3
+}  // match3

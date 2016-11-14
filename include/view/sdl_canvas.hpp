@@ -30,9 +30,13 @@ class sdl_canvas : sdl, public icanvas {
 
  public:
   explicit sdl_canvas(const config c) noexcept
-    : window_(SDL_CreateWindow(c.win_title.c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, c.win_width, c.win_height, SDL_WINDOW_SHOWN), SDL_DestroyWindow),
-      renderer_(SDL_CreateRenderer(window_.get(), RENDER_DRIVER, RENDER_FLAGS), SDL_DestroyRenderer)
-  { }
+      : window_(SDL_CreateWindow(c.win_title.c_str(), SDL_WINDOWPOS_CENTERED,
+                                 SDL_WINDOWPOS_CENTERED, c.win_width,
+                                 c.win_height, SDL_WINDOW_SHOWN),
+                SDL_DestroyWindow),
+        renderer_(SDL_CreateRenderer(window_.get(), RENDER_DRIVER,
+                                     RENDER_FLAGS),
+                  SDL_DestroyRenderer) {}
 
   void draw(std::shared_ptr<void> texture, int x, int y, bool clean) override {
     SDL_Rect pos{x, y, 0, 0};
@@ -83,8 +87,8 @@ class sdl_canvas : sdl, public icanvas {
   }
 
  private:
-  std::unique_ptr<SDL_Window, void(*)(SDL_Window*)> window_;
-  std::unique_ptr<SDL_Renderer, void(*)(SDL_Renderer*) > renderer_;
+  std::unique_ptr<SDL_Window, void (*)(SDL_Window*)> window_;
+  std::unique_ptr<SDL_Renderer, void (*)(SDL_Renderer*)> renderer_;
   std::vector<std::pair<std::shared_ptr<void>, SDL_Rect>> elements_;
 };
 

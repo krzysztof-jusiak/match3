@@ -6,13 +6,13 @@
 // http://www.boost.org/LICENSE_1_0.txt)
 //
 #include <range/v3/algorithm/equal.hpp>
+#include "boost/msm-lite/testing/state_machine.hpp"
 #include "common/logger.hpp"
 #include "common/mocks_provider.hpp"
 #include "config.hpp"
 #include "controller/controller.hpp"
 #include "model/board.hpp"
 #include "pph.hpp"
-#include "boost/msm-lite/testing/state_machine.hpp"
 
 namespace di = boost::di;
 namespace msm = boost::msm::lite;

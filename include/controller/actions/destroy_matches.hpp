@@ -16,4 +16,4 @@ const auto destroy_matches = [](board& b, const auto& m) {
   ranges::for_each(m.matches, [&](auto i) { b.grids[i] = {}; });
 };
 
-} // match3
+}  // match3

@@ -11,4 +11,4 @@ namespace match3 {
 
 using points = int;
 
-} // match3
+}  // match3

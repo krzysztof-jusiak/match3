@@ -13,4 +13,4 @@ namespace match3 {
 
 using selected = std::vector<short>;
 
-} // match3
+}  // match3

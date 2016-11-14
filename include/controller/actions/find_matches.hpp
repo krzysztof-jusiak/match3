@@ -23,4 +23,4 @@ const auto find_matches = [](const board& b, const auto& m, selected& s) {
   m.matches |= ranges::action::sort | ranges::action::unique;
 };
 
-} // match3
+}  // match3

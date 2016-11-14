@@ -7,10 +7,10 @@
 //
 #pragma once
 
-#include "view/view.hpp"
 #include "controller/data/selected.hpp"
-#include "controller/events/up.hpp"
 #include "controller/events/down.hpp"
+#include "controller/events/up.hpp"
+#include "view/view.hpp"
 
 namespace match3 {
 
@@ -18,4 +18,4 @@ const auto select_item = [](const auto& event, const view& v, selected& s) {
   s.emplace_back(v.get_position(event.x, event.y));
 };
 
-} // match3
+}  // match3

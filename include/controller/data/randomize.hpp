@@ -13,4 +13,4 @@ namespace match3 {
 
 using randomize = std::function<int(int, int)>;
 
-} // match3
+}  // match3

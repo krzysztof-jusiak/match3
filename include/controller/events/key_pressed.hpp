@@ -17,4 +17,4 @@ struct key_pressed {
   const int key = 0;
 };
 
-} // match3
+}  // match3

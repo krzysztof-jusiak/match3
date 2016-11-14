@@ -13,4 +13,4 @@ namespace match3 {
 
 const auto clear_selected = [](selected& s) { s.clear(); };
 
-} // match3
+}  // match3

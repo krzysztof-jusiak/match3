@@ -8,11 +8,11 @@
 #pragma once
 
 #include <cassert>
-#include "model/board.hpp"
-#include "view/view.hpp"
-#include "view/animations.hpp"
-#include "controller/data/selected.hpp"
 #include "config.hpp"
+#include "controller/data/selected.hpp"
+#include "model/board.hpp"
+#include "view/animations.hpp"
+#include "view/view.hpp"
 
 namespace match3 {
 
@@ -30,4 +30,4 @@ const auto show_swap = [](const board& b, const selected& s, animations& a,
       150ms);
 };
 
-} // match3
+}  // match3

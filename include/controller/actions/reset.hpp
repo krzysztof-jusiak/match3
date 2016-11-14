@@ -8,13 +8,13 @@
 #pragma once
 
 #include <cassert>
+#include "config.hpp"
+#include "controller/data/moves.hpp"
+#include "controller/data/points.hpp"
+#include "controller/data/randomize.hpp"
+#include "controller/data/selected.hpp"
 #include "model/board.hpp"
 #include "view/view.hpp"
-#include "controller/data/selected.hpp"
-#include "controller/data/randomize.hpp"
-#include "controller/data/points.hpp"
-#include "controller/data/moves.hpp"
-#include "config.hpp"
 
 namespace match3 {
 
@@ -26,4 +26,4 @@ const auto reset = [](config c, board original, board& b, points& p, moves& m,
   v.clear();
 };
 
-} // match3
+}  // match3
