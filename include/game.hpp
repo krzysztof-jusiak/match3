@@ -16,30 +16,30 @@ namespace match3 {
 
 class game {
  public:
-  explicit game(sml::sm<controller>& c) : controller_(c) {}
+  explicit game(sml::sm<player>& c) : player_(c) {}
 
   void play() {
     EM(emscripten_set_main_loop_arg(
-        play_impl, reinterpret_cast<void*>(&controller_), 0, 0))
-    (play_impl(reinterpret_cast<void*>(&controller_)));
+        play_impl, reinterpret_cast<void*>(&player_), 0, 0))
+    (play_impl(reinterpret_cast<void*>(&player_)));
   }
 
   static void play_impl(void* c) {
-    auto& controller_ = *reinterpret_cast<sml::sm<controller>*>(c);
+    auto& player_ = *reinterpret_cast<sml::sm<player>*>(c);
     do {
       auto dispatch_event =
           sml::utility::make_dispatch_table<SDL_Event, SDL_QUIT, SDL_FINGERMOTION>(
-              controller_);
-      controller_.process_event(time_tick{});
+              player_);
+      player_.process_event(time_tick{});
       SDL_Event event;
       while (SDL_PollEvent(&event)) {
         dispatch_event(event, event.type);
       }
-    } while (EM(false &&)() !controller_.is(sml::X));
+    } while (EM(false &&)() !player_.is(sml::X));
   }
 
  private:
-  sml::sm<controller>& controller_;
+  sml::sm<player>& player_;
 };
 
 }  // match3

@@ -58,7 +58,7 @@ const auto row = [](auto&& view, auto n, auto width) {
  * @return column view
  */
 const auto col = [](auto&& view, auto n, auto width) {
-  return view | ranges::view::drop(n) | ranges::view::stride(int(width));
+  return view | ranges::view::drop(n) | ranges::view::stride(width);
 };
 
 /**

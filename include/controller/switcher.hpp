@@ -7,104 +7,23 @@
 //
 #pragma once
 
-#include "config.hpp"
-#include "model/board.hpp"
 #include "pph.hpp"
-#include "view/animations.hpp"
-#include "view/view.hpp"
+#include "controller/events/matches.hpp"
+#include "controller/guards/has_items.hpp"
+#include "controller/guards/is_item_winning.hpp"
+#include "controller/actions/add_points.hpp"
+#include "controller/actions/destroy_matches.hpp"
+#include "controller/actions/drop_item.hpp"
+#include "controller/actions/find_matches.hpp"
+#include "controller/actions/generate_new.hpp"
+#include "controller/actions/scroll_board.hpp"
+#include "controller/actions/show_board.hpp"
+#include "controller/actions/show_matches.hpp"
+#include "controller/actions/show_points.hpp"
 
 namespace sml = boost::sml;
 
 namespace match3 {
-
-using selected = std::vector<short>;
-using randomize = std::function<int(int, int)>;
-using points = int;
-using moves = short;
-
-struct matches {
-  static constexpr auto id = __LINE__;
-  int arity = 0;
-  mutable std::vector<int> matches;
-};
-
-struct time_tick {
-  static constexpr auto id = __LINE__;
-};
-
-/// Guards
-
-const auto has_items = [](const selected& s) { return !s.empty(); };
-
-const auto is_item_winning = [](const board& b, const selected& s) {
-  return !s.empty() && b.is_match(s.back());
-};
-
-/// Actions
-
-const auto drop_item = [](selected& s) {
-  assert(!s.empty());
-  s.pop_back();
-};
-
-const auto find_matches = [](const board& b, const auto& m, selected& s) {
-  assert(m.arity >= 0);
-  auto arity = m.arity;
-  while (arity--) {
-    m.matches |= ranges::action::push_back(b.match(s.back()));
-    s.pop_back();
-  }
-  m.matches |= ranges::action::sort | ranges::action::unique;
-};
-
-const auto destroy_matches = [](board& b, const auto& m) {
-  ranges::for_each(m.matches, [&](auto i) { b.grids[i] = {}; });
-};
-
-const auto scroll_board = [](board& b, const auto& m) {
-  ranges::for_each(m.matches, [&](auto i) { b.scroll(i); });
-};
-
-const auto generate_new = [](board& b, const auto& m, selected& s,
-                             const config c, randomize r) {
-  ranges::action::transform(
-      b.grids, [c, r](auto i) { return i ? i : r(1, c.board_colors); });
-  s |= ranges::action::push_front(
-           board_logic::affected(m.matches, c.board_width)) |
-       ranges::action::sort | ranges::action::unique;
-};
-
-const auto add_points = [](points& p, const auto& m) { p += m.matches.size(); };
-
-const auto show_board = [](const board& b, animations& a, view& v,
-                           const config c) {
-  using namespace std::chrono_literals;
-  a.queue_animation(
-      [b, c, &v] {
-        for (auto i = 0; i < c.board_width * c.board_height; ++i) {
-          v.set_grid(i % c.board_width, i / c.board_width, b[i]);
-        }
-      },
-      150ms);
-};
-
-const auto show_matches = [](const auto& m, animations& a, view& v,
-                             const config c) {
-  using namespace std::chrono_literals;
-  a.queue_animation(
-      [m, c, &v] {
-        for (auto i : m.matches) {
-          v.update_grid(i % c.board_width, i / c.board_width);
-        }
-      },
-      150ms);
-};
-
-const auto show_points = [](view& v, const points& p, animations& a) {
-  using namespace std::chrono_literals;
-  a.queue_animation(
-      [p, &v] { v.set_text("points: " + std::to_string(p), 10, 10); });
-};
 
 struct switcher {
   auto operator()() const {
@@ -123,7 +42,7 @@ struct switcher {
       , "handle matches"_s + event<matches>
        [ has_items and not is_item_winning ] / (drop_item, process(matches{.arity = 1}))
 
-      , "handle matches"_s + event<matches> [ !has_items ] = X
+      , "handle matches"_s + event<matches> [ not has_items ] = X
     );
     // clang-format on
   }
