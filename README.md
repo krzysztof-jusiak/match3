@@ -51,3 +51,9 @@
     <td><code>$browser index.html</code></td>
   </tr>
 </table>
+
+###Related Materials
+
+* CppNow 2016 - [Let's make a web match-3 game in C++14](http://modern-cpp-examples.github.io/match3/cppnow-2016)
+* MeetingC++ 2016 - [Implementing a web game in C++14](http://modern-cpp-examples.github.io/match3/meetingcpp-2016)
+
