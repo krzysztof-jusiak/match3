@@ -23,7 +23,7 @@ int main() {
 
     // clang-format off
     const auto injector = di::make_injector<mocks_provider>(
-      di::bind<>.to(match3::config{"", 0, 0, 7, 10, 5, moves, 3})
+      di::bind<>.to(match3::config{"", 0, 0, 7, 10, 5, moves})
     , di::bind<match3::board::color_t[]>.to({
           /*0 1 2 3 4 5 6*/
       /*0*/ 3,5,1,4,3,2,2,

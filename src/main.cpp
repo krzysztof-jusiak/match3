@@ -26,8 +26,7 @@ auto configuration = []() {
              .board_width = 7,
              .board_height = 10,
              .board_colors = 5,
-             .max_moves = 10,
-             .max_match_length = 3}
+             .max_moves = 10}
     )
 
   , di::bind<board::color_t[]>.to({
@@ -54,6 +53,6 @@ auto configuration = []() {
 };
 
 int main() {
-  auto injector = di::make_injector(configuration());
+  const auto injector = di::make_injector(configuration());
   injector.create<match3::game>().play();
 }

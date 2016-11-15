@@ -10,11 +10,11 @@
 namespace match3 {
 
 struct down : boost::sml::utility::id<SDL_FINGERDOWN, SDL_MOUSEBUTTONDOWN> {
+  // clang-format off
   explicit down(const SDL_Event& event)
-      // clang-format off
     : down(EM_ASM_INT_V({return /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);}), event)
-  // clang-format on
   {}
+  // clang-format on
 
   explicit down(bool is_mobile, const SDL_Event& event)
       : x(is_mobile ? int(event.tfinger.x) : int(event.button.x)),

@@ -17,13 +17,11 @@ namespace match3 {
 const auto show_board = [](const board& b, animations& a, view& v,
                            const config c) {
   using namespace std::chrono_literals;
-  a.queue_animation(
-      [b, c, &v] {
-        for (auto i = 0; i < c.board_width * c.board_height; ++i) {
-          v.set_grid(i % c.board_width, i / c.board_width, b[i]);
-        }
-      },
-      150ms);
+  a.queue_animation([b, c, &v] {
+    for (auto i = 0; i < c.board_width * c.board_height; ++i) {
+      v.set_grid(i % c.board_width, i / c.board_width, b[i]);
+    }
+  });
 };
 
 }  // match3

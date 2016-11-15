@@ -8,13 +8,14 @@
 #pragma once
 
 #include <vector>
+#include "model/board.hpp"
 
 namespace match3 {
 
 struct matches {
   static constexpr auto id = __COUNTER__;
   int arity = 0;
-  mutable std::vector<short> matches;
+  mutable std::vector<board::color_t> matches;
 };
 
 }  // match3

@@ -28,6 +28,13 @@ struct switcher {
   auto operator()() const {
     using namespace sml;
 
+    /**
+     * Transition table for player
+     *
+     * \code{.cpp}
+     *   dst_state <= src_state + event [ guard ] / action
+     * \endcode
+     */
     // clang-format off
     return make_transition_table(
       (*"handle matches"_s) + event<matches> [ has_items and is_item_winning ] / (

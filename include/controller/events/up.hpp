@@ -10,11 +10,11 @@
 namespace match3 {
 
 struct up : boost::sml::utility::id<SDL_FINGERUP, SDL_MOUSEBUTTONUP> {
+  // clang-format off
   explicit up(const SDL_Event& event)
-      // clang-format off
     : up(EM_ASM_INT_V({return /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);}), event)
-  // clang-format on
   {}
+  // clang-format on
 
   explicit up(bool is_mobile, const SDL_Event& event)
       : x(is_mobile ? int(event.tfinger.x) : int(event.button.x)),

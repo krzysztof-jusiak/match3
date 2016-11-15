@@ -17,7 +17,7 @@ int main() {
     selected s = {0, 1};
     struct {
       int arity;
-      std::vector<board::color_t> matches = {};
+      mutable std::vector<board::color_t> matches = {};
     } event{int(s.size())};
 
     find_matches(b, event, s);
@@ -31,7 +31,7 @@ int main() {
     selected s = {0};
     struct {
       int arity;
-      std::vector<board::color_t> matches = {};
+      mutable std::vector<board::color_t> matches = {};
     } event{int(s.size())};
 
     find_matches(b, event, s);
@@ -45,7 +45,7 @@ int main() {
     selected s = {1, 3};
     struct {
       int arity;
-      std::vector<board::color_t> matches = {};
+      mutable std::vector<board::color_t> matches = {};
     } event{int(s.size())};
 
     find_matches(b, event, s);

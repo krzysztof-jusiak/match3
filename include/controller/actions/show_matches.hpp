@@ -18,13 +18,11 @@ namespace match3 {
 const auto show_matches = [](const auto& m, animations& a, view& v,
                              const config c) {
   using namespace std::chrono_literals;
-  a.queue_animation(
-      [m, c, &v] {
-        for (auto i : m.matches) {
-          v.update_grid(i % c.board_width, i / c.board_width);
-        }
-      },
-      150ms);
+  a.queue_animation([m, c, &v] {
+    for (auto i : m.matches) {
+      v.update_grid(i % c.board_width, i / c.board_width);
+    }
+  });
 };
 
 }  // match3

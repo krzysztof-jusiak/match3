@@ -21,8 +21,9 @@ class animations {
  public:
   explicit animations(view& v) : view_(v) {}
 
-  void queue_animation(const std::function<void()>& animate,
-                       std::chrono::milliseconds length = {}) {
+  void queue_animation(
+      const std::function<void()>& animate,
+      std::chrono::milliseconds length = std::chrono::milliseconds(150)) {
     animations_.emplace_back(animation{animate, length});
   }
 
