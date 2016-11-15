@@ -231,7 +231,7 @@ class board {
   board(const std::vector<color_t>& grids, const config c)
       : grids(grids), width(c.board_width) {}
 
-  void swipe(const int p1, const int p2) { std::swap(b[p1], b[p2]); }
+  void swipe(const int p1, const int p2) { std::swap(grids[p1], grids[p2]); }
 
   bool is_match(const int position) const {
     return board_logic::is_match(grids, position, width);
