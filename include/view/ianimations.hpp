@@ -17,7 +17,7 @@ class ianimations {
   virtual ~ianimations() noexcept = default;
   virtual void queue_animation(const std::function<void()>&,
                                std::chrono::milliseconds length =
-                                   std::chrono::milliseconds(EM(50)(80))) = 0;
+                                   std::chrono::milliseconds(80)) = 0;
   virtual void update() = 0;
   virtual bool done() const = 0;
 };

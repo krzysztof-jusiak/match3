@@ -36,7 +36,8 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -include pph.hpp")
 
 if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Emscripten")
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --emrun")
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -s USE_SDL=2 -s USE_SDL_IMAGE=2 -s USE_SDL_TTF=2 -s BINARYEN=1")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -s USE_SDL=2 -s USE_SDL_IMAGE=2 -s USE_SDL_TTF=2")
+  #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -s BINARYEN=1")
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --preload-file data --use-preload-plugins")
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --shell-file ${CMAKE_SOURCE_DIR}/data/template.html")
 

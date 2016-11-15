@@ -17,8 +17,8 @@ struct up : boost::sml::utility::id<SDL_FINGERUP, SDL_MOUSEBUTTONUP> {
   // clang-format on
 
   explicit up(bool is_mobile, const SDL_Event& event)
-      : x(is_mobile ? int(event.tfinger.x) : int(event.button.x)),
-        y(is_mobile ? int(event.tfinger.y) : int(event.button.y)) {}
+      : x(is_mobile ? int(event.tfinger.x * 320) : int(event.button.x)),
+        y(is_mobile ? int(event.tfinger.y * 480) : int(event.button.y)) {}
 
   const int x, y = 0;
 };
