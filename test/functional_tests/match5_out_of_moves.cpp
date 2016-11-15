@@ -5,7 +5,6 @@
 // (See accompanying file LICENSE_1_0.txt or copy at
 // http://www.boost.org/LICENSE_1_0.txt)
 //
-#include <range/v3/algorithm/equal.hpp>
 #include "common/logger.hpp"
 #include "common/mocks_provider.hpp"
 #include "common/utils.hpp"
@@ -20,10 +19,13 @@ int main() {
   "match5 out of moves"_test = [] {
     // given
     constexpr auto moves = 1;
+    constexpr auto width = 7;
+    constexpr auto height = 10;
+    constexpr auto colors = 5;
 
     // clang-format off
     const auto injector = di::make_injector<mocks_provider>(
-      di::bind<>.to(match3::config{"", 0, 0, 7, 10, 5, moves})
+      di::bind<>.to(match3::config{"", 0, 0, width, height, colors, moves})
     , di::bind<match3::board::color_t[]>.to({
           /*0 1 2 3 4 5 6*/
       /*0*/ 3,5,1,4,3,2,2,
@@ -41,8 +43,8 @@ int main() {
     );
     // clang-format on
 
-    expect(ranges::equal(injector.create<match3::board>().grids,
-                         injector.create<match3::board&>().grids));
+    expect(equal<width * height>(injector.create<match3::board>(),
+                                 injector.create<match3::board&>()));
 
     using namespace fakeit;
     auto&& canvas = mock<match3::icanvas>();
@@ -68,17 +70,17 @@ int main() {
     expect(0 == injector.create<match3::moves&>());
 
     // then
-    expect(ranges::equal({/*0 1 2 3 4 5 6*/
-                          /*0*/ 3, 42, 43, 44, 45, 46, 2,
-                          /*1*/ 1, 5,  1,  4,  3,  2,  3,
-                          /*2*/ 5, 1,  4,  2,  5,  1,  2,
-                          /*3*/ 4, 3,  5,  4,  5,  3,  5,
-                          /*4*/ 5, 4,  2,  1,  3,  4,  1,
-                          /*5*/ 5, 1,  1,  2,  4,  5,  1,
-                          /*6*/ 1, 2,  3,  1,  4,  2,  4,
-                          /*7*/ 2, 3,  3,  1,  3,  3,  4,
-                          /*8*/ 3, 2,  2,  5,  4,  4,  1,
-                          /*9*/ 1, 2,  3,  4,  1,  3,  4},
-                         injector.create<match3::board&>().grids));
+    expect(equal<width * height>({/*0 1 2 3 4 5 6*/
+                                  /*0*/ 3, 42, 43, 44, 45, 46, 2,
+                                  /*1*/ 1, 5,  1,  4,  3,  2,  3,
+                                  /*2*/ 5, 1,  4,  2,  5,  1,  2,
+                                  /*3*/ 4, 3,  5,  4,  5,  3,  5,
+                                  /*4*/ 5, 4,  2,  1,  3,  4,  1,
+                                  /*5*/ 5, 1,  1,  2,  4,  5,  1,
+                                  /*6*/ 1, 2,  3,  1,  4,  2,  4,
+                                  /*7*/ 2, 3,  3,  1,  3,  3,  4,
+                                  /*8*/ 3, 2,  2,  5,  4,  4,  1,
+                                  /*9*/ 1, 2,  3,  4,  1,  3,  4},
+                                 injector.create<match3::board&>()));
   };
 }

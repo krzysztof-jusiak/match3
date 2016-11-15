@@ -5,7 +5,6 @@
 // (See accompanying file LICENSE_1_0.txt or copy at
 // http://www.boost.org/LICENSE_1_0.txt)
 //
-#include <range/v3/algorithm/equal.hpp>
 #include "common/logger.hpp"
 #include "common/mocks_provider.hpp"
 #include "common/utils.hpp"
@@ -20,10 +19,13 @@ int main() {
   "match3, matchl, out of moves, game over, reset"_test = [] {
     // given
     constexpr auto moves = 2;
+    constexpr auto width = 7;
+    constexpr auto height = 10;
+    constexpr auto colors = 5;
 
     // clang-format off
     auto injector = di::make_injector<mocks_provider>(
-      di::bind<>.to(match3::config{"", 0, 0, 7, 10, 5, moves})
+      di::bind<>.to(match3::config{"", 0, 0, width, height, colors, moves})
     , di::bind<match3::board::color_t[]>.to({
           /*0 1 2 3 4 5 6*/
       /*0*/ 3,5,1,4,3,2,2,
@@ -57,8 +59,8 @@ int main() {
     When(Method(animations, update)).AlwaysDo([] {});
     When(Method(animations, done)).AlwaysReturn(true);
 
-    expect(ranges::equal(injector.create<match3::board>().grids,
-                         injector.create<match3::board&>().grids));
+    expect(equal<width * height>(injector.create<match3::board>(),
+                                 injector.create<match3::board&>()));
 
     // when
     auto sm = injector.create<sml::sm<match3::player, sml::logger<logger>>>();
@@ -68,36 +70,36 @@ int main() {
     expect(1 == injector.create<match3::moves&>());
 
     // then
-    expect(ranges::equal({/*0 1 2 3 4 5 6*/
-                          /*0*/ 42, 43, 44, 4, 3, 2, 2,
-                          /*1*/ 3,  5,  4,  2, 5, 1, 3,
-                          /*2*/ 5,  3,  5,  4, 5, 3, 2,
-                          /*3*/ 4,  4,  2,  1, 3, 4, 5,
-                          /*4*/ 5,  1,  1,  2, 4, 5, 1,
-                          /*5*/ 5,  2,  3,  5, 4, 2, 1,
-                          /*6*/ 1,  5,  5,  1, 5, 5, 4,
-                          /*7*/ 2,  3,  3,  1, 3, 3, 4,
-                          /*8*/ 3,  2,  2,  5, 4, 4, 1,
-                          /*9*/ 1,  2,  3,  4, 1, 3, 4},
-                         injector.create<match3::board&>().grids));
+    expect(equal<width * height>({/*0 1 2 3 4 5 6*/
+                                  /*0*/ 42, 43, 44, 4, 3, 2, 2,
+                                  /*1*/ 3,  5,  4,  2, 5, 1, 3,
+                                  /*2*/ 5,  3,  5,  4, 5, 3, 2,
+                                  /*3*/ 4,  4,  2,  1, 3, 4, 5,
+                                  /*4*/ 5,  1,  1,  2, 4, 5, 1,
+                                  /*5*/ 5,  2,  3,  5, 4, 2, 1,
+                                  /*6*/ 1,  5,  5,  1, 5, 5, 4,
+                                  /*7*/ 2,  3,  3,  1, 3, 3, 4,
+                                  /*8*/ 3,  2,  2,  5, 4, 4, 1,
+                                  /*9*/ 1,  2,  3,  4, 1, 3, 4},
+                                 injector.create<match3::board&>()));
 
     // when
     swipe(sm, {6, 9}, {6, 8});
     expect(0 == injector.create<match3::moves&>());
 
     // then
-    expect(ranges::equal({/*0 1 2 3 4 5 6*/
-                          /*0*/ 42, 43, 44, 4, 45, 46, 50,
-                          /*1*/ 3,  5,  4,  2, 3,  2,  51,
-                          /*2*/ 5,  3,  5,  4, 5,  1,  52,
-                          /*3*/ 4,  4,  2,  1, 5,  3,  47,
-                          /*4*/ 5,  1,  1,  2, 3,  4,  48,
-                          /*5*/ 5,  2,  3,  5, 4,  5,  49,
-                          /*6*/ 1,  5,  5,  1, 4,  2,  2,
-                          /*7*/ 2,  3,  3,  1, 5,  5,  3,
-                          /*8*/ 3,  2,  2,  5, 3,  3,  2,
-                          /*9*/ 1,  2,  3,  4, 1,  3,  5},
-                         injector.create<match3::board&>().grids));
+    expect(equal<width * height>({/*0 1 2 3 4 5 6*/
+                                  /*0*/ 42, 43, 44, 4, 45, 46, 50,
+                                  /*1*/ 3,  5,  4,  2, 3,  2,  51,
+                                  /*2*/ 5,  3,  5,  4, 5,  1,  52,
+                                  /*3*/ 4,  4,  2,  1, 5,  3,  47,
+                                  /*4*/ 5,  1,  1,  2, 3,  4,  48,
+                                  /*5*/ 5,  2,  3,  5, 4,  5,  49,
+                                  /*6*/ 1,  5,  5,  1, 4,  2,  2,
+                                  /*7*/ 2,  3,  3,  1, 5,  5,  3,
+                                  /*8*/ 3,  2,  2,  5, 3,  3,  2,
+                                  /*9*/ 1,  2,  3,  4, 1,  3,  5},
+                                 injector.create<match3::board&>()));
 
     // when
     sm.process_event(make_click_event<match3::up>(3, 3));  // reset

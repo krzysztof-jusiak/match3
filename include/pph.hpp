@@ -29,6 +29,7 @@
 #include <range/v3/view/drop.hpp>
 #include <range/v3/view/iota.hpp>  // view::ints
 #include <range/v3/view/join.hpp>
+#include <range/v3/view/remove_if.hpp>
 #include <range/v3/view/stride.hpp>
 #include <range/v3/view/take.hpp>
 #include <range/v3/view/transform.hpp>

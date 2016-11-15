@@ -13,7 +13,7 @@
 namespace match3 {
 
 const auto destroy_matches = [](board& b, const auto& m) {
-  ranges::for_each(m.matches, [&](auto i) { b.grids[i] = {}; });
+  ranges::for_each(m.matches, [&b](auto i) { b.update(i, {}); });
 };
 
 }  // match3

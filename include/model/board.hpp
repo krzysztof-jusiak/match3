@@ -245,12 +245,14 @@ class board {
     board_logic::scroll(grids, position, width);
   }
 
-  decltype(auto) operator[](const int i) { return grids[i]; }
-  decltype(auto) operator[](const int i) const { return grids[i]; }
+  void update(const int position, const color_t value) {
+    grids[position] = value;
+  }
 
-  std::vector<color_t> grids;
+  auto operator[](const int position) const { return grids[position]; }
 
  private:
+  std::vector<color_t> grids;
   int width = 0;
 };
 

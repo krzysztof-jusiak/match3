@@ -6,6 +6,7 @@
 //
 #include "controller/actions/swap_items.hpp"
 #include <range/v3/algorithm/equal.hpp>
+#include "common/utils.hpp"
 #include "config.hpp"
 #include "model/board.hpp"
 
@@ -16,6 +17,6 @@ int main() {
     board b{{1, 2}, config{}};
     selected s = {0, 1};
     swap_items(s, b);
-    expect(ranges::equal({2, 1}, b.grids));
+    expect(equal<2>({2, 1}, b));
   };
 }

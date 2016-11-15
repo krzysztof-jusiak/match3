@@ -14,7 +14,7 @@
 namespace match3 {
 
 const auto scroll_board = [](board& b, const auto& m) {
-  ranges::for_each(m.matches, [&](auto i) { b.scroll(i); });
+  ranges::for_each(m.matches, [&b](auto i) { b.scroll(i); });
 };
 
 }  // match3
