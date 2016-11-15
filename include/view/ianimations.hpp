@@ -15,9 +15,9 @@ namespace match3 {
 class ianimations {
  public:
   virtual ~ianimations() noexcept = default;
-  virtual void queue_animation(
-      const std::function<void()>&,
-      std::chrono::milliseconds length = std::chrono::milliseconds(100)) = 0;
+  virtual void queue_animation(const std::function<void()>&,
+                               std::chrono::milliseconds length =
+                                   std::chrono::milliseconds(EM(50)(80))) = 0;
   virtual void update() = 0;
   virtual bool done() const = 0;
 };
