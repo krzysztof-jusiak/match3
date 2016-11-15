@@ -11,12 +11,12 @@
 #include "config.hpp"
 #include "controller/data/selected.hpp"
 #include "model/board.hpp"
-#include "view/animations.hpp"
+#include "view/ianimations.hpp"
 #include "view/view.hpp"
 
 namespace match3 {
 
-const auto show_swap = [](const board& b, const selected& s, animations& a,
+const auto show_swap = [](const board& b, const selected& s, ianimations& a,
                           view& v, const config c) {
   assert(s.size() == 2);
   using namespace std::chrono_literals;

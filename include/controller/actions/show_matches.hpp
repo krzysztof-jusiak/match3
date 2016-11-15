@@ -10,12 +10,12 @@
 
 #include "config.hpp"
 #include "controller/events/matches.hpp"
-#include "view/animations.hpp"
+#include "view/ianimations.hpp"
 #include "view/view.hpp"
 
 namespace match3 {
 
-const auto show_matches = [](const auto& m, animations& a, view& v,
+const auto show_matches = [](const auto& m, ianimations& a, view& v,
                              const config c) {
   using namespace std::chrono_literals;
   a.queue_animation([m, c, &v] {

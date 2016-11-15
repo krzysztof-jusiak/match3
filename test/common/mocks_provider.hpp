@@ -12,6 +12,16 @@
 #include "fakeit.hpp"
 
 namespace di = boost::di;
+template <class T>
+auto& mock(bool reset = true) {
+  using namespace fakeit;
+  static Mock<T> mock;
+  if (reset) {
+    mock.Reset();
+  }
+  When(Dtor(mock)).AlwaysDo([] {});
+  return mock;
+}
 
 struct mocks_provider : di::config {
   struct mock_provider {
@@ -37,7 +47,7 @@ struct mocks_provider : di::config {
     std::enable_if_t<std::is_polymorphic<T>::value, T*> get(
         const di::type_traits::uniform&, const di::type_traits::heap&,
         TArgs&&...) {
-      return &mocks_provider::get_mock<T>(false).get();
+      return &mock<T>(false).get();
     }
 
     template <class T, class... TArgs>
@@ -52,17 +62,6 @@ struct mocks_provider : di::config {
       return T{static_cast<TArgs&&>(args)...};
     }
   };
-
-  template <class T>
-  static auto& get_mock(bool reset = true) {
-    using namespace fakeit;
-    static Mock<T> mock;
-    if (reset) {
-      mock.Reset();
-    }
-    When(Dtor(mock)).AlwaysDo([] {});
-    return mock;
-  }
 
  public:
   static auto provider(...) noexcept { return mock_provider{}; }

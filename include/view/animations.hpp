@@ -7,11 +7,12 @@
 //
 #pragma once
 
+#include "view/ianimations.hpp"
 #include "view/view.hpp"
 
 namespace match3 {
 
-class animations {
+class animations : public ianimations {
   struct animation {
     std::function<void()> animate;
     std::chrono::milliseconds length;
@@ -21,19 +22,18 @@ class animations {
  public:
   explicit animations(view& v) : view_(v) {}
 
-  void queue_animation(
-      const std::function<void()>& animate,
-      std::chrono::milliseconds length = std::chrono::milliseconds(150)) {
+  void queue_animation(const std::function<void()>& animate,
+                       std::chrono::milliseconds length) override {
     animations_.emplace_back(animation{animate, length});
   }
 
-  void update() {
+  virtual void update() override {
     using namespace std::chrono_literals;
-    constexpr auto async_limit = 1;
+    constexpr auto in_parallel = 1;
     const auto now = std::chrono::duration_cast<std::chrono::milliseconds>(
         std::chrono::system_clock::now().time_since_epoch());
 
-    ranges::for_each(animations_ | ranges::view::take(async_limit),
+    ranges::for_each(animations_ | ranges::view::take(in_parallel),
                      [&](auto& a) {
                        a.start = a.start == 0ms ? now : a.start;
                        a.animate();
@@ -47,6 +47,8 @@ class animations {
                                         }),
                       animations_.end());
   }
+
+  virtual bool done() const override { return animations_.empty(); }
 
  private:
   std::vector<animation> animations_;

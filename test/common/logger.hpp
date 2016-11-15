@@ -26,7 +26,7 @@ auto get_type() {
 #endif
 }
 
-struct my_logger {
+struct logger {
   template <class SM, class TEvent>
   void log_process_event(const TEvent&) {
     printf("[%s][process_event] %s\n", get_type<SM>().c_str(),

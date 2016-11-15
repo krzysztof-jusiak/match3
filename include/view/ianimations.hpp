@@ -7,15 +7,19 @@
 //
 #pragma once
 
-#include "view/ianimations.hpp"
+#include <functional>
 #include "view/view.hpp"
 
 namespace match3 {
 
-const auto show_game_over = [](view& v, ianimations& a) {
-  using namespace std::chrono_literals;
-  a.queue_animation(
-      [&v] { v.set_text("GAME OVER", 20, 230, 48 /*font size*/); }, 200ms);
+class ianimations {
+ public:
+  virtual ~ianimations() noexcept = default;
+  virtual void queue_animation(
+      const std::function<void()>&,
+      std::chrono::milliseconds length = std::chrono::milliseconds(100)) = 0;
+  virtual void update() = 0;
+  virtual bool done() const = 0;
 };
 
 }  // match3

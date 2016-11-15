@@ -47,25 +47,26 @@ struct player {
      */
     // clang-format off
     return make_transition_table(
-     // +------------------------------------------------------------------------------------------------------------------+
-        (*"idle"_s)                       / reset_and_show                                      = "first item"_s,
-         "first item"_s                   [ ([](moves& m) { return not m; }) ] / show_game_over = "is game over?"_s,
-         "is game over?"_s  + event<up>   / reset_and_show                                      = "first item"_s,
-         "first item"_s     + event<down> / select_item                                         = "second item"_s,
-         "second item"_s    + event<up>   [ is_allowed ] / select_and_swap_items                = "match items"_s,
-         "second item"_s    + event<up>   / drop_item                                           = "first item"_s,
+     // +-----------------------------------------------------------------------------------------------------------------+
+       (*"idle"_s)                        / reset_and_show                                       = "first item"_s,
+         "game over?"_s     + event<up>   [ ([](ianimations& a) { return a.done(); }) ] /
+                                            reset_and_show                                       = "first item"_s,
+         "first item"_s     + event<down> / select_item                                          = "second item"_s,
+         "second item"_s    + event<up>   [ is_allowed ] / select_and_swap_items                 = "match items"_s,
+         "second item"_s    + event<up>   / drop_item                                            = "first item"_s,
          "match items"_s                  [ is_swap_items_winning ] / (
                                             [](moves& m) {--m;}, show_moves,
                                             process(matches{.arity=2})
-                                          )                                                     = "play"_s.sm<switcher>(),
-         "match items"_s                  / (swap_items, show_swap, clear_selected)             = "first item"_s,
-         "play"_s.sm<switcher>()                                                                = "first item"_s,
-     // +------------------------------------------------------------------------------------------------------------------+
-         (*"UI"_s)          + event<key_pressed> [ is_key(SDLK_ESCAPE) ]                        = X,
-           "UI"_s           + event<quit>                                                       = X,
-     // +------------------------------------------------------------------------------------------------------------------+
-        (*"animations"_s)   + event<time_tick> / [](animations& a) { a.update(); }
-     // +------------------------------------------------------------------------------------------------------------------+
+                                          )                                                      = "play"_s.sm<switcher>(),
+         "match items"_s                  / (swap_items, show_swap, clear_selected)              = "first item"_s,
+         "play"_s.sm<switcher>()          [ ([](moves& m) { return 0 == m; }) ] / show_game_over = "game over?"_s,
+         "play"_s.sm<switcher>()                                                                 = "first item"_s,
+     // +-----------------------------------------------------------------------------------------------------------------+
+       (*"UI"_s)          + event<key_pressed> [ is_key(SDLK_ESCAPE) ]                           = X,
+         "UI"_s           + event<quit>                                                          = X,
+     // +-----------------------------------------------------------------------------------------------------------------+
+       (*"animations"_s)   + event<time_tick> / [](ianimations& a) { a.update(); }
+     // +-----------------------------------------------------------------------------------------------------------------+
     );
     // clang-format on
   }

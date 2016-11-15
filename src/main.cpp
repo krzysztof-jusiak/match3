@@ -8,6 +8,7 @@
 #include "config.hpp"
 #include "game.hpp"
 #include "model/board.hpp"
+#include "view/animations.hpp"
 #include "view/sdl_canvas.hpp"
 
 namespace di = boost::di;
@@ -18,6 +19,7 @@ auto configuration = []() {
   // clang-format off
   return di::make_injector(
     di::bind<icanvas>.to<sdl_canvas>()
+  , di::bind<ianimations>.to<animations>()
 
   , di::bind<>.to(
       config{.win_title = "match3",

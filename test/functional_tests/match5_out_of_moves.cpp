@@ -45,7 +45,7 @@ int main() {
                          injector.create<match3::board&>().grids));
 
     using namespace fakeit;
-    auto&& canvas = mocks_provider::get_mock<match3::icanvas>();
+    auto&& canvas = mock<match3::icanvas>();
     When(Method(canvas, load_image)).AlwaysReturn(std::shared_ptr<void>{});
     When(Method(canvas, create_text)).AlwaysReturn(std::shared_ptr<void>{});
     When(Method(canvas, draw))
@@ -53,9 +53,15 @@ int main() {
     When(Method(canvas, render)).AlwaysDo([] {});
     When(Method(canvas, clear)).AlwaysDo([] {});
 
+    auto&& animations = mock<match3::ianimations>();
+    When(Method(animations, queue_animation))
+        .AlwaysDo(
+            [](const std::function<void()>&, std::chrono::milliseconds) {});
+    When(Method(animations, update)).AlwaysDo([] {});
+    When(Method(animations, done)).AlwaysReturn(true);
+
     // when
-    auto sm =
-        injector.create<sml::sm<match3::player, sml::logger<my_logger>>>();
+    auto sm = injector.create<sml::sm<match3::player, sml::logger<logger>>>();
     expect(1 == injector.create<match3::moves&>());
 
     swipe(sm, {3, 5}, {3, 6});

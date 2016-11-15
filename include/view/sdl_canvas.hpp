@@ -80,10 +80,7 @@ class sdl_canvas : sdl, public icanvas {
     SDL_RenderPresent(renderer_.get());
   }
 
-  void clear() override {
-    elements_.clear();
-    SDL_RenderClear(renderer_.get());
-  }
+  void clear() override { elements_.clear(); }
 
  private:
   std::unique_ptr<SDL_Window, void (*)(SDL_Window*)> window_;

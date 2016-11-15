@@ -9,12 +9,12 @@
 
 #include "config.hpp"
 #include "model/board.hpp"
-#include "view/animations.hpp"
+#include "view/ianimations.hpp"
 #include "view/view.hpp"
 
 namespace match3 {
 
-const auto show_board = [](const board& b, animations& a, view& v,
+const auto show_board = [](const board& b, ianimations& a, view& v,
                            const config c) {
   using namespace std::chrono_literals;
   a.queue_animation([b, c, &v] {

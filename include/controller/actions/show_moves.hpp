@@ -8,12 +8,12 @@
 #pragma once
 
 #include "controller/data/moves.hpp"
-#include "view/animations.hpp"
+#include "view/ianimations.hpp"
 #include "view/view.hpp"
 
 namespace match3 {
 
-const auto show_moves = [](view& v, const moves& m, animations& a) {
+const auto show_moves = [](view& v, const moves& m, ianimations& a) {
   using namespace std::chrono_literals;
   a.queue_animation(
       [m, &v] { v.set_text("moves: " + std::to_string(m), 240, 10); });

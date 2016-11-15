@@ -24,6 +24,7 @@ const auto reset = [](config c, board original, board& b, points& p, moves& m,
   p = {};
   m = c.max_moves;
   v.clear();
+  v.update();
 };
 
 }  // match3

@@ -20,10 +20,10 @@ auto make_click_event(int x, int y) {
     T event;
   } click{{x * 43 + 25, y * 43 + 65}};
   return click.event;
-};
+}
 
 template <class SM>
 void swipe(SM& sm, std::pair<int, int> from, std::pair<int, int> to) {
   sm.process_event(make_click_event<match3::down>(from.first, from.second));
   sm.process_event(make_click_event<match3::up>(to.first, to.second));
-};
+}
