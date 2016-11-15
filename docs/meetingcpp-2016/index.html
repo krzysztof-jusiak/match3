@@ -694,7 +694,8 @@ public:
   bool is_match(const position) const;
   auto match(const position) const;
   void scroll(const position);
-  decltype(auto) operator[](const position) const;
+  void swipe(const position, const position);
+  auto operator[](const position) const;
 
 private:
   std::array<color_t, width * height> grids;
@@ -1214,7 +1215,7 @@ const auto is_swap_winning = [](const board& b, const selected& s) {
 ```cpp
 const auto swap_items = [](const selected& s, board& b) {
   assert(s.size() == 2);
-  std::swap(b[s[0]], b[s[1]]);
+  b.swipe(s[0], s[1]); // std::swap(b[s[0]], b[s[1]]);
 };
 ```
 
@@ -1241,7 +1242,7 @@ state<switcher> = "first item"_s
 
 ----
 
-##Player Transition Table (just for desktop)
+##Player Transition Table (Desktop only)
 
 <img src="images/ui.png" width="50%" />
 
@@ -1395,13 +1396,12 @@ const auto generate_new = [](board& b, const auto& m
 ```
 
 ```cpp
-"generate items"_test = [] {
+"generate new"_test = [] {
   static constexpr auto NEW = 42;
   board b = {4, 0, 3, 3, 0, 2, 1, 0, 3};
-  selected s = {0, 5};
   struct { std::vector<color_t> matches; } event{{1, 4, 7}};
 
-  generate_items(b, event, s);
+  generate_new(b, event, [] { return NEW; });
 
   expect(equal({4, NEW, 3, 3, NEW, 2, 1, NEW, 3}, b));
   expect(equal({0, 1, 4, 5, 7}, s));
@@ -1430,7 +1430,7 @@ $em++ -std=c++14 src/main.cpp
 
 ###Run
 ```sh
-$browser index.html
+$browser index.html # $emrun index.html (localhost:6931)
 ```
 
 ----
@@ -1556,7 +1556,7 @@ function LP(a){a=a|0;var b=0,d=0,e=0,f=0,g=0,h=0,j=0,k=0,l=0,...
 | Range-V3 | https://github.com/ericniebler/range-v3 |
 | Boost.DI (Propsed) | https://github.com/boost-experimental/di |
 | Boost.SML (Propsed) | https://github.com/boost-experimental/sml |
-<!-- .element: style="margin-left:-15%; width:130%" -->
+<!-- .element: style="margin-left:-13%; width:125%" -->
 
 					</script>
 				</section>
