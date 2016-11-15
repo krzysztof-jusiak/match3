@@ -6,24 +6,28 @@
 
 #Simple Web Match3 game in C++14
 
+<center>
 <a href="http://modern-cpp-examples.github.io/match3">
   <img src="docs/match3.png" width="300" height="450"/>
 </a>
+</center>
 
 ###Tested Compilers
 
-* [Clang-3.7+](http://clang.llvm.org)
-* [GCC-6+](https://gcc.gnu.org/gcc-6/changes.html)
-* [Emscripten - 1.35.0](http://kripken.github.io/emscripten-site/docs/getting_started/downloads.html)
+* Web
+  * [Emscripten](emscripten.org)
+  * [WebAssembly](http://webassembly.org)
+
+* Desktop
+  * [Clang-3.7+](http://clang.llvm.org)
+  * [GCC-6+](https://gcc.gnu.org/gcc-6/changes.html)
 
 ###Dependencies
 
 * [SDL2](https://www.libsdl.org/download-2.0.php)
-* [SDL2-image](https://www.libsdl.org/projects/SDL_image)
-* [SDL2-ttf](https://www.libsdl.org/download-2.0.php)
-* [Boost.DI](https://github.com/boost-experimental/di)
-* [Boost.SML](https://github.com/boost-experimental/sml)
-* [Range-V3](https://github.com/ericniebler/range-v3)
+* [Range-v3](https://github.com/ericniebler/range-v3)
+* [Boost.DI](https://github.com/boost-experimental/di) (Proposed)
+* [Boost.SML](https://github.com/boost-experimental/sml) (Proposed)
 
 
 ###Quick start
