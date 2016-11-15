@@ -6,11 +6,9 @@
 
 #Simple Web Match3 game in C++14
 
-<center>
 <a href="http://modern-cpp-examples.github.io/match3">
   <img src="docs/match3.png" width="300" height="450"/>
 </a>
-</center>
 
 ###Tested Compilers
 
