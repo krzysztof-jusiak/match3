@@ -6,11 +6,15 @@ class game {
   play()
 }
 
+note right of board: model
+
 class board {
   is_match(position): bool
   match(position)
   scroll(position)
 }
+
+note left of iview: view
 
 class iview {
   show_grid(x, y, color)
@@ -19,10 +23,14 @@ class iview {
 }
 
 
+note right of player: controller
+
 class player {
   () : transition_table
   process_event(event)
 }
+
+note right of switcher: controller
 
 class switcher {
   () : transition_table

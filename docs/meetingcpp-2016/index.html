@@ -208,6 +208,10 @@ wasm-function[0]:
 
 -----
 
+##Libraries
+
+-----
+
 ##Range-v3
 
 > Range library for C++11/14/17
@@ -295,6 +299,29 @@ assert(3 == ranges::count(vi, 2));
 > Dependency Injection Library
 
 https://github.com/boost-experimental/di
+
+----
+
+##Dependency Injection
+
+> "Don't call us, we'll call you", Hollywood principle
+
+####No DI
+```cpp
+coffee_maker()                          
+  : heater(make_shared<electric_heater>()) // construct dependencies
+  , pump(make_unique<heat_pump>(heater))  
+{ }                                     
+```
+
+####DI
+```cpp
+coffee_maker(shared_ptr<iheater> heater // inject dependencies
+           , unique_ptr<ipump> pump)
+  : heater(heater)
+  , pump(move(pump))
+{ }
+```
 
 ----
 
@@ -558,7 +585,7 @@ main:
 
 ##Match-3 Game - Design
 
-<img src="images/design.png" width="50%" />
+<img src="images/design.png" width="60%" />
 
 ==============================================================================
 
@@ -614,7 +641,7 @@ class ivew {
 
 ----
 
-##Game
+##Game (Loop)
 
 ```cpp
 struct game {
@@ -625,7 +652,7 @@ struct game {
      make_dispatch_table<SDL_Event
                        , SDL_FIRSTEVENT
                        , SDL_LASTEVENT>(player_);
-   while (!player_.is(sml::X)) { // is not in final state
+   while (!player_.is(sml::X)) { // is not in a final state
      SDL_Event event;
      while (SDL_PollEvent(&event)) {
        dispatch_event(event, event.type);
@@ -691,10 +718,10 @@ make_transition_table(
 ```cpp
 class board {
 public:
+  void swipe(const position, const position);
   bool is_match(const position) const;
   auto match(const position) const;
   void scroll(const position);
-  void swipe(const position, const position);
   auto operator[](const position) const;
 
 private:
@@ -783,15 +810,21 @@ match-n: | 1 2 1 1 | => color:3 => | 1  2   1   1  | =>   begin: 1
 
 ####No Match
 ```cpp
-         | 1 3 2 3 |               | 1 3 3 3 |    {
-match-n: | 1 2 1 1 | => color:3 => | 1 2 1 1 | =>   begin: 0
-         | 3 2 2 1 |    n:1        | 3 2 2 1 |      length: 0
-                                                  }
+         | 1 3 2 3 |               | 1 [3] 2 3 |    {
+match-n: | 1 2 1 1 | => color:3 => | 1  2  1 1 | =>   begin: 0
+         | 3 2 2 1 |    n:1        | 3  2  2 1 |      length: 0
+                                                    }
 ```
 
 ----
 
 ##Match-N (helper)
+
+```cpp
+                 [ 1==3 3==3 3==3 ] -> [ 0 1 1 ] -> size(2)
+[ 1 3 3 3 2 ] -> [ 3==3 3==3 3==3 ] -> [ 1 1 1 ] -> size(3) -> MATCH-3!
+                 [ 3==3 3==3 2==3 ] -> [ 1 1 0 ] -> size(2)
+```
 
 ```cpp
 const auto match_n = [](auto&& view, auto color, const int n = 3) {
@@ -891,7 +924,7 @@ match: | 2 5 5 5 3 | => n:13 => | 2  5 5 [5] 3 | => | 2 [5] [5] [5] 3 |
        | 2 1 3 5 1 |            | 2  1 3  5  3 |    | 2  1   3  [5] 3 |
        | 4 2 1 5 8 |            | 4  2 1  5  8 |    | 4  2   1  [5] 8 |
 
-    => [11, 12, 13, 18, 23]
+    => [11, 12, 13, 18, 23] (positions)
 ```
 
 ####No Match
@@ -913,16 +946,16 @@ const auto match = [](auto&& view, auto n, auto width) {
   const auto x = n % width, y = n / width;
   const auto match_r = match_n(row(view, y, width), color);
   const auto match_c = match_n(col(view, x, width), color);
-  const auto transform = [](auto length, auto expr) {
+  const auto get_positions = [](auto length, auto expr) {
     return view::ints | view::take(length) | view::transform(expr);
   };
 ```
 
 ```cpp
   std::vector<decltype(n)> result = view::concat(
-    transform(match_r.length,
+    get_positions(match_r.length,
       [=](auto i) { return y * width + match_r.begin + i; }),
-    transform(match_c.length,
+    get_positions(match_c.length,
       [=](auto i) { return (match_c.begin + i) * width + x; }));
   result |= action::sort | action::unique;
   return result;
@@ -950,9 +983,9 @@ const auto match = [](auto&& view, auto n, auto width) {
 ##Scroll (idea)
 
 ```cpp
-        | 1 1 3 |                     | 1  1  3 |    | 1 0 3 |
-scroll: | 3 0 5 | => n:4, width: 3 => | 3 [0] 5 | => | 3 1 5 |
-        | 6 0 8 |                     | 6  0  8 |    | 6 0 8 |
+        | 1 1 3 |                     | 1 [1] 3 |    | 1 [0] 3 |
+scroll: | 3 0 5 | => n:4, width: 3 => | 3 [0] 5 | => | 3 [1] 5 |
+        | 6 0 8 |                     | 6  0  8 |    | 6  0  8 |
 ```
 
 ----

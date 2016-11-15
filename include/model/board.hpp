@@ -182,15 +182,15 @@ const auto match = [](auto&& view, auto n, auto width) {
   const auto y = n / width;
   const auto match_r = match_n(row(view, y, width), color);
   const auto match_c = match_n(col(view, x, width), color);
-  const auto transform = [](auto length, auto expr) {
+  const auto get_positions = [](auto length, auto expr) {
     return ranges::view::ints | ranges::view::take(length) |
            ranges::view::transform(expr);
   };
   std::vector<decltype(n)> result = ranges::view::concat(
-      transform(match_r.length,
-                [=](auto i) { return y * width + match_r.begin + i; }),
-      transform(match_c.length,
-                [=](auto i) { return (match_c.begin + i) * width + x; }));
+      get_positions(match_r.length,
+                    [=](auto i) { return y * width + match_r.begin + i; }),
+      get_positions(match_c.length,
+                    [=](auto i) { return (match_c.begin + i) * width + x; }));
   result |= ranges::action::sort | ranges::action::unique;
   return result;
 };
