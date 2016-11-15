@@ -8,6 +8,9 @@
 #pragma once
 
 #include <cassert>
+#include <range/v3/action/push_back.hpp>
+#include <range/v3/action/sort.hpp>
+#include <range/v3/action/unique.hpp>
 #include "controller/data/selected.hpp"
 #include "controller/events/matches.hpp"
 #include "model/board.hpp"

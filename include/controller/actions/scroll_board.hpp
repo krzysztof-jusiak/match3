@@ -7,6 +7,7 @@
 //
 #pragma once
 
+#include <range/v3/algorithm/for_each.hpp>
 #include "controller/events/matches.hpp"
 #include "model/board.hpp"
 

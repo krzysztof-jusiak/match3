@@ -7,6 +7,19 @@
 //
 #pragma once
 
+#include <algorithm>
+#include <range/v3/action/sort.hpp>
+#include <range/v3/action/transform.hpp>
+#include <range/v3/action/unique.hpp>
+#include <range/v3/algorithm/count.hpp>
+#include <range/v3/algorithm/find.hpp>
+#include <range/v3/algorithm/rotate.hpp>
+#include <range/v3/view/concat.hpp>
+#include <range/v3/view/drop.hpp>
+#include <range/v3/view/iota.hpp>  // view::ints
+#include <range/v3/view/stride.hpp>
+#include <range/v3/view/take.hpp>
+#include <range/v3/view/transform.hpp>
 #include "config.hpp"
 
 namespace match3 {
@@ -217,6 +230,8 @@ class board {
 
   board(const std::vector<color_t>& grids, const config c)
       : grids(grids), width(c.board_width) {}
+
+  void swipe(const int p1, const int p2) { std::swap(b[p1], b[p2]); }
 
   bool is_match(const int position) const {
     return board_logic::is_match(grids, position, width);

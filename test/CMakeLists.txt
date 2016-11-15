@@ -27,4 +27,6 @@ test(unit_tests/controller/guards/has_items)
 test(unit_tests/controller/guards/is_item_winning)
 test(unit_tests/controller/guards/is_key)
 test(unit_tests/model/board)
-test(functional_tests/match3)
+
+test(functional_tests/match3_matchl_no_moves_reset)
+test(functional_tests/match5_out_of_moves)

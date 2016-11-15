@@ -8,6 +8,12 @@
 #pragma once
 
 #include <cassert>
+#include <range/v3/action/push_front.hpp>
+#include <range/v3/action/sort.hpp>
+#include <range/v3/action/transform.hpp>
+#include <range/v3/action/unique.hpp>
+#include <range/v3/view/iota.hpp>  // view::ints
+#include <range/v3/view/take.hpp>
 #include "config.hpp"
 #include "controller/data/randomize.hpp"
 #include "controller/data/selected.hpp"

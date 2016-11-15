@@ -15,7 +15,7 @@ namespace match3 {
 
 const auto swap_items = [](const selected& s, board& b) {
   assert(s.size() == 2);
-  std::swap(b[s[0]], b[s[1]]);
+  b.swipe(s[0], s[1]);
 };
 
 }  // match3
