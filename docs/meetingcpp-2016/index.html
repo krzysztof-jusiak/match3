@@ -62,8 +62,8 @@ Kris Jusiak
 * Overview
   * Emscripten / WebAssembly
   * Range-v3
-  * Boost.DI (Proposed)
-  * Boost.SML (Proposed)
+  * [Boost].DI
+  * [Boost].SML
 * Design
 * Implementation
 * Demo
@@ -294,7 +294,7 @@ assert(3 == ranges::count(vi, 2));
 
 -----
 
-##Experimental Boost.DI
+##[Boost].DI
 
 > Dependency Injection Library
 
@@ -325,7 +325,7 @@ coffee_maker(shared_ptr<iheater> heater // inject dependencies
 
 ----
 
-##Boost.DI
+##[Boost].DI
 
 * One header - 3k LOC - (boost/di.hpp) / generated
 * Neither Boost nor STL is required
@@ -339,7 +339,7 @@ coffee_maker(shared_ptr<iheater> heater // inject dependencies
 
 ----
 
-##Boost.DI - Hello World
+##[Boost].DI - Hello World
 
 ```cpp
 #include <boost/di.hpp>
@@ -371,7 +371,7 @@ int main() {                               |    |
 
 ----
 
-##Boost.DI - Hello World
+##[Boost].DI - Hello World
 
 ```sh
 time $CXX -std=c++14 hello_world.cpp # 0.102s
@@ -425,9 +425,9 @@ error: inline function 'abstract_type<ihello>::is_not_bound::error'
 
 ----
 
-##Boost.DI vs Java
+##[Boost].DI vs Java
 
-| **Library** | Boost.DI | Guice | Dagger2 |
+| **Library** | [Boost].DI | Guice | Dagger2 |
 | ----------  | -------- | ------------ | ------- |
 | Language    | C++14    | Java | Java |
 | Linkage     | header only | jar | jar |
@@ -438,21 +438,21 @@ error: inline function 'abstract_type<ihello>::is_not_bound::error'
 
 ##Benchmarks (Clang-3.8/Java8)
 
-| 64 types, 1-4 ctor params, 1024 iterations | **Boost.DI** | **Guice** | **Dagger2** |
+| 64 types, 1-4 ctor params, 1024 iterations | **[Boost].DI** | **Guice** | **Dagger2** |
 | --------------------- | ------------ | ---------------- | ------------- |
 | Compilation time    | 0.376s       |  0.570s            | 1.411s        |
 | Execution time      | 0.002s       |  0.528s            | 0.157s        |
 
 ---
 
-| 256 types, 1-4 ctor params, 1024 iterations | **Boost.DI** | **Guice** | **Dagger2** |
+| 256 types, 1-4 ctor params, 1024 iterations | **[Boost].DI** | **Guice** | **Dagger2** |
 | --------------------- | ------------ | ---------------- | ------------- |
 | Compilation time    | 0.706s       | 0.642s             | 1.903s        |
 | Execution time      | 0.002s       | 0.544s             | 0.210s        |
 
 ----
 
-##Experimental Boost.SML
+##[Boost].SML
 
 > UML-2.5 State Machine Language
 
@@ -460,25 +460,25 @@ https://github.com/boost-experimental/sml
 
 -----
 
-##Boost.SML
+##[Boost].SML
 
 * One header - 2k LOC - (boost/sml.hpp) / generated
 * Neither Boost nor STL is required
 * Supports UML-2.5
-* Quick compilation-times
-* Fast run-time
+* Quick compilation-times (-fno-rtti, -fno-exceptions)
+* No run-time overhead (`process_event` is O(1))
 * Supported compilers (C++14)
   * [Clang-3.4+](https://travis-ci.org/boost-experimental/sml), [XCode-6.1+](https://travis-ci.org/boost-experimental/sml), [GCC-5.2+](https://travis-ci.org/boost-experimental/di), [MSVC-2015+](https://ci.appveyor.com/project/krzysztof-jusiak/sml)
 
 ----
 
-##Boost.SML - Hello World
+##[Boost].SML - Hello World
 
 ![hello world](images/sml.png)
 
 ----
 
-##Boost.SML - Hello World
+##[Boost].SML - Hello World
 
 ```cpp
 #include <boost/sml.hpp>
@@ -511,7 +511,7 @@ struct hello_world {
 
 ----
 
-##Boost.SML - Hello World
+##[Boost].SML - Hello World
 
 ```cpp
 int main() {
@@ -531,7 +531,7 @@ $./a.out
 
 ----
 
-##Boost.SML - Hello World
+##[Boost].SML - Hello World
 
 ```sh
 time $CXX -std=c++14 hello_world.cpp # 0.079s
@@ -561,7 +561,7 @@ main:
 
 ##Benchmarks (Clang-3.8)
 
-| [Complex Test](https://github.com/boost-experimental/sml/tree/master/test/pt/complex) |      Boost.SML | Boost.MSM-eUML   | Boost.Statechart   |
+| [Complex Test](https://github.com/boost-experimental/sml/tree/master/test/pt/complex) |      [Boost].SML | Boost.MSM-eUML   | Boost.Statechart   |
 |------------------|----------------|------------------|--------------------|
 | Compilation time | 0.582s         | 1m15.935s        | 3.661s             |
 | Execution time   | 72ms           | 81ms             | 6221ms             |
@@ -1552,6 +1552,7 @@ function LP(a){a=a|0;var b=0,d=0,e=0,f=0,g=0,h=0,j=0,k=0,l=0,...
 
 ##Demo / C++14 on the slide!
 
+http://modern-cpp-examples.github.io/match3
 <div class="stretch">
   <iframe src="http://modern-cpp-examples.github.io/match3" height="100%" width="100%" />
   <!--<iframe src="http://localhost:6931/index.html" height="100%" width="100%" />-->
@@ -1593,11 +1594,11 @@ function LP(a){a=a|0;var b=0,d=0,e=0,f=0,g=0,h=0,j=0,k=0,l=0,...
 |  |  |
 | ------- | ------------- |
 | Match-3 Game | https://github.com/modern-cpp-examples/match3 |
-| Emscripten | http://emscripten.org |
-| WebAssembly | http://webassembly.org |
-| Range-V3 | https://github.com/ericniebler/range-v3 |
-| Boost.DI (Propsed) | https://github.com/boost-experimental/di |
-| Boost.SML (Propsed) | https://github.com/boost-experimental/sml |
+| Emscripten   | http://emscripten.org |
+| WebAssembly  | http://webassembly.org |
+| Range-V3     | https://github.com/ericniebler/range-v3 |
+| [Boost].DI   | https://github.com/boost-experimental/di |
+| [Boost].SML    | https://github.com/boost-experimental/sml |
 <!-- .element: style="margin-left:-13%; width:125%" -->
 
 					</script>
