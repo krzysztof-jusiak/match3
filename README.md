@@ -24,8 +24,8 @@
 
 * [SDL2](https://www.libsdl.org/download-2.0.php)
 * [Range-v3](https://github.com/ericniebler/range-v3)
-* [Boost.DI](https://github.com/boost-experimental/di) (Proposed)
-* [Boost.SML](https://github.com/boost-experimental/sml) (Proposed)
+* [[Boost].DI](https://github.com/boost-experimental/di)
+* [[Boost].SML](https://github.com/boost-experimental/sml)
 
 
 ###Quick start
