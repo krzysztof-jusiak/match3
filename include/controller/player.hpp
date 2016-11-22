@@ -62,10 +62,10 @@ struct player {
          "play"_s.sm<switcher>()          [ ([](moves& m) { return 0 == m; }) ] / show_game_over = "game over?"_s,
          "play"_s.sm<switcher>()                                                                 = "first item"_s,
      // +-----------------------------------------------------------------------------------------------------------------+
-       (*"UI"_s)          + event<key_pressed> [ is_key(SDLK_ESCAPE) ]                           = X,
-         "UI"_s           + event<quit>                                                          = X,
+       (*"UI"_s)            + event<key_pressed> [ is_key(SDLK_ESCAPE) ]                         = X,
+         "UI"_s             + event<quit>                                                        = X,
      // +-----------------------------------------------------------------------------------------------------------------+
-       (*"animations"_s)   + event<time_tick> / [](ianimations& a) { a.update(); }
+       (*"animations"_s)    + event<time_tick> / [](ianimations& a) { a.update(); }
      // +-----------------------------------------------------------------------------------------------------------------+
     );
     // clang-format on
