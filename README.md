@@ -13,7 +13,7 @@
 ###Tested Compilers
 
 * Web
-  * [Emscripten](emscripten.org)
+  * [Emscripten](http://emscripten.org)
   * [WebAssembly](http://webassembly.org)
 
 * Desktop
@@ -43,7 +43,7 @@
   <tr>
     <td>Compile</td>
     <td><code>mkdir build &amp;&amp; cmake .. &amp;&amp; make app</code></td>
-    <td><code>mkdir build &amp;&amp; cxx=em++ cmake .. &amp;&amp; make web</code></td>
+    <td><code>mkdir build &amp;&amp; cmake -DCMAKE_CXX_COMPILER=em++ .. &amp;&amp; make web</code></td>
   </tr>
   <tr>
     <td>Run</td>
