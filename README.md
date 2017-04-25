@@ -4,13 +4,13 @@
 
 ---------------------------------------
 
-#A web Match-3 game in C++14
+# A web Match-3 game in C++14
 
 <a href="http://modern-cpp-examples.github.io/match3">
   <img src="docs/images/match3.png" width="300" height="450"/>
 </a>
 
-###Tested Compilers
+### Tested Compilers
 
 * Web
   * [Emscripten](http://emscripten.org)
@@ -20,7 +20,7 @@
   * [Clang-3.7+](http://clang.llvm.org)
   * [GCC-6+](https://gcc.gnu.org/gcc-6/changes.html)
 
-###Dependencies
+### Dependencies
 
 * [SDL2](https://www.libsdl.org/download-2.0.php)
 * [Range-v3](https://github.com/ericniebler/range-v3)
@@ -28,7 +28,7 @@
 * [[Boost].SML](https://github.com/boost-experimental/sml)
 
 
-###Quick start
+### Quick start
 
 <table>
   <tr>
@@ -52,7 +52,7 @@
   </tr>
 </table>
 
-###Related Materials
+### Related Materials
 
 * CppNow 2016 - [Let's make a web match-3 game in C++14](http://modern-cpp-examples.github.io/match3/cppnow-2016)
 * Meeting C++ 2016 - [Implementing a web game in C++14](http://modern-cpp-examples.github.io/match3/meetingcpp-2016)
